@@ -1,0 +1,37 @@
+---
+import ResourceIndex from "../../components/ResourceIndex.astro";
+
+const entries = [
+  {
+    title: "Log File Inspector",
+    description: "Parse a bounded Apache or Nginx access-log sample. Review accepted rows, status families, request paths, and declared user agents.",
+    href: "/tools/log-file-inspector",
+    meta: "Browser-local · no upload",
+    status: "OPEN TOOL",
+  },
+  {
+    title: "Response Inspector",
+    description: "Paste raw HTTP response headers and HTML. Separate observed status, redirect, canonical, robots, and unknown fields.",
+    href: "/tools/url-inspector",
+    meta: "Paste-only · no fetch",
+    status: "OPEN TOOL",
+  },
+  {
+    title: "IP Address Check",
+    description: "Classify IPv4 or IPv6 syntax and selected reserved ranges without claiming identity or precise location.",
+    href: "/tools/ip-location",
+    meta: "Browser-local · no dataset lookup",
+    status: "OPEN TOOL",
+  },
+];
+---
+<ResourceIndex
+  title="Browser-local tools"
+  pageTitle="Web diagnostics tools — AnalyseSpider"
+  description="Browser-local tools for access logs, pasted HTTP responses, HTML directives, and IP address properties."
+  intro="Inspect evidence already in your possession. The current tools run locally in your browser and do not issue arbitrary network requests."
+  canonicalPath="/tools"
+  index="20"
+  entries={entries}
+  note="Every result remains available without signup. Observations, inferences, unknowns, and input limits are shown on the tool surface."
+/>

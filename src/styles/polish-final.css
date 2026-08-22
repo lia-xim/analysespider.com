@@ -1,0 +1,33 @@
+@media (min-width: 761px) {
+  .hero-copy h1 {
+    font-size: clamp(4.5rem, 5.75vw, 6.25rem);
+  }
+
+  .hero-copy h1 span {
+    white-space: nowrap;
+  }
+}
+
+.tool-sidebar h1 {
+  font-size: clamp(3.3rem, 4.25vw, 4.65rem);
+}
+
+.tool-page .tool-main > .tool-boundary {
+  margin-right: 0;
+  margin-bottom: 1rem;
+  margin-left: auto;
+}
+
+@media (max-width: 760px) {
+  .hero-copy h1 span {
+    white-space: normal;
+  }
+
+  .evidence-line {
+    top: 30px;
+  }
+
+  .tool-sidebar h1 {
+    font-size: clamp(3.5rem, 17vw, 4.5rem);
+  }
+}

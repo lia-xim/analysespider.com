@@ -1,0 +1,208 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ToolBoundary from "../../components/ToolBoundary.astro";
+---
+<BaseLayout
+  title="HTTP Response Inspector — AnalyseSpider"
+  description="Inspect pasted HTTP status lines, headers, canonical markup, and robots directives locally."
+  canonicalPath="/tools/url-inspector"
+  bodyClass="tool-page"
+>
+  <section class="tool-shell">
+    <aside class="tool-sidebar">
+      <h1>Response Inspector</h1>
+      <p>Paste the evidence you already have. AnalyseSpider will not request the URL for you.</p>
+      <button class="button sidebar-action" id="load-response-sample" type="button">Load sample</button>
+      <div class="sidebar-meta">
+        <strong>INPUT SOURCES</strong><br />
+        Browser network panel<br />
+        <code>curl -I</code> output<br />
+        Raw HTTP response<br />
+        Page-source excerpt
+      </div>
+    </aside>
+
+    <div class="tool-main">
+      <ToolBoundary />
+      <section class="workspace" aria-labelledby="response-input-heading">
+        <div class="workspace-toolbar"><span class="active">1. PASTE EVIDENCE</span><span>NO FETCH</span><span>NO STORAGE</span></div>
+        <div class="workspace-content">
+          <h2 id="response-input-heading" class="visually-hidden">Response input</h2>
+          <div class="input-grid">
+            <div>
+              <label for="header-input">Status line and response headers</label>
+              <textarea id="header-input" spellcheck="false" placeholder="HTTP/2 301&#10;location: https://example.com/new-path&#10;x-robots-tag: noindex"></textarea>
+              <p class="field-help">Paste one observed response block. Redirect hops should be inspected separately.</p>
+            </div>
+            <div class="or-divider" aria-hidden="true">+</div>
+            <div>
+              <label for="html-input">HTML source or head excerpt (optional)</label>
+              <textarea id="html-input" spellcheck="false" placeholder='<link rel="canonical" href="https://example.com/new-path">&#10;<meta name="robots" content="index,follow">'></textarea>
+            </div>
+          </div>
+          <div class="workspace-actions">
+            <button class="button" id="clear-response" type="button">Clear</button>
+            <button class="button primary" id="inspect-response" type="button">Inspect locally</button>
+          </div>
+          <p class="form-status" id="response-status" role="status" aria-live="polite">Waiting for pasted evidence.</p>
+        </div>
+      </section>
+
+      <section class="result-surface" id="response-results" hidden aria-labelledby="response-result-heading">
+        <div class="workspace-toolbar"><span class="active">2. RESULT</span><span id="observation-time"></span></div>
+        <h2 id="response-result-heading" class="visually-hidden">Response inspection result</h2>
+        <div class="diagnostic-output">
+          <section class="evidence-group">
+            <h3>OBSERVED</h3>
+            <div><ul id="observed-list"></ul></div>
+          </section>
+          <section class="evidence-group">
+            <h3>INFERRED</h3>
+            <div><ul id="inferred-list"></ul></div>
+          </section>
+          <section class="evidence-group">
+            <h3>UNKNOWN</h3>
+            <div><ul id="unknown-list"></ul></div>
+          </section>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <section class="content-grid">
+    <div class="prose">
+      <h2>Why the tool does not fetch URLs</h2>
+      <p>An unrestricted server-side URL field can become a proxy into private networks, cloud metadata services, redirect loops, and oversized responses. This pre-launch tool accepts evidence directly from you and performs no network request.</p>
+      <p>A future fetch service would need DNS resolution checks before and after redirects, private and link-local address blocking, response-size and redirect-depth caps, rate limits, timeouts, abuse monitoring, and a clear retention contract. That service is not implied by this interface.</p>
+    </div>
+    <aside class="side-note">
+      <h3>Useful collection commands</h3>
+      <p><code>curl -I https://example.com/</code></p>
+      <p>For each redirect hop, preserve the status, <code>Location</code>, robots headers, and observation time.</p>
+    </aside>
+  </section>
+
+  <script>
+    const headerInput = document.querySelector<HTMLTextAreaElement>("#header-input")!;
+    const htmlInput = document.querySelector<HTMLTextAreaElement>("#html-input")!;
+    const status = document.querySelector<HTMLElement>("#response-status")!;
+    const results = document.querySelector<HTMLElement>("#response-results")!;
+    const sampleHeaders = `HTTP/2 301
+date: Fri, 22 Aug 2026 09:00:00 GMT
+location: https://example.com/new-path
+x-robots-tag: noindex, follow
+cache-control: public, max-age=300
+content-type: text/html; charset=utf-8`;
+    const sampleHtml = `<!doctype html>
+<html><head>
+  <link rel="canonical" href="https://example.com/new-path">
+  <meta name="robots" content="index, follow">
+  <title>Moved page</title>
+</head><body></body></html>`;
+
+    const setList = (selector: string, items: string[]) => {
+      const list = document.querySelector<HTMLUListElement>(selector)!;
+      list.replaceChildren();
+      items.forEach((item) => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        list.append(li);
+      });
+    };
+
+    const inspect = () => {
+      const rawHeaders = headerInput.value.trim();
+      const rawHtml = htmlInput.value.trim();
+      if (!rawHeaders && !rawHtml) {
+        results.hidden = true;
+        status.textContent = "Paste headers or HTML before inspecting.";
+        return;
+      }
+
+      const observed: string[] = [];
+      const inferred: string[] = [];
+      const unknown: string[] = [];
+      const lines = rawHeaders.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+      const statusLine = lines.find((line) => /^HTTP\//i.test(line));
+      const headers = new Map<string, string[]>();
+
+      lines.filter((line) => !/^HTTP\//i.test(line)).forEach((line) => {
+        const split = line.indexOf(":");
+        if (split < 1) return;
+        const name = line.slice(0, split).trim().toLowerCase();
+        const value = line.slice(split + 1).trim();
+        headers.set(name, [...(headers.get(name) ?? []), value]);
+      });
+
+      if (statusLine) {
+        observed.push(`Status line: ${statusLine}`);
+        const code = Number(statusLine.match(/\s(\d{3})(?:\s|$)/)?.[1]);
+        if (code >= 300 && code < 400) {
+          inferred.push(headers.has("location")
+            ? "This response is a redirect with an explicit destination."
+            : "This is a redirect status, but no Location header was present in the pasted block.");
+        } else if (code >= 400) {
+          inferred.push("The pasted response represents an error response, not an indexable success response.");
+        } else if (code >= 200 && code < 300) {
+          inferred.push("The pasted response is a successful HTTP response; indexability still depends on directives and content.");
+        }
+      } else if (rawHeaders) {
+        unknown.push("No HTTP status line was found in the pasted header block.");
+      }
+
+      ["location", "x-robots-tag", "content-type", "cache-control", "link"].forEach((name) => {
+        (headers.get(name) ?? []).forEach((value) => observed.push(`${name}: ${value}`));
+      });
+
+      const xRobots = (headers.get("x-robots-tag") ?? []).join(", ").toLowerCase();
+      if (xRobots.includes("noindex")) inferred.push("The observed X-Robots-Tag contains noindex.");
+
+      if (rawHtml) {
+        const documentCopy = new DOMParser().parseFromString(rawHtml, "text/html");
+        const canonical = documentCopy.querySelector<HTMLLinkElement>('link[rel~="canonical"]')?.href;
+        const robots = documentCopy.querySelector<HTMLMetaElement>('meta[name="robots" i]')?.content;
+        const title = documentCopy.querySelector("title")?.textContent?.trim();
+        if (canonical) observed.push(`HTML canonical: ${canonical}`);
+        else unknown.push("No HTML canonical link was found in the pasted source.");
+        if (robots) {
+          observed.push(`HTML robots meta: ${robots}`);
+          if (robots.toLowerCase().includes("noindex")) inferred.push("The observed HTML robots directive contains noindex.");
+        } else {
+          unknown.push("No HTML robots meta directive was found in the pasted source.");
+        }
+        if (title) observed.push(`HTML title: ${title}`);
+        if (canonical && headers.has("location")) {
+          const location = headers.get("location")![0];
+          inferred.push(canonical === new URL(location, canonical).href
+            ? "The pasted canonical and redirect destination resolve to the same URL."
+            : "The pasted canonical and redirect destination differ; verify the final response.");
+        }
+      } else {
+        unknown.push("Canonical and HTML robots directives were not checked because no HTML was pasted.");
+      }
+
+      unknown.push("Final redirect destination, rendered content, network timing, DNS resolution, and live index state were not fetched or verified.");
+      setList("#observed-list", observed.length ? observed : ["No supported status, header, or HTML signals were recognized."]);
+      setList("#inferred-list", inferred.length ? inferred : ["No inference was made from the pasted evidence."]);
+      setList("#unknown-list", unknown);
+      document.querySelector("#observation-time")!.textContent = `ANALYSED ${new Date().toISOString()}`;
+      results.hidden = false;
+      status.textContent = "Pasted evidence inspected locally. No URL was requested.";
+    };
+
+    document.querySelector("#load-response-sample")!.addEventListener("click", () => {
+      headerInput.value = sampleHeaders;
+      htmlInput.value = sampleHtml;
+      status.textContent = "Sample evidence loaded locally.";
+      headerInput.focus();
+    });
+    document.querySelector("#clear-response")!.addEventListener("click", () => {
+      headerInput.value = "";
+      htmlInput.value = "";
+      results.hidden = true;
+      status.textContent = "Local input cleared.";
+      headerInput.focus();
+    });
+    document.querySelector("#inspect-response")!.addEventListener("click", inspect);
+  </script>
+</BaseLayout>

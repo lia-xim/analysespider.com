@@ -1,24 +1,17 @@
 ---
-import { site } from "../data/site";
-import "../styles/global.css";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ArrowIcon from "../components/ArrowIcon.astro";
 ---
-
-<!doctype html>
-<html lang={site.language}>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="robots" content="noindex, nofollow, noarchive" />
-    <title>Not found | {site.domain}</title>
-  </head>
-  <body>
-    <main>
-      <div class="eyebrow">{site.domain}</div>
-      <h1>Page not found</h1>
-      <p class="purpose">Only the project setup page exists at the moment.</p>
-      <div class="actions"><a href="/">Return to the project setup</a></div>
-    </main>
-  </body>
-</html>
-
-
+<BaseLayout title="Page not found — AnalyseSpider" description="The requested AnalyseSpider path was not found. Use the explicit legacy map or return to the diagnostics library." canonicalPath="/404">
+  <section class="not-found">
+    <div>
+      <p class="kicker">HTTP 404</p>
+      <h1>Path not found.</h1>
+      <p>Unknown and unrelated legacy paths are not redirected to the homepage. Use the legacy map to find an explicitly reviewed successor.</p>
+      <div class="hero-actions">
+        <a class="button primary" href="/legacy">Open legacy map <ArrowIcon /></a>
+        <a class="text-link" href="/">Return home <ArrowIcon /></a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

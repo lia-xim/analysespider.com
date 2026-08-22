@@ -1,0 +1,26 @@
+---
+import ArrowIcon from "./ArrowIcon.astro";
+const entries = [
+  { index: "01", title: "Tools", href: "/tools", copy: "Three browser-local inspectors for logs, pasted responses, and IP properties." },
+  { index: "02", title: "Guides", href: "/guides", copy: "Repeatable workflows for crawler traffic, responses, redirects, and data limits." },
+  { index: "03", title: "Lab Notes", href: "/blog", copy: "Dated notes that challenge one diagnostic shortcut at a time." },
+  { index: "04", title: "Reference", href: "/reference", copy: "Primary-source definitions for status codes, crawler identity, and robots rules." },
+];
+---
+<section class="home-library" aria-labelledby="library-heading">
+  <header>
+    <span class="section-index">40</span>
+    <h2 id="library-heading">Use the whole evidence library</h2>
+    <p>Choose a tool for the evidence in hand, a guide for the workflow, a note for a disputed assumption, or a reference for the underlying definition.</p>
+  </header>
+  <div class="home-library-grid">
+    {entries.map((entry) => (
+      <a href={entry.href}>
+        <span class="section-index">{entry.index}</span>
+        <h3>{entry.title}</h3>
+        <p>{entry.copy}</p>
+        <span class="text-link">Open index <ArrowIcon /></span>
+      </a>
+    ))}
+  </div>
+</section>

@@ -1,0 +1,121 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageLead from "./PageLead.astro";
+import ArrowIcon from "./ArrowIcon.astro";
+import { formatDate, type ContentPage } from "../data/content";
+
+interface Props {
+  page: ContentPage;
+}
+
+const { page } = Astro.props;
+const roots = {
+  guide: { path: "/guides", label: "Guides", index: "31" },
+  "lab-note": { path: "/blog", label: "Lab Notes", index: "41" },
+  reference: { path: "/reference", label: "Reference", index: "51" },
+  audience: { path: "/for", label: "For teams", index: "61" },
+} as const;
+const root = roots[page.kind];
+const canonicalPath = `${root.path}/${page.slug}`;
+const article = page.kind !== "audience";
+---
+<BaseLayout
+  title={`${page.title} — AnalyseSpider`}
+  description={page.description}
+  canonicalPath={canonicalPath}
+  pageType={article ? "article" : "website"}
+  publishedTime={article ? page.publishedAt : undefined}
+  modifiedTime={article ? page.updatedAt : undefined}
+>
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <a href="/">Home</a><span aria-hidden="true">/</span>
+    <a href={root.path}>{root.label}</a><span aria-hidden="true">/</span>
+    <span aria-current="page">{page.title}</span>
+  </nav>
+  <PageLead title={page.title} intro={page.intro} index={root.index} />
+
+  <div class="article-meta" aria-label="Publication details">
+    <span>{page.eyebrow}</span>
+    <span>{article ? `Published ${formatDate(page.publishedAt)}` : "Audience route"}</span>
+    <span>Updated {formatDate(page.updatedAt)}</span>
+    <span>{page.readingMinutes} min read</span>
+    <strong>NOINDEX · PRE-LAUNCH</strong>
+  </div>
+
+  <div class="article-shell">
+    <article class="article-prose">
+      <div class="takeaway">
+        <span>Decision rule</span>
+        <p>{page.takeaway}</p>
+      </div>
+
+      {page.sections.map((section, sectionIndex) => (
+        <section aria-labelledby={`section-${sectionIndex}`}>
+          <span class="section-index">{String(sectionIndex + 1).padStart(2, "0")}</span>
+          <h2 id={`section-${sectionIndex}`}>{section.heading}</h2>
+          {section.paragraphs?.map((paragraph) => <p>{paragraph}</p>)}
+          {section.bullets && (
+            <ul>
+              {section.bullets.map((item) => <li>{item}</li>)}
+            </ul>
+          )}
+          {section.steps && (
+            <ol class="numbered-steps">
+              {section.steps.map((item) => <li>{item}</li>)}
+            </ol>
+          )}
+          {section.callout && <p class="article-callout">{section.callout}</p>}
+        </section>
+      ))}
+    </article>
+
+    <aside class="article-aside" aria-label="Article context">
+      <div>
+        <span class="aside-label">Scope</span>
+        <p>{page.description}</p>
+      </div>
+      <div>
+        <span class="aside-label">Evidence state</span>
+        <p>Technical claims are tied to the primary documentation listed below. Product behavior is verified locally and remains pre-launch.</p>
+      </div>
+    </aside>
+  </div>
+
+  {page.sources.length > 0 && (
+    <section class="source-section" aria-labelledby="sources-heading">
+      <header>
+        <span class="section-index">90</span>
+        <h2 id="sources-heading">Primary sources</h2>
+        <p>Checked for this page on 22 August 2026. External documentation can change.</p>
+      </header>
+      <ol class="source-list">
+        {page.sources.map((source, index) => (
+          <li>
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            <div>
+              <a href={source.href} rel="noreferrer">{source.label} <ArrowIcon external /></a>
+              <p>{source.note}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+  )}
+
+  <section class="related-section" aria-labelledby="related-heading">
+    <header>
+      <span class="section-index">99</span>
+      <h2 id="related-heading">Continue the trace</h2>
+    </header>
+    <div class="related-grid">
+      {page.related.map((item, index) => (
+        <a href={item.href}>
+          <span class="section-index">{String(index + 1).padStart(2, "0")}</span>
+          <h3>{item.label}</h3>
+          <p>{item.note}</p>
+          <span class="text-link">Open <ArrowIcon /></span>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

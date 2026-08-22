@@ -1,0 +1,22 @@
+---
+import ResourceIndex from "../../components/ResourceIndex.astro";
+import { audiencePages } from "../../data/content";
+
+const entries = audiencePages.map((page) => ({
+  title: page.title,
+  description: page.description,
+  href: `/for/${page.slug}`,
+  meta: page.eyebrow,
+  status: "VIEW",
+}));
+---
+<ResourceIndex
+  title="Built for the evidence owner"
+  pageTitle="AnalyseSpider for technical SEOs, developers, and site owners"
+  description="Choose an AnalyseSpider workflow for technical SEO, web development, or site-owner review."
+  intro="The same observation means different things to the person debugging a server, reviewing an audit, or authorising a production change. These routes make the handoff explicit."
+  canonicalPath="/for"
+  index="60"
+  entries={entries}
+  note="These pages describe different decisions and responsibilities. They do not create hidden copies of the same keyword landing page."
+/>

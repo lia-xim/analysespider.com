@@ -1,0 +1,53 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageLead from "../components/PageLead.astro";
+import ArrowIcon from "../components/ArrowIcon.astro";
+---
+<BaseLayout
+  title="AnalyseSpider changelog"
+  description="Public record of user-visible changes, limits, and release state for the new AnalyseSpider implementation."
+  canonicalPath="/changelog"
+>
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><span aria-current="page">Changelog</span></nav>
+  <PageLead
+    title="Changes that affect what you can inspect or trust"
+    intro="A public record of user-visible tools, content, evidence boundaries, and release state. Internal plumbing stays out unless it changes the result."
+    index="71"
+  />
+  <section class="change-log" aria-label="Changelog entries">
+    <article>
+      <div class="change-date"><time datetime="2026-08-22">22 AUG 2026</time><span>PRE-LAUNCH</span></div>
+      <div>
+        <h2>Diagnostic library and responsive type hardening</h2>
+        <p>Added dedicated Tools, Guides, Lab Notes, Reference, and audience hubs. Published four diagnostic guides, three primary-source reference pages, three dated lab notes, About, and this changelog.</p>
+        <ul>
+          <li>Large headings now wrap inside their grid track instead of being clipped by fixed sidebar widths or no-wrap rules.</li>
+          <li>Navigation, content rows, tables, source links, and technical strings have explicit narrow-screen behavior.</li>
+          <li>All new pages remain noindex while the site is under construction.</li>
+        </ul>
+        <a class="text-link" href="/guides">Inspect the guide library <ArrowIcon /></a>
+      </div>
+    </article>
+    <article>
+      <div class="change-date"><time datetime="2026-08-22">22 AUG 2026</time><span>FOUNDATION</span></div>
+      <div>
+        <h2>Three browser-local inspectors</h2>
+        <p>Introduced a bounded access-log parser, a paste-only HTTP response and HTML inspector, and a local IP syntax and reserved-range check.</p>
+        <ul>
+          <li>No current tool uploads submitted data.</li>
+          <li>No current tool fetches an arbitrary URL or scans a target.</li>
+          <li>Results distinguish observations, inferences, and unknowns.</li>
+        </ul>
+        <a class="text-link" href="/tools">Open the tools index <ArrowIcon /></a>
+      </div>
+    </article>
+    <article>
+      <div class="change-date"><time datetime="2026-08-22">22 AUG 2026</time><span>RIGHTS</span></div>
+      <div>
+        <h2>New ownership and legacy URL decisions</h2>
+        <p>Published the new-ownership boundary and URL-level decisions for the strongest historical targets. No former software, content, customers, or operator identity is presented as transferred.</p>
+        <a class="text-link" href="/legacy">Read the legacy map <ArrowIcon /></a>
+      </div>
+    </article>
+  </section>
+</BaseLayout>

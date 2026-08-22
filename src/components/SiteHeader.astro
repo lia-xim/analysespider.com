@@ -1,0 +1,24 @@
+---
+const path = Astro.url.pathname;
+const items = [
+  { number: "01", label: "TOOLS", href: "/tools", active: path.startsWith("/tools") },
+  { number: "02", label: "GUIDES", href: "/guides", active: path.startsWith("/guides") },
+  { number: "03", label: "LAB NOTES", href: "/blog", active: path.startsWith("/blog") || path.startsWith("/lab") },
+  { number: "04", label: "REFERENCE", href: "/reference", active: path.startsWith("/reference") },
+  { number: "05", label: "LEGACY", href: "/legacy", active: path.startsWith("/legacy") || path.includes(".html") },
+  { number: "06", label: "METHOD", href: "/methodology-and-privacy", active: path.startsWith("/methodology") || path.startsWith("/new-ownership") },
+];
+---
+<header class="site-header">
+  <a class="brand" href="/" aria-label="AnalyseSpider home">
+    <span>ANALYSE</span><span class="brand-slash">/</span><span>SPIDER</span>
+  </a>
+  <nav aria-label="Primary navigation">
+    {items.map((item) => (
+      <a href={item.href} aria-current={item.active ? "page" : undefined}>
+        <span class="nav-number">{item.number}</span>
+        <span>{item.label}</span>
+      </a>
+    ))}
+  </nav>
+</header>

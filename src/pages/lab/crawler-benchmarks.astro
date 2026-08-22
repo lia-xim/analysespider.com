@@ -1,0 +1,35 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageLead from "../../components/PageLead.astro";
+---
+<BaseLayout title="Crawler benchmark protocol — AnalyseSpider" description="Predefined fixtures, expected observations, security gates, and publication rules for future crawler benchmark runs." canonicalPath="/lab/crawler-benchmarks">
+  <PageLead title="Benchmarks need fixtures, not vibes." intro="The lab publishes the test contract before results. No crawler score is claimed until a reproducible run and raw evidence exist." />
+  <section class="content-grid">
+    <div class="prose" style="max-width:none">
+      <h2>Candidate fixture matrix</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Fixture</th><th>Signal under test</th><th>Expected observation</th><th>Current state</th></tr></thead>
+          <tbody>
+            <tr><td>R-01</td><td>single 301</td><td>one hop, stable Location, final 200</td><td class="status">PROTOCOL ONLY</td></tr>
+            <tr><td>R-02</td><td>redirect loop</td><td>bounded stop with loop evidence</td><td class="status">PROTOCOL ONLY</td></tr>
+            <tr><td>C-01</td><td>canonical conflict</td><td>header and HTML signals reported separately</td><td class="status">PROTOCOL ONLY</td></tr>
+            <tr><td>X-01</td><td>X-Robots-Tag</td><td>header directive preserved with response hop</td><td class="status">PROTOCOL ONLY</td></tr>
+            <tr><td>D-01</td><td>DNS change</td><td>resolved addresses checked before every hop</td><td class="status">SECURITY GATE</td></tr>
+            <tr><td>S-01</td><td>private redirect</td><td>blocked before request</td><td class="status">SECURITY GATE</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Required result object</h2>
+      <p>A valid benchmark run must preserve observation time, requested URL, response status, relevant headers, redirect hops, resolution time, test identity, tool version, fixture version, errors, and stop reason. A screenshot without raw evidence is not a benchmark.</p>
+
+      <h2>Why there is no leaderboard yet</h2>
+      <p>No public crawler run has passed the network-safety and operating gates for this site. Publishing vendor or crawler rankings now would invent evidence. The first release therefore exposes the fixture and reporting contract only.</p>
+    </div>
+    <aside class="side-note">
+      <h3>Publication gate</h3>
+      <p>At least three repeatable runs, a dated environment, raw outputs, documented failures, and a named reviewer are required before a result is described as a benchmark.</p>
+    </aside>
+  </section>
+</BaseLayout>

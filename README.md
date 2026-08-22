@@ -1,24 +1,27 @@
 # analysespider.com
 
-Public source repository for the future `analysespider.com` website.
+Public source repository for the new `analysespider.com` Web Diagnostics Lab.
+
+## Purpose
+
+AnalyseSpider provides bounded, inspectable browser tools for technical SEOs, developers, site owners, and web-operations teams. The first implementation parses access logs, raw HTTP responses, HTML directives, and IP-address properties locally in the browser.
+
+The project continues the former domain's broad technical-utility theme, but not its software, code, content, operator identity, users, customers, downloads, or claims.
 
 ## Current state
 
-Repository and Vercel foundation only. The planned public tool, reference, service, or publication is not launched on the custom domain yet. The temporary deployment is deliberately excluded from indexing.
+The substantive site is under construction. It is assigned to Contextter in the canonical DomainPortfolio, with common ownership disclosed. It must remain `noindex, nofollow, noarchive` until an explicit launch decision and verified production evidence exist.
 
-## Standalone purpose
+## Product boundaries
 
-The planned site will help users inspect public URL responses, redirects, headers, canonical signals and robots directives within strict network-safety limits.
+- No unrestricted server-side fetching.
+- No active security scanning, port scanning, open redirects, or unrestricted crawling.
+- Logs, pasted HTTP responses, and IP values are processed in the browser by default.
+- No submitted data is uploaded by the current tools.
+- A result must distinguish observation, inference, and unknowns.
+- Contextter is an optional related workflow, not independent corroboration.
 
-## Current status
-
-Planning repository. The proposed Contextter assignment and security architecture are not yet accepted as a public launch.
-
-## Hard boundary
-
-No former software, users, downloads or operator identity transferred. No unrestricted server-side fetching or active security scanning.
-
-Primary portfolio relationship: `Contextter (proposed, not assigned)`.
+See [PROJECT_BRIEF.md](./PROJECT_BRIEF.md), [SECURITY.md](./SECURITY.md), `src/data/rights-evidence.json`, and `src/data/legacy-url-actions.json`.
 
 ## Local development
 
@@ -37,10 +40,8 @@ corepack pnpm verify
 
 Vercel project: `analysespider-com`.
 
-The placeholder carries both a robots exclusion and an `X-Robots-Tag`. Remove those only when the real site passes its strategy, rights, disclosure, quality, and launch gates. Connecting the custom domain and changing DNS are separate operations.
+Do not deploy, connect DNS, or remove indexing blocks without separate authorization. The current `vercel.json`, page metadata, and `robots.txt` intentionally block indexing.
 
 ## Rights
 
-This repository is public for operational transparency. No license to reuse former-site content, identities, brands, media, datasets, code, subscribers, customers, or other third-party material is granted. No open-source license is granted unless a later commit adds one explicitly.
-
-
+This repository is public for operational transparency. No license to reuse former-site text, identities, brands, media, datasets, binaries, source code, subscribers, customers, or other third-party material is granted. No open-source license is granted unless a later commit adds one explicitly.

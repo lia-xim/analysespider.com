@@ -1,0 +1,282 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ToolBoundary from "../../components/ToolBoundary.astro";
+---
+<BaseLayout
+  title="Log File Inspector — AnalyseSpider"
+  description="Parse up to 25,000 Apache or Nginx access-log lines locally in your browser."
+  canonicalPath="/tools/log-file-inspector"
+  bodyClass="tool-page"
+>
+  <section class="tool-shell">
+    <aside class="tool-sidebar">
+      <h1>Log File Inspector</h1>
+      <p>Your file stays in this browser. Parse up to 25,000 lines without uploading a byte.</p>
+      <button class="button sidebar-action" id="load-sample" type="button">Load sample</button>
+      <div class="sidebar-meta">
+        <strong>SUPPORTED INPUT</strong><br />
+        Apache Common Log Format<br />
+        Apache Combined Log Format<br />
+        Nginx Combined Log Format<br />
+        8 MB / 25,000-line hard limit
+      </div>
+    </aside>
+
+    <div class="tool-main">
+      <ToolBoundary />
+      <section class="workspace" aria-labelledby="input-heading">
+        <div class="workspace-toolbar">
+          <span class="active">1. INPUT</span><span>CLIENT-SIDE PARSER</span><span>NO RETENTION</span>
+        </div>
+        <div class="workspace-content">
+          <h2 id="input-heading" class="visually-hidden">Access-log input</h2>
+          <div class="input-grid">
+            <div class="file-panel">
+              <label for="log-file">Choose log file</label>
+              <input id="log-file" type="file" accept=".log,.txt,text/plain" />
+              <p class="field-help" id="file-help">Plain text only. Maximum 8 MB.</p>
+            </div>
+            <div class="or-divider" aria-hidden="true">OR</div>
+            <div>
+              <label for="log-input">Paste access log</label>
+              <textarea id="log-input" spellcheck="false" placeholder='192.0.2.10 - - [12/May/2025:10:15:02 +0000] "GET / HTTP/1.1" 200 5120'></textarea>
+            </div>
+          </div>
+          <div class="workspace-actions">
+            <button class="button" id="clear-log" type="button">Clear</button>
+            <button class="button primary" id="analyse-log" type="button">Analyse locally</button>
+          </div>
+          <p class="form-status" id="log-status" role="status" aria-live="polite">Waiting for local input.</p>
+        </div>
+      </section>
+
+      <section class="result-surface" id="log-results" aria-labelledby="results-heading" hidden>
+        <h2 id="results-heading" class="visually-hidden">Log analysis results</h2>
+        <div class="result-tabs" role="tablist" aria-label="Result views">
+          <button id="tab-overview" role="tab" aria-selected="true" aria-controls="panel-overview">Overview</button>
+          <button id="tab-crawlers" role="tab" aria-selected="false" aria-controls="panel-crawlers">Crawlers</button>
+          <button id="tab-status" role="tab" aria-selected="false" aria-controls="panel-status">Status</button>
+          <button id="tab-paths" role="tab" aria-selected="false" aria-controls="panel-paths">Paths</button>
+        </div>
+
+        <div id="panel-overview" class="result-panel" role="tabpanel" aria-labelledby="tab-overview">
+          <dl class="summary-grid">
+            <div><dt>REQUESTS</dt><dd id="metric-requests">0</dd></div>
+            <div><dt>UNIQUE IPS</dt><dd id="metric-ips">0</dd></div>
+            <div><dt>BOT REQUESTS</dt><dd id="metric-bots">0</dd></div>
+            <div><dt>CLIENT ERRORS</dt><dd id="metric-4xx">0</dd></div>
+            <div><dt>SERVER ERRORS</dt><dd id="metric-5xx">0</dd></div>
+          </dl>
+          <div class="result-columns">
+            <section class="result-column">
+              <h3>Top crawlers</h3>
+              <div class="table-wrap"><table><thead><tr><th>Crawler</th><th>Requests</th></tr></thead><tbody id="overview-crawlers"></tbody></table></div>
+            </section>
+            <section class="result-column">
+              <h3>Status distribution</h3>
+              <div id="overview-status"></div>
+            </section>
+            <section class="result-column">
+              <h3>Most requested paths</h3>
+              <div class="table-wrap"><table><thead><tr><th>Path</th><th>Requests</th></tr></thead><tbody id="overview-paths"></tbody></table></div>
+            </section>
+          </div>
+        </div>
+
+        <div id="panel-crawlers" class="result-panel" role="tabpanel" aria-labelledby="tab-crawlers" hidden>
+          <div class="table-wrap"><table><thead><tr><th>#</th><th>Crawler family</th><th>Requests</th><th>Share</th></tr></thead><tbody id="crawler-rows"></tbody></table></div>
+        </div>
+
+        <div id="panel-status" class="result-panel" role="tabpanel" aria-labelledby="tab-status" hidden>
+          <div class="table-wrap"><table><thead><tr><th>Status</th><th>Class</th><th>Requests</th><th>Share</th></tr></thead><tbody id="status-rows"></tbody></table></div>
+        </div>
+
+        <div id="panel-paths" class="result-panel" role="tabpanel" aria-labelledby="tab-paths" hidden>
+          <div class="table-wrap"><table><thead><tr><th>#</th><th>Request path</th><th>Requests</th><th>Share</th></tr></thead><tbody id="path-rows"></tbody></table></div>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <script>
+    type ParsedLine = {
+      ip: string;
+      method: string;
+      path: string;
+      status: number;
+      bytes: number | null;
+      agent: string;
+      crawler: string | null;
+    };
+
+    const MAX_LINES = 25_000;
+    const MAX_BYTES = 8 * 1024 * 1024;
+    const sample = `192.0.2.10 - - [12/May/2025:10:15:02 +0000] "GET / HTTP/1.1" 200 5120 "-" "Mozilla/5.0"
+192.0.2.10 - - [12/May/2025:10:15:03 +0000] "GET /assets/app.js HTTP/1.1" 200 10240 "https://example.com/" "Mozilla/5.0"
+66.249.66.1 - - [12/May/2025:10:15:05 +0000] "GET /robots.txt HTTP/1.1" 200 512 "-" "Googlebot/2.1 (+http://www.google.com/bot.html)"
+66.249.66.1 - - [12/May/2025:10:15:06 +0000] "GET /sitemap.xml HTTP/1.1" 200 1024 "-" "Googlebot/2.1 (+http://www.google.com/bot.html)"
+203.0.113.55 - - [12/May/2025:10:15:07 +0000] "GET /old-page HTTP/1.1" 301 0 "-" "Mozilla/5.0"
+198.51.100.23 - - [12/May/2025:10:15:08 +0000] "GET /wp-login.php HTTP/1.1" 404 1534 "-" "Mozilla/5.0"
+192.0.2.10 - - [12/May/2025:10:15:09 +0000] "POST /api/data HTTP/1.1" 403 221 "-" "Mozilla/5.0"
+157.55.39.1 - - [12/May/2025:10:15:10 +0000] "GET /about HTTP/1.1" 200 1582 "-" "bingbot/2.0 (+http://www.bing.com/bingbot.htm)"
+192.0.2.10 - - [12/May/2025:10:15:11 +0000] "GET /broken HTTP/1.1" 500 980 "-" "Mozilla/5.0"`;
+
+    const input = document.querySelector<HTMLTextAreaElement>("#log-input")!;
+    const file = document.querySelector<HTMLInputElement>("#log-file")!;
+    const statusMessage = document.querySelector<HTMLElement>("#log-status")!;
+    const results = document.querySelector<HTMLElement>("#log-results")!;
+
+    const crawlerRules: Array<[RegExp, string]> = [
+      [/googlebot/i, "Googlebot"],
+      [/bingbot/i, "Bingbot"],
+      [/gptbot/i, "GPTBot"],
+      [/claudebot|anthropic-ai/i, "ClaudeBot"],
+      [/perplexitybot/i, "PerplexityBot"],
+      [/bytespider/i, "Bytespider"],
+      [/ahrefsbot/i, "AhrefsBot"],
+      [/semrushbot/i, "SemrushBot"],
+      [/mj12bot/i, "MJ12bot"],
+      [/dotbot/i, "DotBot"],
+      [/slurp/i, "Yahoo Slurp"],
+      [/bot|crawler|spider/i, "Other crawler"],
+    ];
+
+    const getCrawler = (agent: string) => crawlerRules.find(([pattern]) => pattern.test(agent))?.[1] ?? null;
+
+    const parseLine = (line: string): ParsedLine | null => {
+      const match = line.match(/^(\S+)\s+\S+\s+\S+\s+\[([^\]]+)]\s+"(\S+)\s+([^"]*?)(?:\s+HTTP\/[\d.]+)?"\s+(\d{3})\s+(\S+)(?:\s+"[^"]*"\s+"([^"]*)")?/);
+      if (!match) return null;
+      const agent = match[7] ?? "";
+      return {
+        ip: match[1],
+        method: match[3],
+        path: match[4] || "/",
+        status: Number(match[5]),
+        bytes: match[6] === "-" ? null : Number(match[6]),
+        agent,
+        crawler: getCrawler(agent),
+      };
+    };
+
+    const countBy = <T,>(items: T[], key: (item: T) => string) => {
+      const counts = new Map<string, number>();
+      items.forEach((item) => counts.set(key(item), (counts.get(key(item)) ?? 0) + 1));
+      return [...counts.entries()].sort((a, b) => b[1] - a[1]);
+    };
+
+    const addCell = (row: HTMLTableRowElement, value: string) => {
+      const cell = document.createElement("td");
+      cell.textContent = value;
+      row.append(cell);
+    };
+
+    const fillTable = (target: string, rows: string[][]) => {
+      const body = document.querySelector<HTMLTableSectionElement>(target)!;
+      body.replaceChildren();
+      rows.forEach((values) => {
+        const row = document.createElement("tr");
+        values.forEach((value) => addCell(row, value));
+        body.append(row);
+      });
+    };
+
+    const render = (parsed: ParsedLine[], rejected: number, capped: boolean) => {
+      const total = parsed.length;
+      const bots = parsed.filter((line) => line.crawler);
+      const crawlerCounts = countBy(bots, (line) => line.crawler!);
+      const statusCounts = countBy(parsed, (line) => String(line.status));
+      const pathCounts = countBy(parsed, (line) => line.path);
+      const share = (count: number) => total ? `${((count / total) * 100).toFixed(1)}%` : "0.0%";
+
+      document.querySelector("#metric-requests")!.textContent = total.toLocaleString();
+      document.querySelector("#metric-ips")!.textContent = new Set(parsed.map((line) => line.ip)).size.toLocaleString();
+      document.querySelector("#metric-bots")!.textContent = bots.length.toLocaleString();
+      document.querySelector("#metric-4xx")!.textContent = parsed.filter((line) => line.status >= 400 && line.status < 500).length.toLocaleString();
+      document.querySelector("#metric-5xx")!.textContent = parsed.filter((line) => line.status >= 500).length.toLocaleString();
+
+      fillTable("#overview-crawlers", (crawlerCounts.length ? crawlerCounts : [["No crawler signatures", 0]]).slice(0, 8).map(([name, count]) => [String(name), Number(count).toLocaleString()]));
+      fillTable("#overview-paths", pathCounts.slice(0, 10).map(([path, count]) => [path, count.toLocaleString()]));
+      fillTable("#crawler-rows", crawlerCounts.map(([name, count], index) => [String(index + 1), name, count.toLocaleString(), share(count)]));
+      fillTable("#status-rows", statusCounts.map(([code, count]) => [
+        code,
+        code.startsWith("2") ? "Success" : code.startsWith("3") ? "Redirect" : code.startsWith("4") ? "Client error" : code.startsWith("5") ? "Server error" : "Other",
+        count.toLocaleString(),
+        share(count),
+      ]));
+      fillTable("#path-rows", pathCounts.slice(0, 100).map(([path, count], index) => [String(index + 1), path, count.toLocaleString(), share(count)]));
+
+      const bars = document.querySelector<HTMLElement>("#overview-status")!;
+      bars.replaceChildren();
+      statusCounts.slice(0, 8).forEach(([code, count]) => {
+        const row = document.createElement("div");
+        row.className = "bar-row";
+        const label = document.createElement("span");
+        label.textContent = code;
+        const value = document.createElement("span");
+        value.textContent = count.toLocaleString();
+        const bar = document.createElement("span");
+        bar.className = `bar ${Number(code) >= 400 ? "error" : ""}`;
+        bar.style.setProperty("--bar", share(count));
+        bar.append(document.createElement("span"));
+        row.append(label, value, bar);
+        bars.append(row);
+      });
+
+      results.hidden = false;
+      statusMessage.textContent = `Parsed ${total.toLocaleString()} lines locally${rejected ? `; ${rejected.toLocaleString()} unmatched lines skipped` : ""}${capped ? `; input capped at ${MAX_LINES.toLocaleString()} lines` : ""}.`;
+      results.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+    };
+
+    const analyse = () => {
+      const rawLines = input.value.split(/\r?\n/).filter((line) => line.trim());
+      const capped = rawLines.length > MAX_LINES;
+      const lines = rawLines.slice(0, MAX_LINES);
+      const parsed = lines.map(parseLine).filter((line): line is ParsedLine => Boolean(line));
+      if (!parsed.length) {
+        results.hidden = true;
+        statusMessage.textContent = lines.length
+          ? "No supported access-log lines were recognized. Check the Apache/Nginx format."
+          : "Add a log sample before analysing.";
+        return;
+      }
+      render(parsed, lines.length - parsed.length, capped);
+    };
+
+    document.querySelector("#load-sample")!.addEventListener("click", () => {
+      input.value = sample;
+      statusMessage.textContent = "Sample loaded locally. Select Analyse locally.";
+      input.focus();
+    });
+
+    document.querySelector("#clear-log")!.addEventListener("click", () => {
+      input.value = "";
+      file.value = "";
+      results.hidden = true;
+      statusMessage.textContent = "Local input cleared.";
+      input.focus();
+    });
+
+    document.querySelector("#analyse-log")!.addEventListener("click", analyse);
+
+    file.addEventListener("change", async () => {
+      const selected = file.files?.[0];
+      if (!selected) return;
+      if (selected.size > MAX_BYTES) {
+        file.value = "";
+        statusMessage.textContent = "File rejected: the local 8 MB limit was exceeded.";
+        return;
+      }
+      input.value = await selected.text();
+      statusMessage.textContent = `${selected.name} loaded into this browser. Nothing was uploaded.`;
+    });
+
+    document.querySelectorAll<HTMLButtonElement>('[role="tab"]').forEach((tab) => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll<HTMLButtonElement>('[role="tab"]').forEach((item) => item.setAttribute("aria-selected", String(item === tab)));
+        document.querySelectorAll<HTMLElement>('[role="tabpanel"]').forEach((panel) => {
+          panel.hidden = panel.id !== tab.getAttribute("aria-controls");
+        });
+      });
+    });
+  </script>
+</BaseLayout>

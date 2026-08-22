@@ -1,0 +1,692 @@
+export type ContentKind = "guide" | "lab-note" | "reference" | "audience";
+
+export interface ContentSource {
+  label: string;
+  href: string;
+  note: string;
+}
+
+export interface ContentSection {
+  heading: string;
+  paragraphs?: string[];
+  bullets?: string[];
+  steps?: string[];
+  callout?: string;
+}
+
+export interface ContentPage {
+  slug: string;
+  kind: ContentKind;
+  eyebrow: string;
+  title: string;
+  description: string;
+  intro: string;
+  takeaway: string;
+  publishedAt: string;
+  updatedAt: string;
+  readingMinutes: number;
+  sections: ContentSection[];
+  sources: ContentSource[];
+  related: { label: string; href: string; note: string }[];
+}
+
+const sources = {
+  rfc9110: {
+    label: "RFC 9110 — HTTP Semantics",
+    href: "https://www.rfc-editor.org/rfc/rfc9110.html",
+    note: "The normative definitions for HTTP methods, status codes, fields, and response semantics.",
+  },
+  googleRedirects: {
+    label: "Google Search Central — Redirects and Google Search",
+    href: "https://developers.google.com/search/docs/crawling-indexing/301-redirects",
+    note: "Google's current treatment of permanent and temporary redirects in Search.",
+  },
+  googleRobots: {
+    label: "Google Search Central — Robots meta and X-Robots-Tag",
+    href: "https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag",
+    note: "Current page-level indexing and serving controls supported by Google Search.",
+  },
+  googleCrawlers: {
+    label: "Google — Common crawlers",
+    href: "https://developers.google.com/crawling/docs/crawlers-fetchers/google-common-crawlers",
+    note: "Published crawler tokens, user-agent strings, products, and IP-range context.",
+  },
+  googleVerify: {
+    label: "Google — Verify crawler requests",
+    href: "https://developers.google.com/crawling/docs/crawlers-fetchers/verify-google-requests",
+    note: "Official IP-range and forward-confirmed reverse-DNS verification methods.",
+  },
+  bingCrawlers: {
+    label: "Bing Webmaster Tools — Bing crawlers",
+    href: "https://www.bing.com/webmasters/help/help/which-crawlers-does-bing-use-8c184ec0",
+    note: "Published Bing crawler user agents and an explicit warning that strings can be spoofed.",
+  },
+  bingVerify: {
+    label: "Bing Webmaster Tools — Verify Bingbot",
+    href: "https://www.bing.com/webmasters/help/Verify-Bingbot-2195837f",
+    note: "Bing's verification workflow for crawler IP addresses.",
+  },
+  apacheLogs: {
+    label: "Apache HTTP Server — Log files",
+    href: "https://httpd.apache.org/docs/current/logs.html",
+    note: "Official access-log configuration and Common and Combined Log Format fields.",
+  },
+  nginxLogs: {
+    label: "NGINX — HTTP log module",
+    href: "https://nginx.org/en/docs/http/ngx_http_log_module.html",
+    note: "Official access_log and log_format behavior, variables, buffering, and escaping.",
+  },
+} satisfies Record<string, ContentSource>;
+
+export const guides: ContentPage[] = [
+  {
+    slug: "log-file-analysis",
+    kind: "guide",
+    eyebrow: "Guide 01",
+    title: "Server log analysis without invented certainty",
+    description: "A practical workflow for turning Apache or Nginx access logs into a bounded request inventory before drawing SEO conclusions.",
+    intro: "Start with the fields the server actually recorded. A log line can show that a request reached one logging layer; it cannot prove that a page was indexed, rendered successfully, or understood.",
+    takeaway: "Treat each log row as an observation about a request, then state separately what the row cannot answer.",
+    publishedAt: "2026-08-22",
+    updatedAt: "2026-08-22",
+    readingMinutes: 7,
+    sections: [
+      {
+        heading: "Confirm the log format first",
+        paragraphs: [
+          "Apache and Nginx access logs are configurable. A parser that assumes every row contains the same fields will eventually mislabel a value or reject valid data.",
+          "Record the active format string with the sample. At minimum, identify the remote address, timestamp, request method and path, returned status, bytes sent, referrer, and user agent when those fields exist.",
+        ],
+        bullets: [
+          "Common Log Format usually omits referrer and user agent.",
+          "Combined formats commonly add both fields, but administrators can rename, reorder, or omit them.",
+          "An upstream proxy or CDN may change which client address reaches the origin log.",
+        ],
+      },
+      {
+        heading: "Reduce before you interpret",
+        paragraphs: [
+          "Build a request inventory before hunting for a story. Count accepted and rejected rows, then group accepted rows by time window, method, path, status family, and declared user agent.",
+        ],
+        steps: [
+          "Keep the raw sample unchanged and work on a copy.",
+          "Remove or mask personal and secret-bearing fields that are not needed for the question.",
+          "Parse the declared format and report rows that did not match it.",
+          "Group requests by the smallest useful time window and URL pattern.",
+          "Inspect exceptions before calculating rates or crawler shares.",
+        ],
+      },
+      {
+        heading: "Separate observation from inference",
+        paragraphs: [
+          "A 200 row means the logging server recorded a successful response status for that request. It does not prove that a downstream client received every byte or that a search engine indexed the response.",
+          "A user-agent string containing Googlebot or bingbot is a claim made by the requester. Verification requires additional IP or DNS evidence from the relevant operator.",
+        ],
+        callout: "Useful conclusion: “The origin log recorded 138 GET requests to /products returning 200.” Unsupported conclusion: “Google indexed /products 138 times.”",
+      },
+      {
+        heading: "Choose an action the log can support",
+        paragraphs: [
+          "Logs are strongest for finding patterns worth checking: repeated 5xx responses, crawler traffic concentrated on redirects, important paths that never appear, or large request volume on parameters.",
+          "Confirm the suspected issue with response inspection, a crawl, Search Console, application telemetry, or the relevant server configuration before changing production behavior.",
+        ],
+      },
+    ],
+    sources: [sources.apacheLogs, sources.nginxLogs, sources.googleVerify],
+    related: [
+      { label: "Open Log File Inspector", href: "/tools/log-file-inspector", note: "Parse a bounded sample locally in your browser." },
+      { label: "Crawler log analysis", href: "/guides/crawler-log-analysis", note: "Classify claimed bots without calling every matching string genuine." },
+      { label: "Private data in access logs", href: "/blog/private-data-in-access-logs", note: "Decide what should be removed before analysis." },
+    ],
+  },
+  {
+    slug: "crawler-log-analysis",
+    kind: "guide",
+    eyebrow: "Guide 02",
+    title: "Analyse crawler traffic in access logs",
+    description: "Find declared search crawlers in server logs, verify identity where needed, and avoid confusing crawl activity with indexing.",
+    intro: "A crawler-shaped user agent is a useful filter, not proof of identity. Use it to build a candidate set, then verify the requests that matter.",
+    takeaway: "Label unverified user agents as claimed crawlers. Reserve verified crawler labels for requests that pass the operator's published checks.",
+    publishedAt: "2026-08-22",
+    updatedAt: "2026-08-22",
+    readingMinutes: 8,
+    sections: [
+      {
+        heading: "Build a candidate set",
+        paragraphs: [
+          "Filter the user-agent field for known product tokens, but preserve the original string. Normalising too early can erase distinctions between search crawlers, product fetchers, ad crawlers, and user-triggered fetchers.",
+        ],
+        bullets: [
+          "Keep request time, IP address, method, path, status, bytes, and full user agent together.",
+          "Group by token and IP only after recording the untouched row.",
+          "Treat missing or custom user-agent fields as unknown, not human traffic.",
+        ],
+      },
+      {
+        heading: "Verify requests when identity matters",
+        paragraphs: [
+          "Google publishes crawler IP ranges and a forward-confirmed reverse-DNS process. Bing provides its own verification tool and warns that user-agent strings are easy to spoof.",
+          "Verification may be unnecessary for a quick exploratory count. It becomes important before blocking traffic, attributing load, reporting crawl shares, or calling a request genuine search-engine activity.",
+        ],
+        steps: [
+          "Match the request IP against the operator's current published ranges when available.",
+          "If using DNS, perform the documented reverse lookup and then resolve the returned hostname forward.",
+          "Require the forward result to contain the original IP.",
+          "Store the verification timestamp and method because ranges and hostnames can change.",
+        ],
+      },
+      {
+        heading: "Measure paths and outcomes, not vanity volume",
+        paragraphs: [
+          "Total crawler hits are rarely the decision. Group verified or claimed requests by page type and returned status. Compare important 200 pages, redirected URLs, 404s, parameter traps, and repeated 5xx responses.",
+          "A spike can reflect a deployment, sitemap change, new internal links, retries, or unwanted URL expansion. Logs alone do not identify the cause.",
+        ],
+      },
+      {
+        heading: "Do not turn crawl into index status",
+        paragraphs: [
+          "Crawling, rendering, canonical selection, and indexing are different stages. A request proves only that the recorded layer saw a request and produced the logged response fields.",
+          "Use Search Console or the relevant engine's tools for indexing evidence. Use rendered HTML and response inspection for what a crawler could receive. Keep these evidence types in separate columns.",
+        ],
+      },
+    ],
+    sources: [sources.googleCrawlers, sources.googleVerify, sources.bingCrawlers, sources.bingVerify],
+    related: [
+      { label: "Find search bots in logs", href: "/blog/how-to-find-search-bots-in-server-logs", note: "A compact field note with a reusable classification table." },
+      { label: "Log File Inspector", href: "/tools/log-file-inspector", note: "Explore a local sample without uploading it." },
+      { label: "Crawler user-agent reference", href: "/reference/crawler-user-agents", note: "Know which labels are observations and which require verification." },
+    ],
+  },
+  {
+    slug: "http-response-debugging",
+    kind: "guide",
+    eyebrow: "Guide 03",
+    title: "Debug HTTP responses in evidence order",
+    description: "Inspect status, Location, canonical, robots directives, and rendered HTML without letting one signal stand in for the whole response.",
+    intro: "The useful unit is the response as a set: status, headers, representation, and the request context that produced them. Reading only the final HTML can hide the redirect or header that changed the outcome.",
+    takeaway: "Capture the response chain first. Interpret status, headers, and HTML as separate signals before combining them.",
+    publishedAt: "2026-08-22",
+    updatedAt: "2026-08-22",
+    readingMinutes: 7,
+    sections: [
+      {
+        heading: "Record request context",
+        paragraphs: [
+          "Write down the exact URL, method, timestamp, and relevant request headers. Scheme, host, path, query, cookies, authentication, language, and user agent can change the response.",
+        ],
+      },
+      {
+        heading: "Read the chain before the destination",
+        paragraphs: [
+          "For each hop, record status and Location exactly as returned. Resolve relative locations against the current URL, note loops, and stop at a defined hop limit.",
+          "The final 200 does not erase a problematic chain. A temporary hop, cross-host change, protocol downgrade, or loop belongs in the diagnosis.",
+        ],
+      },
+      {
+        heading: "Keep header and HTML directives separate",
+        paragraphs: [
+          "A robots meta element lives in HTML. X-Robots-Tag lives in the response headers and can also control non-HTML resources. Record each occurrence and the user agent it targets.",
+          "A canonical link is not a redirect and a redirect is not a canonical declaration. They can point to the same destination, conflict, or be absent.",
+        ],
+        callout: "If you only paste the final HTML into an inspector, the original status, Location header, and X-Robots-Tag are unknown. Say so in the result.",
+      },
+      {
+        heading: "Translate evidence into the next check",
+        paragraphs: [
+          "Use the observed response to choose a focused follow-up: inspect the server rule, compare an unauthenticated request, fetch the canonical target, check an alternate host, or verify the rendered document.",
+          "Do not rewrite production redirects or indexing controls from one capture when the route varies by region, device, cache, authentication, or deployment.",
+        ],
+      },
+    ],
+    sources: [sources.rfc9110, sources.googleRedirects, sources.googleRobots],
+    related: [
+      { label: "Open Response Inspector", href: "/tools/url-inspector", note: "Paste a raw response and HTML for browser-local inspection." },
+      { label: "HTTP status-code reference", href: "/reference/http-status-codes", note: "Separate protocol meaning from SEO interpretation." },
+      { label: "Redirect-chain analysis", href: "/guides/redirect-chain-analysis", note: "Work hop by hop without hiding intermediate states." },
+    ],
+  },
+  {
+    slug: "redirect-chain-analysis",
+    kind: "guide",
+    eyebrow: "Guide 04",
+    title: "Analyse redirect chains hop by hop",
+    description: "A bounded workflow for inspecting 301, 302, 307, and 308 responses, resolving Location fields, and identifying the check that comes next.",
+    intro: "A redirect is one response, not a verdict on a migration. The chain matters because each hop can change host, scheme, method behavior, cacheability, and the final page a client receives.",
+    takeaway: "Record every response in order and stop describing a chain as healthy until its destination and intent equivalence are checked.",
+    publishedAt: "2026-08-22",
+    updatedAt: "2026-08-22",
+    readingMinutes: 7,
+    sections: [
+      {
+        heading: "Capture each hop",
+        paragraphs: [
+          "Store the requested URL, response status, Location field, resolved destination, timestamp, and any cache or robots headers. Use a fixed redirect limit and flag repeated URLs as loops.",
+        ],
+        steps: [
+          "Start from the exact historical or internal URL, including scheme and query.",
+          "Record the first response before following it.",
+          "Resolve a relative Location value against the current URL.",
+          "Repeat until a non-redirect response, a loop, or the configured hop cap.",
+          "Inspect the final representation and whether it satisfies the original user job.",
+        ],
+      },
+      {
+        heading: "Read permanence as stated intent",
+        paragraphs: [
+          "RFC 9110 defines the HTTP meaning of redirect status codes. Search platforms can add their own processing rules; Google currently describes 301 and 308 as permanent signals and 302, 303, and 307 as temporary signals for Search.",
+          "That processing guidance does not prove that the target is equivalent, indexable, or selected as canonical. Those are separate checks.",
+        ],
+      },
+      {
+        heading: "Look for avoidable ambiguity",
+        bullets: [
+          "Multiple permanent hops where one direct redirect is possible.",
+          "A scheme or host oscillation that creates a loop.",
+          "A Location value that drops a required path or parameter.",
+          "A final 404, soft error, login page, or unrelated homepage.",
+          "Conflicting canonical or robots signals on the destination.",
+        ],
+        paragraphs: [
+          "A long chain is not automatically broken, but every additional hop adds another state that must work. Reduce it when the direct destination is known and behavior can be preserved.",
+        ],
+      },
+      {
+        heading: "Check intent equivalence before consolidating",
+        paragraphs: [
+          "A permanent redirect is appropriate when the new resource is a real replacement for the old user job. Redirecting unrelated retired downloads or many distinct pages to a homepage creates a misleading destination for both users and diagnostic systems.",
+          "When no equivalent remains, an explicit 404 or 410 can be more truthful than a broad redirect.",
+        ],
+      },
+    ],
+    sources: [sources.rfc9110, sources.googleRedirects],
+    related: [
+      { label: "What a 301 does not prove", href: "/blog/what-a-301-response-does-not-prove", note: "A short note on the gaps after the status is observed." },
+      { label: "Response Inspector", href: "/tools/url-inspector", note: "Inspect pasted response evidence without a network fetch." },
+      { label: "Legacy URL map", href: "/legacy", note: "See why redirects, restorations, and retirements are decided per URL." },
+    ],
+  },
+];
+
+export const blogPosts: ContentPage[] = [
+  {
+    slug: "how-to-find-search-bots-in-server-logs",
+    kind: "lab-note",
+    eyebrow: "Lab Note 01",
+    title: "How to find search bots in server logs",
+    description: "Use user-agent strings to find candidate crawler requests, then keep claimed and verified bot traffic separate.",
+    intro: "Search the user-agent field first. That gives you candidates quickly. Do not rename those rows “Googlebot traffic” or “Bingbot traffic” until the IP evidence passes the operator's published verification method.",
+    takeaway: "A useful report can contain both counts: claimed crawler requests and the verified subset.",
+    publishedAt: "2026-08-22",
+    updatedAt: "2026-08-22",
+    readingMinutes: 5,
+    sections: [
+      {
+        heading: "Start with the field your server logged",
+        paragraphs: [
+          "Combined Apache and Nginx formats commonly include the User-Agent request header. The client supplies that value, so it is evidence about what the requester claimed to be.",
+          "Filter for the operator's current tokens and retain the original string. A broad search for “bot” is useful for discovery but mixes search crawlers, monitoring systems, scrapers, and arbitrary labels.",
+        ],
+      },
+      {
+        heading: "Use three identity states",
+        bullets: [
+          "Claimed: the string matches a known crawler token, but the source is not verified.",
+          "Verified: the IP or DNS check passed the operator's current published method.",
+          "Unknown: the field is absent, custom, ambiguous, or failed verification.",
+        ],
+        paragraphs: [
+          "This small distinction prevents a spoofed user agent from inflating a crawl report or triggering a production block rule.",
+        ],
+      },
+      {
+        heading: "Count what helps you decide",
+        paragraphs: [
+          "Group the candidate rows by URL class, status, and date. A useful table shows successful content requests, redirects, 404s, and server errors separately.",
+          "If a crawler never appears on an important page, the log does not tell you why. Check links, sitemaps, robots controls, response behavior, and the engine's own reporting before choosing a cause.",
+        ],
+      },
+    ],
+    sources: [sources.apacheLogs, sources.nginxLogs, sources.googleCrawlers, sources.googleVerify, sources.bingCrawlers],
+    related: [
+      { label: "Crawler log analysis guide", href: "/guides/crawler-log-analysis", note: "Run the full verification and interpretation workflow." },
+      { label: "Crawler user-agent reference", href: "/reference/crawler-user-agents", note: "Keep tokens, strings, IPs, and identity claims distinct." },
+      { label: "Log File Inspector", href: "/tools/log-file-inspector", note: "Filter a bounded log sample locally." },
+    ],
+  },
+  {
+    slug: "what-a-301-response-does-not-prove",
+    kind: "lab-note",
+    eyebrow: "Lab Note 02",
+    title: "What a 301 response does not prove",
+    description: "A 301 states that a resource has moved permanently. It does not prove destination quality, intent equivalence, or search-engine selection.",
+    intro: "A 301 is strong protocol evidence about the server's stated redirect. It is not a complete migration report.",
+    takeaway: "After observing 301, inspect Location, the rest of the chain, the final response, and whether the destination actually replaces the source.",
+    publishedAt: "2026-08-22",
+    updatedAt: "2026-08-22",
+    readingMinutes: 5,
+    sections: [
+      {
+        heading: "The status has a defined meaning",
+        paragraphs: [
+          "RFC 9110 defines 301 Moved Permanently as a redirect indicating that the target resource has been assigned a new permanent URI. Google currently describes 301 and 308 as permanent redirect signals for Search.",
+          "That is enough to classify the observed response as a stated permanent move. It does not fill in any missing evidence about the destination.",
+        ],
+      },
+      {
+        heading: "Five questions remain",
+        bullets: [
+          "Did Location resolve to the intended URL?",
+          "Did another hop change the destination or permanence?",
+          "Did the final URL return a usable response and representation?",
+          "Does the final page satisfy the same user job as the source?",
+          "Do canonical and robots signals agree with the migration intent?",
+        ],
+      },
+      {
+        heading: "Homepage redirects need the same proof",
+        paragraphs: [
+          "A blanket redirect can remove 404s from a report while sending visitors to an unrelated page. That is not the same as restoring a resource or consolidating equivalent content.",
+          "For retired software downloads or historical pages without a rights-safe successor, an explicit 404 or 410 may describe the state more accurately.",
+        ],
+      },
+    ],
+    sources: [sources.rfc9110, sources.googleRedirects],
+    related: [
+      { label: "Redirect-chain guide", href: "/guides/redirect-chain-analysis", note: "Capture each hop and the final representation." },
+      { label: "HTTP status-code reference", href: "/reference/http-status-codes", note: "Read protocol meaning without overextending it." },
+      { label: "Legacy decisions", href: "/legacy", note: "Inspect URL-level restore, redirect, and retirement choices." },
+    ],
+  },
+  {
+    slug: "private-data-in-access-logs",
+    kind: "lab-note",
+    eyebrow: "Lab Note 03",
+    title: "Private data can hide inside ordinary access logs",
+    description: "Access logs may contain addresses, identifiers, query values, referrers, and user agents. Minimise the sample before sharing or analysis.",
+    intro: "A log file can look mechanical and still contain personal, confidential, or secret-bearing data. The safe default is to remove fields you do not need before the sample leaves its operational boundary.",
+    takeaway: "Minimise first, analyse second. Redaction should preserve the pattern needed for the question without preserving the original identifier.",
+    publishedAt: "2026-08-22",
+    updatedAt: "2026-08-22",
+    readingMinutes: 5,
+    sections: [
+      {
+        heading: "Know which fields can carry data",
+        paragraphs: [
+          "Remote addresses, authenticated usernames, full paths, query strings, referrers, cookies, user agents, and custom headers can all reveal more than the analysis needs. URL parameters sometimes contain email addresses, search terms, session identifiers, or reset tokens.",
+          "The exact exposure depends on the configured format. Read the Apache LogFormat or Nginx log_format definition instead of guessing from a few rows.",
+        ],
+      },
+      {
+        heading: "Preserve structure, not identity",
+        bullets: [
+          "Replace addresses with stable sample-only labels when sequence matters.",
+          "Remove query values or retain only an allowlisted parameter name when value content is irrelevant.",
+          "Delete cookies, authorisation fields, and secret-bearing headers from diagnostic exports.",
+          "Reduce timestamps to the precision the question actually needs.",
+          "Keep a small bounded window instead of exporting the complete retention period.",
+        ],
+      },
+      {
+        heading: "Local processing narrows the exposure",
+        paragraphs: [
+          "A browser-local tool avoids uploading the pasted sample to the tool operator, but it does not make the original file harmless. The device, clipboard, browser extensions, screenshots, and later exports remain part of the handling boundary.",
+          "Document who can access the raw logs, how long they are retained, and which derived result is safe to share. Tool choice is one control, not the whole policy.",
+        ],
+      },
+    ],
+    sources: [sources.apacheLogs, sources.nginxLogs],
+    related: [
+      { label: "Method and privacy", href: "/methodology-and-privacy", note: "See the current browser-local processing boundary." },
+      { label: "Log-analysis guide", href: "/guides/log-file-analysis", note: "Build a bounded request inventory after minimisation." },
+      { label: "Log File Inspector", href: "/tools/log-file-inspector", note: "No current log sample is uploaded by the tool." },
+    ],
+  },
+];
+
+export const referencePages: ContentPage[] = [
+  {
+    slug: "http-status-codes",
+    kind: "reference",
+    eyebrow: "Reference 01",
+    title: "HTTP status codes for web diagnostics",
+    description: "A compact diagnostic reference for common 2xx, 3xx, 4xx, and 5xx responses, with protocol meaning separated from SEO inference.",
+    intro: "An HTTP status code describes the result of one request in protocol terms. It does not, by itself, report rendering, canonical selection, indexing, or business impact.",
+    takeaway: "Use RFC 9110 for status semantics. Add headers, representation, request context, and platform evidence before making an SEO diagnosis.",
+    publishedAt: "2026-08-22",
+    updatedAt: "2026-08-22",
+    readingMinutes: 7,
+    sections: [
+      {
+        heading: "Successful responses",
+        bullets: [
+          "200 OK: the request succeeded; the meaning of the content depends on the method.",
+          "204 No Content: the request succeeded and the response has no content.",
+          "206 Partial Content: the server is fulfilling a valid range request with selected content.",
+        ],
+        paragraphs: ["A 200 can still contain an error message, login screen, empty template, noindex directive, or unintended canonical. Inspect the representation."],
+      },
+      {
+        heading: "Redirect responses",
+        bullets: [
+          "301 Moved Permanently and 308 Permanent Redirect state a permanent move.",
+          "302 Found and 307 Temporary Redirect state a temporary move.",
+          "303 See Other points the client to another resource, commonly after a non-GET request.",
+          "304 Not Modified is a cache-validation response, not a normal redirect to another URL.",
+        ],
+        paragraphs: ["Record the Location field and follow the entire bounded chain. Status alone does not show whether the destination is equivalent or healthy."],
+      },
+      {
+        heading: "Client-error responses",
+        bullets: [
+          "400 Bad Request: the server cannot or will not process the request because of a client-side error.",
+          "401 Unauthorized: authentication credentials are required or insufficient for the request.",
+          "403 Forbidden: the server understood the request but refuses to fulfil it.",
+          "404 Not Found: the server did not find a current representation or is not willing to disclose one.",
+          "410 Gone: the resource is no longer available and the condition is likely permanent.",
+          "429 Too Many Requests: the client sent too many requests in a given time.",
+        ],
+      },
+      {
+        heading: "Server-error responses",
+        bullets: [
+          "500 Internal Server Error: the server encountered an unexpected condition.",
+          "502 Bad Gateway: a gateway or proxy received an invalid upstream response.",
+          "503 Service Unavailable: the server is temporarily unable to handle the request.",
+          "504 Gateway Timeout: a gateway or proxy did not receive a timely upstream response.",
+        ],
+        paragraphs: ["Group repeated 5xx responses by route, upstream, time, and deployment. One row establishes an observed failure, not its root cause."],
+      },
+    ],
+    sources: [sources.rfc9110, sources.googleRedirects],
+    related: [
+      { label: "HTTP response debugging", href: "/guides/http-response-debugging", note: "Turn a status into a complete evidence capture." },
+      { label: "Response Inspector", href: "/tools/url-inspector", note: "Inspect pasted headers and HTML locally." },
+      { label: "What a 301 does not prove", href: "/blog/what-a-301-response-does-not-prove", note: "Avoid a common over-interpretation." },
+    ],
+  },
+  {
+    slug: "crawler-user-agents",
+    kind: "reference",
+    eyebrow: "Reference 02",
+    title: "Crawler user agents: claim, token, and verification",
+    description: "A reference for classifying crawler strings without treating an easily spoofed header as verified identity.",
+    intro: "The User-Agent header is supplied by the requester. It can name a crawler product, but identity requires the verification method published by that operator.",
+    takeaway: "Store the full string, extracted token, source IP, identity state, verification method, and timestamp as separate fields.",
+    publishedAt: "2026-08-22",
+    updatedAt: "2026-08-22",
+    readingMinutes: 6,
+    sections: [
+      {
+        heading: "Five fields that should not collapse into one",
+        bullets: [
+          "Full user-agent string: the exact request header value.",
+          "Product token: the crawler name used for matching or robots rules.",
+          "Source address: the IP recorded by the logging layer.",
+          "Identity state: claimed, verified, or unknown.",
+          "Verification evidence: range file or DNS procedure plus timestamp.",
+        ],
+      },
+      {
+        heading: "Google crawler evidence",
+        paragraphs: [
+          "Google publishes common crawler strings and tokens as well as machine-readable IP ranges. It also documents a forward-confirmed reverse-DNS method for manual verification.",
+          "Different Google products use different crawlers and fetchers. Do not normalise every string containing “Google” into Googlebot.",
+        ],
+      },
+      {
+        heading: "Bing crawler evidence",
+        paragraphs: [
+          "Bing publishes examples for bingbot and other crawler products. Its documentation explicitly warns that user-agent strings are easy to spoof and provides a verification workflow for IP addresses.",
+        ],
+      },
+      {
+        heading: "A classification rule that survives change",
+        paragraphs: [
+          "Keep the operator documentation URL and the date you checked it. Crawler strings, rendering-engine versions, IP ranges, and product names can change.",
+          "A historical log should retain the evidence available at analysis time rather than silently receiving a present-day identity label.",
+        ],
+      },
+    ],
+    sources: [sources.googleCrawlers, sources.googleVerify, sources.bingCrawlers, sources.bingVerify],
+    related: [
+      { label: "Crawler log analysis", href: "/guides/crawler-log-analysis", note: "Apply the identity model to a real log sample." },
+      { label: "Find bots in logs", href: "/blog/how-to-find-search-bots-in-server-logs", note: "Build the candidate and verified counts." },
+      { label: "Log File Inspector", href: "/tools/log-file-inspector", note: "Explore declared agents before any external verification." },
+    ],
+  },
+  {
+    slug: "robots-directives",
+    kind: "reference",
+    eyebrow: "Reference 03",
+    title: "Robots directives in headers and HTML",
+    description: "Read robots meta elements and X-Robots-Tag response headers as page-level controls, with crawler access and conflicts kept visible.",
+    intro: "Robots meta and X-Robots-Tag can carry page-level indexing and serving rules. They only help a crawler that can receive and process the response containing them.",
+    takeaway: "Inspect response headers and HTML separately, record targeted user agents, and resolve conflicts with the relevant crawler documentation.",
+    publishedAt: "2026-08-22",
+    updatedAt: "2026-08-22",
+    readingMinutes: 6,
+    sections: [
+      {
+        heading: "Where directives appear",
+        bullets: [
+          "Robots meta element: an HTML element, normally in the document head.",
+          "X-Robots-Tag: an HTTP response header that can also apply to non-HTML resources.",
+          "robots.txt: a crawl-control file, not a page-level noindex mechanism.",
+        ],
+      },
+      {
+        heading: "Common rules",
+        bullets: [
+          "noindex asks a supporting search engine not to show the resource in results.",
+          "nofollow asks a supporting crawler not to follow links on the resource.",
+          "nosnippet prevents a text or video preview in supporting Google results.",
+          "max-snippet, max-image-preview, and max-video-preview set supported preview limits.",
+        ],
+        paragraphs: ["Support and interpretation can differ by crawler. Recheck the operator's current documentation before relying on a rule outside Google Search."],
+      },
+      {
+        heading: "Crawler access comes first",
+        paragraphs: [
+          "Google states that a crawler must be allowed to access a page to discover its meta or X-Robots-Tag rules. Disallowing a URL in robots.txt can prevent those page-level rules from being seen.",
+          "This is why crawl control and index control should be tested as a combined system, not as interchangeable files.",
+        ],
+      },
+      {
+        heading: "What an inspector should report",
+        bullets: [
+          "Every robots meta element and its name attribute.",
+          "Every X-Robots-Tag field and any targeted crawler token.",
+          "Duplicate or conflicting rules without silently discarding one.",
+          "Whether the HTML, response headers, or original fetch context are missing.",
+        ],
+      },
+    ],
+    sources: [sources.googleRobots],
+    related: [
+      { label: "Response debugging", href: "/guides/http-response-debugging", note: "Capture headers and HTML in evidence order." },
+      { label: "Response Inspector", href: "/tools/url-inspector", note: "Paste both surfaces and compare observed directives." },
+      { label: "Method and privacy", href: "/methodology-and-privacy", note: "See what the current inspector does and does not fetch." },
+    ],
+  },
+];
+
+export const audiencePages: ContentPage[] = [
+  {
+    slug: "technical-seos",
+    kind: "audience",
+    eyebrow: "For technical SEOs",
+    title: "Trace crawl and response evidence before opening another audit ticket",
+    description: "Browser-local log and response inspection for technical SEOs who need a reproducible first pass without uploading client evidence.",
+    intro: "Use AnalyseSpider for the small evidence step before a larger crawl or platform investigation: isolate the requests, responses, directives, and unknowns that justify the next check.",
+    takeaway: "The output is a diagnostic handoff, not an automated verdict about indexing or ranking.",
+    publishedAt: "2026-08-22",
+    updatedAt: "2026-08-22",
+    readingMinutes: 4,
+    sections: [
+      { heading: "Useful starting jobs", paragraphs: ["Parse a bounded log sample, classify redirect and error patterns, inspect pasted response headers and HTML, or check whether an IP value is public, private, or reserved."], bullets: ["Crawler candidate inventory", "Status and path distribution", "Redirect and directive capture", "Observed, inferred, and unknown handoff"] },
+      { heading: "Where this stops", paragraphs: ["AnalyseSpider does not currently fetch arbitrary URLs, crawl sites, query Search Console, verify bot IPs, or decide canonical selection. Those need separate evidence and controls."], callout: "Client logs can contain personal or confidential data. Minimise the sample before pasting it into any tool, including a local one." },
+      { heading: "A practical sequence", steps: ["Reduce the sample to the affected time and route set.", "Inspect local observations and rejected rows.", "Write the strongest supported hypothesis.", "Verify it in the relevant server, crawler, search-platform, or application surface."] },
+    ],
+    sources: [],
+    related: [
+      { label: "Tools", href: "/tools", note: "Choose the smallest inspector for the evidence you already have." },
+      { label: "Guides", href: "/guides", note: "Follow a bounded diagnostic workflow." },
+      { label: "Method", href: "/methodology-and-privacy", note: "Audit processing, limits, and source roles." },
+    ],
+  },
+  {
+    slug: "web-developers",
+    kind: "audience",
+    eyebrow: "For web developers",
+    title: "Reproduce response behavior before changing routing code",
+    description: "Inspect raw HTTP response evidence, redirect hops, directives, and local logs before editing middleware, proxy, or application rules.",
+    intro: "A routing bug often crosses layers: CDN, proxy, framework, application, and browser. AnalyseSpider helps keep the captured evidence intact while you decide which layer to inspect next.",
+    takeaway: "Use the tools to narrow the owner of a response. Do not treat a pasted capture as proof of every environment or request context.",
+    publishedAt: "2026-08-22",
+    updatedAt: "2026-08-22",
+    readingMinutes: 4,
+    sections: [
+      { heading: "Capture the response as delivered", paragraphs: ["Keep status, Location, cache fields, content type, X-Robots-Tag, and relevant HTML together. Record the exact URL and request context that produced them."], bullets: ["Relative and absolute redirect targets", "Host and scheme changes", "Header and HTML directive conflicts", "Final response status and representation"] },
+      { heading: "Use unknowns as test cases", paragraphs: ["If the capture omits a request header, intermediate hop, CDN state, or authenticated variant, mark it unknown. That missing field becomes the next reproducible test rather than an excuse for a broad configuration change."] },
+      { heading: "No network side effects", paragraphs: ["The current inspectors parse pasted input in the browser. They do not issue an unrestricted server-side request, scan ports, or crawl a target."], callout: "Networked diagnostics remain out of scope until egress controls, DNS-rebinding protection, rate limits, response caps, abuse monitoring, and ownership are reviewed." },
+    ],
+    sources: [],
+    related: [
+      { label: "Response Inspector", href: "/tools/url-inspector", note: "Inspect raw pasted headers and HTML." },
+      { label: "HTTP response guide", href: "/guides/http-response-debugging", note: "Move from request context to the next check." },
+      { label: "HTTP status reference", href: "/reference/http-status-codes", note: "Keep protocol meaning and application diagnosis separate." },
+    ],
+  },
+  {
+    slug: "site-owners",
+    kind: "audience",
+    eyebrow: "For site owners",
+    title: "Understand what a technical report actually observed",
+    description: "Plain evidence boundaries for site owners reviewing redirect, crawler, response, or IP findings before authorising a change.",
+    intro: "Technical reports often compress a chain of observations into one confident sentence. AnalyseSpider keeps the status, path, directive, and uncertainty visible so you can ask for the missing proof.",
+    takeaway: "A useful diagnosis tells you what was seen, what it may mean, what remains unknown, and which check would change the decision.",
+    publishedAt: "2026-08-22",
+    updatedAt: "2026-08-22",
+    readingMinutes: 4,
+    sections: [
+      { heading: "Questions worth asking", bullets: ["Was this result observed on the live production URL?", "Which request and response fields were captured?", "Is the crawler identity verified or only declared?", "Does the destination replace the same user job?", "What evidence would disprove the recommendation?"] , paragraphs: ["These questions are more useful than asking whether an audit score is high or low."] },
+      { heading: "Safe uses of the current tools", paragraphs: ["You can inspect a small redacted log sample, paste a response supplied by your developer, or classify an IP range without uploading the values to AnalyseSpider's server."] },
+      { heading: "When to involve the system owner", paragraphs: ["Changes to redirects, access controls, log retention, crawler blocking, or production headers can affect users and search systems. Ask the developer, hosting owner, privacy owner, or SEO owner to confirm the scope before rollout."], callout: "An IP address does not establish a person's identity or precise location. Do not use the IP checker to make decisions about an individual." },
+    ],
+    sources: [],
+    related: [
+      { label: "Start with the tools", href: "/tools", note: "Choose a bounded browser-local inspection." },
+      { label: "Read the reference", href: "/reference", note: "Translate technical labels into their actual scope." },
+      { label: "Contact and corrections", href: "/contact", note: "Report a factual, privacy, or legacy issue." },
+    ],
+  },
+];
+
+export const contentPages = [...guides, ...blogPosts, ...referencePages, ...audiencePages];
+
+export const formatDate = (date: string) => new Intl.DateTimeFormat("en", {
+  day: "2-digit",
+  month: "short",
+  year: "numeric",
+  timeZone: "UTC",
+}).format(new Date(`${date}T00:00:00Z`));

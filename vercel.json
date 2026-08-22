@@ -4,6 +4,61 @@
   "installCommand": "corepack pnpm install --frozen-lockfile",
   "buildCommand": "corepack pnpm build",
   "outputDirectory": "dist",
+  "redirects": [
+    {
+      "source": "/ip2country/lookup.php",
+      "destination": "/tools/ip-location",
+      "permanent": true
+    },
+    {
+      "source": "/ip2country/lookup.html",
+      "destination": "/tools/ip-location",
+      "permanent": true
+    },
+    {
+      "source": "/ip2country/ip_country.html",
+      "destination": "/guides/ip-geolocation-data",
+      "permanent": true
+    },
+    {
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/contact.html",
+      "destination": "/contact",
+      "permanent": true
+    },
+    {
+      "source": "/tools/redirect-chain",
+      "destination": "/tools/url-inspector",
+      "permanent": true
+    },
+    {
+      "source": "/ip-geo/accuracy",
+      "destination": "/guides/ip-geolocation-data",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/download/analysespider.exe",
+      "destination": "/api/legacy-gone?path=/download/analysespider.exe"
+    },
+    {
+      "source": "/download/flags.zip",
+      "destination": "/api/legacy-gone?path=/download/flags.zip"
+    },
+    {
+      "source": "/download.html",
+      "destination": "/api/legacy-gone?path=/download.html"
+    },
+    {
+      "source": "/order.html",
+      "destination": "/api/legacy-gone?path=/order.html"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
@@ -11,10 +66,24 @@
         {
           "key": "X-Robots-Tag",
           "value": "noindex, nofollow, noarchive"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
         }
       ]
     }
   ]
 }
-
-

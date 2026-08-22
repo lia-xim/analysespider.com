@@ -1,0 +1,30 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageLead from "../components/PageLead.astro";
+import { site } from "../data/site";
+---
+<BaseLayout title="New ownership — AnalyseSpider" description="How the new 2026 AnalyseSpider implementation separates current work from former software, operators, users, and content." canonicalPath="/new-ownership">
+  <PageLead title="Same domain. New work." intro={site.ownershipDisclosure} />
+  <section class="content-grid">
+    <article class="prose">
+      <h2>What continuity means here</h2>
+      <p>The domain historically hosted technical utilities related to web-log analysis, crawler visits, IP-to-country data, and geotargeting. The current project uses that verified topic history to choose useful modern jobs. All current copy, code, examples, visual design, and tools are new.</p>
+      <p>This is a transparent same-topic continuation—not a continuation of the former company, operator, product warranties, customer relationships, or software distribution.</p>
+
+      <h2>What did not transfer</h2>
+      <ul>
+        <li>former executables, source code, databases, media, documentation, and downloads;</li>
+        <li>former users, customers, subscribers, orders, support obligations, or testimonials;</li>
+        <li>former operator identity, authorship, endorsements, logos, or brand assets.</li>
+      </ul>
+
+      <h2>Current operator and Contextter</h2>
+      <p>{site.operatorDisclosure}</p>
+      <p>AnalyseSpider must be useful without a Contextter account or outbound click. A Contextter link is appropriate only when a completed diagnostic result has a genuine downstream workflow, or when the shared rebuild is documented as a case study. Shared ownership alone is not evidence.</p>
+    </article>
+    <aside class="side-note">
+      <h3>Correction standard</h3>
+      <p>If you have rights evidence, a historical correction, or a concern about a legacy path, use the <a href="/contact">current contact route</a>. Historical operators are not implied to monitor this site.</p>
+    </aside>
+  </section>
+</BaseLayout>

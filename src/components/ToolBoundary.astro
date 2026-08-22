@@ -1,0 +1,7 @@
+---
+interface Props { compact?: boolean }
+const { compact = false } = Astro.props;
+---
+<div class:list={["tool-boundary", { compact }]} aria-label="Privacy boundary">
+  <span>LOCAL ONLY</span><span aria-hidden="true">·</span><span>NO UPLOAD</span><span aria-hidden="true">·</span><span>NO NETWORK REQUEST</span>
+</div>

@@ -1,0 +1,58 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageLead from "../../components/PageLead.astro";
+import { countryCodes } from "../../data/country-codes";
+---
+<BaseLayout
+  title="Country code reference — AnalyseSpider"
+  description="Searchable ISO 3166-1 alpha-2 country and territory code reference, independently implemented under new ownership."
+  canonicalPath="/ip2country/country_code.html"
+>
+  <PageLead title="Country code reference." intro="A searchable alpha-2 reference for technical configuration and data inspection. This is a new page, not a copy of the historical resource." />
+  <section class="content-grid">
+    <div class="prose" style="max-width:none">
+      <div class="filter-row">
+        <div>
+          <label for="country-filter">Filter by name or alpha-2 code</label>
+          <input id="country-filter" type="search" autocomplete="off" placeholder="e.g. Germany or DE" />
+        </div>
+        <p id="country-count" class="form-status" aria-live="polite">{countryCodes.length} entries</p>
+      </div>
+      <div class="country-grid" id="country-grid">
+        {countryCodes.map(({ code, name }) => (
+          <div class="country-row" data-search={`${code} ${name}`.toLowerCase()}>
+            <code>{code}</code><span>{name}</span>
+          </div>
+        ))}
+      </div>
+      <h2>Use the right identifier</h2>
+      <p>Alpha-2 country and territory codes are often used in locale tags, forms, datasets, shipping rules, and reporting. They do not by themselves prove a user's residence or the physical location of an IP address. Dataset editions and code semantics must be checked at the point of use.</p>
+      <p>Names on this page are rendered from the JavaScript internationalization data available at build time. For a legal or contractual registry decision, verify the current official ISO 3166 source used by your system.</p>
+    </div>
+    <aside class="side-note">
+      <h3>Path decision</h3>
+      <dl class="facts-list">
+        <div><dt>Historical path</dt><dd>/ip2country/country_code.html</dd></div>
+        <div><dt>Action</dt><dd>Restore 200</dd></div>
+        <div><dt>Referring domains</dt><dd>7</dd></div>
+        <div><dt>Implementation</dt><dd>New generated reference</dd></div>
+        <div><dt>Updated</dt><dd>2026-08-22</dd></div>
+      </dl>
+    </aside>
+  </section>
+  <script>
+    const input = document.querySelector<HTMLInputElement>("#country-filter")!;
+    const rows = [...document.querySelectorAll<HTMLElement>(".country-row")];
+    const count = document.querySelector<HTMLElement>("#country-count")!;
+    input.addEventListener("input", () => {
+      const query = input.value.trim().toLowerCase();
+      let visible = 0;
+      const exactCode = query.length === 2 && /^[a-z]{2}$/.test(query);
+      rows.forEach((row) => {
+        row.hidden = exactCode ? !row.dataset.search?.startsWith(`${query} `) : !row.dataset.search?.includes(query);
+        if (!row.hidden) visible += 1;
+      });
+      count.textContent = `${visible} ${visible === 1 ? "entry" : "entries"}`;
+    });
+  </script>
+</BaseLayout>

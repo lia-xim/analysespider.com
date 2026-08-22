@@ -1,13 +1,49 @@
-export const site = {
+export type IndexingState = "blocked" | "public";
+
+export interface SiteConfig {
+  schemaVersion: 1;
+  domain: string;
+  origin: string;
+  language: "en";
+  name: string;
+  title: string;
+  description: string;
+  purpose: string;
+  ownershipDisclosure: string;
+  operatorDisclosure: string;
+  boundary: string;
+  indexing: IndexingState;
+  analytics: { enabled: false; provider: null };
+  githubUrl: string;
+  contactEmail: string;
+  primaryProject: { id: "contextter"; name: "Contextter"; relationship: string };
+  buildDate: string;
+}
+
+export const site: SiteConfig = {
+  schemaVersion: 1,
   domain: "analysespider.com",
+  origin: "https://analysespider.com",
   language: "en",
+  name: "AnalyseSpider",
   title: "AnalyseSpider Web Diagnostics Lab",
-  description: "Project foundation for a safe, inspectable web diagnostics lab under new ownership.",
-  purpose: "The planned site will help users inspect public URL responses, redirects, headers, canonical signals and robots directives within strict network-safety limits.",
-  status: "Planning repository. The proposed Contextter assignment and security architecture are not yet accepted as a public launch.",
-  boundary: "No former software, users, downloads or operator identity transferred. No unrestricted server-side fetching or active security scanning.",
-  primaryProject: "Contextter (proposed, not assigned)",
+  description: "Browser-local tools for inspecting access logs, HTTP response signals, directives, and IP address properties with visible limits.",
+  purpose: "Inspect crawler and response evidence without uploading logs or enabling unrestricted server-side fetching.",
+  ownershipDisclosure: "AnalyseSpider is a new implementation under new ownership in 2026. Former software, users, downloads, customers, and operator identity did not transfer.",
+  operatorDisclosure: "Operated by the team behind Contextter. Common ownership is disclosed; this site is not independent corroboration.",
+  boundary: "No former software, users, downloads, or operator identity transferred. No unrestricted server-side fetching or active security scanning.",
+  primaryProject: {
+    id: "contextter",
+    name: "Contextter",
+    relationship: "Common operator and optional downstream workflow after a complete standalone result.",
+  },
+  indexing: "blocked",
+  analytics: { enabled: false, provider: null },
   githubUrl: "https://github.com/lia-xim/analysespider.com",
-} as const;
+  contactEmail: "info@contextter.com",
+  buildDate: "2026-08-22",
+};
 
-
+export const robotsContent = site.indexing === "public"
+  ? `User-agent: *\nAllow: /\nSitemap: ${site.origin}/sitemap.xml\n`
+  : `User-agent: *\nDisallow: /\nSitemap: ${site.origin}/sitemap.xml\n`;

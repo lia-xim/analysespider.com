@@ -1,0 +1,29 @@
+---
+import ResourceIndex from "../../components/ResourceIndex.astro";
+import { guides } from "../../data/content";
+
+const entries = [
+  ...guides.map((guide) => ({
+    title: guide.title,
+    description: guide.description,
+    href: `/guides/${guide.slug}`,
+    meta: `${guide.eyebrow} · ${guide.readingMinutes} min`,
+  })),
+  {
+    title: "IP geolocation data: limits and safe use",
+    description: "Understand what an IP-location result can estimate, what it cannot establish, and which decisions need stronger evidence.",
+    href: "/guides/ip-geolocation-data",
+    meta: "Guide 05 · data limits",
+  },
+];
+---
+<ResourceIndex
+  title="Diagnostic guides"
+  pageTitle="Web diagnostics guides — AnalyseSpider"
+  description="Evidence-led guides for server log analysis, crawler verification, HTTP response debugging, redirects, and IP data limits."
+  intro="Stable workflows for inspecting the evidence you already have. Each guide states what the source can support, what remains unknown, and which check should come next."
+  canonicalPath="/guides"
+  index="30"
+  entries={entries}
+  note="A guide earns its own URL only when it covers a distinct diagnostic job. Query variations stay inside the strongest relevant page."
+/>

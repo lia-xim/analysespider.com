@@ -1,0 +1,14 @@
+---
+interface Props { size?: number; external?: boolean }
+const { size = 18, external = false } = Astro.props;
+---
+{external ? (
+  <svg aria-hidden="true" width={size} height={size} viewBox="0 0 18 18" fill="none">
+    <path d="M6 3.5h8.5V12M14 4 5 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
+    <path d="M12 9.5V14H3.5V5.5H8" stroke="currentColor" stroke-width="1.5"/>
+  </svg>
+) : (
+  <svg aria-hidden="true" width={size} height={size} viewBox="0 0 18 18" fill="none">
+    <path d="M2.5 9h12M10 4.5 14.5 9 10 13.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"/>
+  </svg>
+)}

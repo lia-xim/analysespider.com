@@ -1,0 +1,173 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ToolBoundary from "../../components/ToolBoundary.astro";
+---
+<BaseLayout
+  title="IP Address Check — AnalyseSpider"
+  description="Classify IPv4 and IPv6 address syntax and special-use ranges locally without making location claims."
+  canonicalPath="/tools/ip-location"
+  bodyClass="tool-page"
+>
+  <section class="tool-shell">
+    <aside class="tool-sidebar">
+      <h1>IP Address Check</h1>
+      <p>Classify syntax and special-use ranges. An IP address is not a person, street address, or precise location.</p>
+      <div class="sidebar-meta">
+        <strong>LOCAL CLASSIFICATION</strong><br />
+        IPv4 and IPv6 syntax<br />
+        Private / loopback / link-local<br />
+        Documentation and multicast ranges<br />
+        No external geolocation lookup
+      </div>
+    </aside>
+
+    <div class="tool-main">
+      <ToolBoundary />
+      <section class="workspace" aria-labelledby="ip-input-heading">
+        <div class="workspace-toolbar"><span class="active">1. ADDRESS</span><span>SYNTAX + RANGE</span><span>NO DATASET CLAIM</span></div>
+        <div class="workspace-content">
+          <h2 id="ip-input-heading" class="visually-hidden">IP address input</h2>
+          <label for="ip-input">IPv4 or IPv6 address</label>
+          <input id="ip-input" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="192.0.2.10" />
+          <div class="workspace-actions">
+            <button class="button" id="load-ip-sample" type="button">Use documentation sample</button>
+            <button class="button primary" id="check-ip" type="button">Check locally</button>
+          </div>
+          <p class="form-status" id="ip-status" role="status" aria-live="polite">Waiting for an address.</p>
+        </div>
+      </section>
+
+      <section class="result-surface" id="ip-results" hidden aria-labelledby="ip-result-heading">
+        <div class="workspace-toolbar"><span class="active">2. CLASSIFICATION</span><span id="ip-family"></span></div>
+        <h2 id="ip-result-heading" class="visually-hidden">IP address classification</h2>
+        <div class="diagnostic-output">
+          <section class="evidence-group">
+            <h3>OBSERVED</h3>
+            <div><ul id="ip-observed"></ul></div>
+          </section>
+          <section class="evidence-group">
+            <h3>INFERRED</h3>
+            <div><ul id="ip-inferred"></ul></div>
+          </section>
+          <section class="evidence-group">
+            <h3>UNKNOWN</h3>
+            <div><ul id="ip-unknown"></ul></div>
+          </section>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <section class="content-grid">
+    <div class="prose">
+      <h2>What an IP can—and cannot—tell you</h2>
+      <p>An address can be syntactically valid and belong to a special-purpose range. A separate, dated allocation or commercial geolocation dataset may associate public addresses with a network, country, or approximate area. Those associations can be stale, indirect, shared, proxied, or mapped to an organization rather than a user.</p>
+      <p>Use IP geography as a weak routing or analytics signal with fallbacks and user control. Do not treat it as proof of residence, identity, eligibility, fraud, or physical presence.</p>
+      <p><a href="/guides/ip-geolocation-data">Read the IP geolocation data guide</a> or use the <a href="/ip2country/country_code.html">country-code reference</a>.</p>
+    </div>
+    <aside class="side-note">
+      <h3>No precision theatre</h3>
+      <p>This tool deliberately does not display a map pin, city, ISP, or confidence score because no current external dataset is queried.</p>
+    </aside>
+  </section>
+
+  <script>
+    type Classification = { family: "IPv4" | "IPv6"; normalized: string; scope: string; details: string[] };
+    const input = document.querySelector<HTMLInputElement>("#ip-input")!;
+    const status = document.querySelector<HTMLElement>("#ip-status")!;
+    const results = document.querySelector<HTMLElement>("#ip-results")!;
+
+    const ipv4Parts = (value: string) => {
+      if (!/^\d{1,3}(?:\.\d{1,3}){3}$/.test(value)) return null;
+      const parts = value.split(".").map(Number);
+      return parts.every((part) => part >= 0 && part <= 255) ? parts : null;
+    };
+
+    const classifyV4 = (parts: number[]): Classification => {
+      const [a, b, c] = parts;
+      let scope = "Public or unclassified";
+      const details: string[] = [];
+      if (a === 10 || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168)) scope = "Private-use address";
+      else if (a === 127) scope = "Loopback address";
+      else if (a === 169 && b === 254) scope = "Link-local address";
+      else if (a === 100 && b >= 64 && b <= 127) scope = "Shared address space (carrier-grade NAT)";
+      else if (a === 192 && b === 0 && c === 2 || a === 198 && b === 51 && c === 100 || a === 203 && b === 0 && c === 113) scope = "Documentation address";
+      else if (a >= 224 && a <= 239) scope = "Multicast address";
+      else if (a === 0) scope = "Current-network / special-use address";
+      else if (a >= 240) scope = "Reserved address";
+      else if (a === 255 && b === 255 && c === 255 && parts[3] === 255) scope = "Limited broadcast address";
+      details.push("Four decimal octets are within the IPv4 range.");
+      details.push(`Range classification: ${scope}.`);
+      return { family: "IPv4", normalized: parts.join("."), scope, details };
+    };
+
+    const isValidV6 = (value: string) => {
+      if (!/^[0-9a-f:]+$/i.test(value) || value.includes(":::")) return false;
+      const pieces = value.split("::");
+      if (pieces.length > 2) return false;
+      const left = pieces[0] ? pieces[0].split(":") : [];
+      const right = pieces[1] ? pieces[1].split(":") : [];
+      if ([...left, ...right].some((part) => !/^[0-9a-f]{1,4}$/i.test(part))) return false;
+      return pieces.length === 2 ? left.length + right.length < 8 : left.length === 8;
+    };
+
+    const classifyV6 = (value: string): Classification => {
+      const normalized = value.toLowerCase();
+      let scope = "Global or unclassified";
+      if (normalized === "::1") scope = "Loopback address";
+      else if (normalized === "::") scope = "Unspecified address";
+      else if (/^f[cd][0-9a-f]{2}:/i.test(normalized)) scope = "Unique local address";
+      else if (/^fe[89ab][0-9a-f]:/i.test(normalized)) scope = "Link-local address";
+      else if (/^ff/i.test(normalized)) scope = "Multicast address";
+      else if (/^2001:db8:/i.test(normalized)) scope = "Documentation address";
+      return {
+        family: "IPv6",
+        normalized,
+        scope,
+        details: ["Hexadecimal groups form a valid IPv6 address.", `Range classification: ${scope}.`],
+      };
+    };
+
+    const setList = (selector: string, items: string[]) => {
+      const list = document.querySelector<HTMLUListElement>(selector)!;
+      list.replaceChildren();
+      items.forEach((item) => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        list.append(li);
+      });
+    };
+
+    const check = () => {
+      const value = input.value.trim();
+      const v4 = ipv4Parts(value);
+      const classification = v4 ? classifyV4(v4) : isValidV6(value) ? classifyV6(value) : null;
+      if (!classification) {
+        results.hidden = true;
+        status.textContent = "The input is not recognized as a valid standalone IPv4 or IPv6 address.";
+        return;
+      }
+      document.querySelector("#ip-family")!.textContent = classification.family;
+      setList("#ip-observed", [`Normalized input: ${classification.normalized}`, `Address family: ${classification.family}`, ...classification.details]);
+      setList("#ip-inferred", classification.scope === "Public or unclassified" || classification.scope === "Global or unclassified"
+        ? ["The syntax and range do not by themselves establish ownership, routing, reputation, or location."]
+        : [`The address is in a ${classification.scope.toLowerCase()} range and should not be treated as a normal public geolocation target.`]);
+      setList("#ip-unknown", [
+        "Network owner, announcing ASN, country, region, city, proxy/VPN status, and reputation were not queried.",
+        "No person, device, or precise physical position can be established from this local classification.",
+      ]);
+      results.hidden = false;
+      status.textContent = "Address classified locally. No external dataset was queried.";
+    };
+
+    document.querySelector("#load-ip-sample")!.addEventListener("click", () => {
+      input.value = "192.0.2.10";
+      status.textContent = "Documentation-range sample loaded.";
+      input.focus();
+    });
+    document.querySelector("#check-ip")!.addEventListener("click", check);
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") check();
+    });
+  </script>
+</BaseLayout>

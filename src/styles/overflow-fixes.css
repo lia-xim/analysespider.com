@@ -1,0 +1,154 @@
+.page-frame,
+main,
+.site-header,
+.site-header > *,
+.site-header nav,
+.site-header nav a,
+.hero > *,
+.instruments > *,
+.instrument-list,
+.instrument,
+.method-band > *,
+.legacy-band > *,
+.tool-shell > *,
+.content-grid > *,
+.page-lead > * {
+  min-width: 0;
+}
+
+h1,
+h2,
+h3,
+.display {
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+.hero-copy h1 span {
+  max-width: 100%;
+  white-space: normal !important;
+}
+
+.hero-copy h1 {
+  max-width: 9ch;
+}
+
+.instruments-heading h2,
+.method-statement h2,
+.legacy-copy h2,
+.home-library > header h2 {
+  max-width: 12ch;
+}
+
+.page-lead {
+  grid-template-columns: minmax(28px, 52px) minmax(0, 920px);
+}
+
+.page-lead h1 {
+  width: min(100%, 12ch);
+  font-size: clamp(3.4rem, 7.2vw, 7.2rem);
+  line-height: .93;
+}
+
+.tool-shell {
+  grid-template-columns: clamp(270px, 19vw, 310px) minmax(0, 1fr);
+}
+
+.tool-sidebar h1 {
+  width: 100%;
+  max-width: 100%;
+  font-size: clamp(3rem, 3.7vw, 4.15rem);
+  line-height: .94;
+  overflow-wrap: break-word;
+}
+
+td,
+th,
+code,
+pre,
+.trace-result,
+.tool-boundary,
+.sidebar-meta,
+.source-list a {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 1050px) {
+  .tool-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .tool-sidebar h1 {
+    max-width: 12ch;
+  }
+}
+
+@media (max-width: 760px) {
+  :root {
+    --gutter: clamp(.78rem, 4.6vw, 1.25rem);
+  }
+
+  .site-header nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .site-header nav a:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .page-lead {
+    grid-template-columns: minmax(20px, 28px) minmax(0, 1fr);
+    gap: clamp(.65rem, 3vw, 1rem);
+  }
+
+  .page-lead h1 {
+    width: 100%;
+    font-size: clamp(3.15rem, 16vw, 5.4rem);
+  }
+
+  .hero-copy h1 {
+    max-width: 100%;
+    font-size: clamp(3.65rem, 18vw, 5.8rem);
+  }
+
+  .tool-sidebar h1 {
+    max-width: 100%;
+    font-size: clamp(3.15rem, 15vw, 4.25rem);
+  }
+
+  .summary-grid > div,
+  .demo-results > div,
+  .protocol-list dd,
+  .workspace-content,
+  .result-column {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 360px) {
+  .page-frame {
+    width: calc(100% - .5rem);
+    margin: .25rem auto;
+  }
+
+  .brand {
+    gap: .35rem;
+    font-size: 1.25rem;
+  }
+
+  .page-lead {
+    padding-right: .75rem;
+    padding-left: .75rem;
+  }
+
+  .page-lead h1 {
+    font-size: clamp(2.85rem, 15vw, 4.25rem);
+  }
+
+  .article-prose p,
+  .article-prose li,
+  .change-log p,
+  .change-log li {
+    font-size: .96rem;
+  }
+}

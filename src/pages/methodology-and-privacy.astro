@@ -1,0 +1,51 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageLead from "../components/PageLead.astro";
+---
+<BaseLayout
+  title="Methodology and privacy — AnalyseSpider"
+  description="How AnalyseSpider separates observations, inferences, unknowns, privacy boundaries, and future network safety gates."
+  canonicalPath="/methodology-and-privacy"
+>
+  <PageLead title="Evidence before conclusions." intro="Every tool exposes what it observed, what it inferred, what remains unknown, and what data left your device." />
+  <section class="content-grid">
+    <article class="prose">
+      <h2>Current processing boundary</h2>
+      <p>The Log File Inspector, Response Inspector, and IP Address Check run in your browser. The current implementation does not upload the submitted text or file, request an entered URL, query a geolocation provider, or store a result.</p>
+      <p>Browser-local processing reduces exposure, but it does not make unsafe input harmless. Do not paste confidential logs into any device or browser you do not control. Results remain an interpretation of the supplied material—not proof of live server behavior.</p>
+
+      <h2>Result vocabulary</h2>
+      <h3>Observed</h3>
+      <p>A literal value found in the supplied evidence: a status line, header, canonical tag, address syntax, log request, user agent, or response code.</p>
+      <h3>Inferred</h3>
+      <p>A bounded interpretation based on those values. For example, a 301 plus a Location header suggests a redirect response. It does not prove that the destination succeeds.</p>
+      <h3>Unknown</h3>
+      <p>A question the current evidence cannot answer: live DNS, the final redirect hop, rendered DOM, current index state, precise location, identity, or future behavior.</p>
+
+      <h2>Limits and safety gates</h2>
+      <p>AnalyseSpider does not currently expose unrestricted server-side URL fetching. A future fetcher would require all of the following before public launch:</p>
+      <ul>
+        <li>private, loopback, link-local, metadata, and internal DNS blocking;</li>
+        <li>DNS-rebinding checks before and after every redirect;</li>
+        <li>strict scheme, port, redirect-depth, response-size, and timeout caps;</li>
+        <li>rate limits, abuse monitoring, retention limits, and a named operator;</li>
+        <li>tests for redirect-to-private targets and changing DNS answers.</li>
+      </ul>
+
+      <h2>Sources and change control</h2>
+      <p>Historical archives are used only to establish broad former topic and URL intent. A paid target-level backlink export was used to prioritize which old jobs deserved a new successor. Neither source grants rights to old content or proves current search performance.</p>
+      <p>The repository publishes versioned rights and legacy-action manifests. Material method changes are dated. Corrections can be submitted through the <a href="/contact">current contact route</a>.</p>
+    </article>
+    <aside class="side-note">
+      <h3>Current declaration</h3>
+      <dl class="facts-list">
+        <div><dt>Processing</dt><dd>Browser-local</dd></div>
+        <div><dt>Upload</dt><dd>None in current tools</dd></div>
+        <div><dt>URL fetch</dt><dd>Disabled</dd></div>
+        <div><dt>Analytics</dt><dd>Disabled</dd></div>
+        <div><dt>Retention</dt><dd>No application storage</dd></div>
+        <div><dt>Updated</dt><dd>2026-08-22</dd></div>
+      </dl>
+    </aside>
+  </section>
+</BaseLayout>

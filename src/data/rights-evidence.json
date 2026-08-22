@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-08-22",
+  "domain": "analysespider.com",
+  "ownership": {
+    "status": "owned_confirmed",
+    "source": "canonical DomainPortfolio user assertion",
+    "continuityModel": "transparent_continuation",
+    "currentOperator": "team behind Contextter",
+    "formerOperatorRelationship": "none documented"
+  },
+  "rights": {
+    "formerText": "not_cleared",
+    "formerCode": "not_cleared",
+    "formerBranding": "not_cleared",
+    "formerMedia": "not_cleared",
+    "formerBinaries": "prohibited",
+    "formerDatabases": "prohibited",
+    "formerUsersAndCustomers": "not_transferred",
+    "implementationRule": "All current copy, code, UI, datasets, and examples must be independently created or separately licensed."
+  },
+  "evidence": [
+    {
+      "id": "portfolio-dossier",
+      "type": "authoritative_strategy",
+      "path": "C:\\Users\\matth\\Documents\\DomainPortfolio\\strategy\\domains\\analysespider.com.md",
+      "supports": ["purpose", "continuity model", "boundaries", "linking policy", "stop condition"]
+    },
+    {
+      "id": "paid-backlink-run",
+      "type": "provider_export",
+      "observedAt": "2026-08-22",
+      "path": "C:\\Users\\matth\\Documents\\DomainPortfolio\\reports\\owned-domain-rebuild\\evidence-analysespider-paid-success-2026-08-22.json",
+      "supports": ["target-level referring-domain counts", "sample quality classification", "legacy intent prioritization"],
+      "doesNotSupport": ["rights", "former identity transfer", "current rankings", "future backlink retention"]
+    },
+    {
+      "id": "wayback-review",
+      "type": "historical_topic_evidence",
+      "observedAt": "2026-08-22",
+      "supports": ["former log-analysis and IP/country utility topics"],
+      "doesNotSupport": ["republishing rights", "authorship", "customer transfer", "product ownership"]
+    }
+  ],
+  "forbiddenClaims": [
+    "official continuation of the former AnalyseSpider operator",
+    "former users or customers transferred",
+    "former software or databases are available",
+    "AnalyseSpider independently recommends or validates Contextter",
+    "an IP address proves a person or precise physical location",
+    "unrestricted crawler or security scanner"
+  ]
+}

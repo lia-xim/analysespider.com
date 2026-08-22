@@ -1,0 +1,26 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageLead from "../components/PageLead.astro";
+import { site } from "../data/site";
+---
+<BaseLayout title="Contact and corrections — AnalyseSpider" description="Report a factual correction, rights concern, security issue, abuse case, or legacy URL problem to the current AnalyseSpider operator." canonicalPath="/contact">
+  <PageLead title="Corrections, rights, and abuse." intro="Reach the current operator about a factual correction, rights concern, security issue, or legacy URL decision." />
+  <section class="content-grid">
+    <article class="prose">
+      <h2>Current contact</h2>
+      <p>Email <a href={`mailto:${site.contactEmail}?subject=AnalyseSpider%20correction`}>{site.contactEmail}</a> and include <strong>AnalyseSpider</strong> in the subject.</p>
+      <p>For a legacy-path request, include the exact URL, your relationship to the material, and evidence supporting the requested change. Do not send passwords, raw customer data, private access logs, or former software files.</p>
+      <h2>Security reports</h2>
+      <p>Describe the affected route, observable impact, and a minimal reproduction. Do not perform denial-of-service testing, access private systems, upload malware, or scan unrelated infrastructure.</p>
+      <h2>Response boundary</h2>
+      <p>This contact reaches the current operator only. It is not a support route for former AnalyseSpider products, orders, licenses, downloads, or accounts.</p>
+    </article>
+    <aside class="side-note">
+      <h3>Useful subject lines</h3>
+      <p>AnalyseSpider correction</p>
+      <p>AnalyseSpider rights concern</p>
+      <p>AnalyseSpider security report</p>
+      <p>AnalyseSpider legacy URL</p>
+    </aside>
+  </section>
+</BaseLayout>

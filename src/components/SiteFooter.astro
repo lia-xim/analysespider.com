@@ -1,0 +1,23 @@
+---
+import ArrowIcon from "./ArrowIcon.astro";
+import { site } from "../data/site";
+---
+<footer class="site-footer">
+  <div class="footer-disclosure">
+    <p>{site.ownershipDisclosure}</p>
+    <p>{site.operatorDisclosure}</p>
+  </div>
+  <nav aria-label="Footer navigation">
+    <a href="/new-ownership">NEW OWNERSHIP <ArrowIcon /></a>
+    <a href="/about">ABOUT <ArrowIcon /></a>
+    <a href="/changelog">CHANGELOG <ArrowIcon /></a>
+    <a href="/for">FOR TEAMS <ArrowIcon /></a>
+    <a href="/contact">CORRECTIONS <ArrowIcon /></a>
+    <a href={site.githubUrl}>GITHUB <ArrowIcon external /></a>
+  </nav>
+  <div class="launch-state">
+    <span>PRE-LAUNCH</span>
+    <span aria-hidden="true">·</span>
+    <strong>NOINDEX ACTIVE</strong>
+  </div>
+</footer>

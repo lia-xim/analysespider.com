@@ -1,0 +1,37 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageLead from "../../components/PageLead.astro";
+---
+<BaseLayout title="Geo targeting without brittle IP redirects — AnalyseSpider" description="Use stable URLs, explicit preferences, and reversible language or market hints instead of hard IP-based redirects." canonicalPath="/geo-targeting/geo-targeting.html">
+  <PageLead title="Geo routing should fail open." intro="IP-based routing is approximate. Prefer language, market, and user choice over invisible hard redirects or access blocks." />
+  <section class="content-grid">
+    <article class="prose">
+      <h2>The brittle pattern</h2>
+      <p>A server estimates location from an IP address and immediately redirects or blocks the request. Search crawlers, VPN users, travelers, corporate networks, mobile carriers, shared gateways, and stale data can all receive the wrong experience. Hard redirects also fragment canonical signals and can hide content from users and crawlers.</p>
+
+      <h2>A safer decision sequence</h2>
+      <ol>
+        <li>Use the requested URL and explicit user preference first.</li>
+        <li>Use browser language or account market as a reversible hint.</li>
+        <li>Use coarse IP geography only as a weak fallback.</li>
+        <li>Show the proposed market or language and let the user change it.</li>
+        <li>Keep all legitimate versions directly reachable with stable URLs.</li>
+        <li>Measure correction rates and stale mappings before expanding automation.</li>
+      </ol>
+
+      <h2>Search and crawler safeguards</h2>
+      <p>Do not send crawlers to a different canonical destination merely because their data-center IP maps to another country. Avoid redirect loops between locale selectors. Preserve response status, canonical tags, alternate-language annotations, and a path back to the original version.</p>
+
+      <h2>Historical-path disclosure</h2>
+      <p>This URL formerly discussed IP-based scripts. The current page is newly written and does not reproduce or sell former code. It deliberately replaces precision and blocking claims with a reversible, user-controlled model.</p>
+    </article>
+    <aside class="side-note">
+      <h3>Good fallback order</h3>
+      <p>Explicit choice</p>
+      <p>Account preference</p>
+      <p>Requested URL</p>
+      <p>Language hint</p>
+      <p>Coarse IP estimate</p>
+    </aside>
+  </section>
+</BaseLayout>

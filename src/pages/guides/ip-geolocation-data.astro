@@ -1,0 +1,40 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageLead from "../../components/PageLead.astro";
+---
+<BaseLayout title="IP geolocation data: limits and safe use — AnalyseSpider" description="Understand IP allocation, routing, and geolocation estimates without treating an address as identity or precise physical location." canonicalPath="/guides/ip-geolocation-data">
+  <PageLead title="IP geography is an estimate, not identity." intro="Read allocation, routing, and commercial location data as dated signals with failure modes—not as proof of a person or precise place." />
+  <section class="content-grid">
+    <article class="prose">
+      <h2>Three different questions</h2>
+      <h3>Who received the address block?</h3>
+      <p>Registry and allocation records can identify an organization responsible for a block. That organization may be a carrier, cloud provider, enterprise, or intermediary. It is not necessarily the current end user.</p>
+      <h3>Who announces the route?</h3>
+      <p>Routing observations can associate an address with an autonomous system. Routing changes, anycast, hosting, VPNs, and intermediaries make this a network observation rather than a personal location.</p>
+      <h3>Where does a dataset place it?</h3>
+      <p>Commercial and public geolocation datasets may estimate a country, region, or city using different signals and update schedules. Agreement between products does not turn an estimate into precise physical evidence.</p>
+
+      <h2>Safe product patterns</h2>
+      <ul>
+        <li>Use country-level estimates to preselect a reversible option, not to silently lock it.</li>
+        <li>Show a user-visible override and retain the user's explicit preference.</li>
+        <li>Record dataset name, edition or observation time, and expected accuracy level.</li>
+        <li>Separate network ownership, route origin, and estimated geography in the data model.</li>
+        <li>Do not use an IP estimate alone for identity, sanctions, fraud, eligibility, or access decisions.</li>
+      </ul>
+
+      <h2>Why the former database is not here</h2>
+      <p>The historical domain advertised IP-country data and related downloads. No former database, update contract, license, or distribution right transferred. This page is an independently written limitations guide and does not offer those files.</p>
+    </article>
+    <aside class="side-note">
+      <h3>Minimum metadata</h3>
+      <dl class="facts-list">
+        <div><dt>Source</dt><dd>Named dataset or observation</dd></div>
+        <div><dt>Edition</dt><dd>Version or date</dd></div>
+        <div><dt>Granularity</dt><dd>Country / region / city</dd></div>
+        <div><dt>Confidence</dt><dd>Defined, not decorative</dd></div>
+        <div><dt>Override</dt><dd>User-controlled fallback</dd></div>
+      </dl>
+    </aside>
+  </section>
+</BaseLayout>

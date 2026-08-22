@@ -1,0 +1,52 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageLead from "./PageLead.astro";
+import ArrowIcon from "./ArrowIcon.astro";
+
+interface Entry {
+  title: string;
+  description: string;
+  href: string;
+  meta: string;
+  status?: string;
+}
+
+interface Props {
+  title: string;
+  pageTitle: string;
+  description: string;
+  intro: string;
+  canonicalPath: string;
+  index: string;
+  entries: Entry[];
+  note: string;
+}
+
+const { title, pageTitle, description, intro, canonicalPath, index, entries, note } = Astro.props;
+---
+<BaseLayout title={pageTitle} description={description} canonicalPath={canonicalPath}>
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <a href="/">Home</a><span aria-hidden="true">/</span><span aria-current="page">{title}</span>
+  </nav>
+  <PageLead title={title} intro={intro} index={index} />
+  <div class="index-note">
+    <span>Library contract</span>
+    <p>{note}</p>
+  </div>
+  <section class="resource-index" aria-label={`${title} index`}>
+    {entries.map((entry, entryIndex) => (
+      <a class="resource-row" href={entry.href}>
+        <span class="resource-number">{String(entryIndex + 1).padStart(2, "0")}</span>
+        <div class="resource-title">
+          <span>{entry.meta}</span>
+          <h2>{entry.title}</h2>
+        </div>
+        <p>{entry.description}</p>
+        <div class="resource-action">
+          <span>{entry.status ?? "OPEN"}</span>
+          <ArrowIcon />
+        </div>
+      </a>
+    ))}
+  </section>
+</BaseLayout>

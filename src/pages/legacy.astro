@@ -1,0 +1,46 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageLead from "../components/PageLead.astro";
+import manifest from "../data/legacy-url-actions.json";
+
+const actionLabel = (action: string) => action === "restore_200" ? "RESTORE 200" : action === "410" ? "RETIRE 410" : action.includes("redirect") ? "REDIRECT 308" : action.toUpperCase();
+const actionClass = (action: string) => action === "restore_200" ? "restore" : action === "410" ? "retire" : "";
+---
+<BaseLayout title="Legacy URL map — AnalyseSpider" description="URL-level restore, redirect, and retirement decisions for important historical AnalyseSpider paths under new ownership." canonicalPath="/legacy">
+  <PageLead title="Old URLs, explicit decisions." intro="Historical paths are reviewed by user intent, rights, safety, and target-level link evidence. Unknown paths do not collapse into the homepage." />
+  <section class="content-grid">
+    <div class="prose" style="max-width:none">
+      <div class="table-wrap">
+        <table class="decision-table">
+          <thead>
+            <tr><th>Historical path</th><th>Former intent</th><th>Evidence</th><th>Decision</th><th>Current target / reason</th></tr>
+          </thead>
+          <tbody>
+            {manifest.records.map((record) => (
+              <tr>
+                <td><code>{record.normalized_path}</code></td>
+                <td>{record.former_topic}</td>
+                <td>{record.referring_domains === null ? "intent reviewed" : `${record.referring_domains} referring domains`}</td>
+                <td class:list={["status", actionClass(record.action)]}>{actionLabel(record.action)}</td>
+                <td>{record.target_url ? <a href={record.target_url}>{record.target_url}</a> : record.equivalence_reason}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <h2>Decision rules</h2>
+      <p><strong>Restore 200</strong> means the same legitimate user job receives independently written current content or a new tool. <strong>Redirect 308</strong> requires a substantially equivalent current destination. <strong>410</strong> is reserved for deliberately retired software, downloads, data, or commerce routes that cannot truthfully return.</p>
+      <p>This map is implementation evidence, not a claim that every production response has already been verified. Launch remains blocked until the deployed host is checked.</p>
+    </div>
+    <aside class="side-note">
+      <h3>Evidence snapshot</h3>
+      <dl class="facts-list">
+        <div><dt>Paid run</dt><dd>2026-08-22</dd></div>
+        <div><dt>Backlinks</dt><dd>514</dd></div>
+        <div><dt>Referring domains</dt><dd>283</dd></div>
+        <div><dt>Profile</dt><dd>Mixed; target review required</dd></div>
+        <div><dt>Rights</dt><dd>No former assets transferred</dd></div>
+      </dl>
+    </aside>
+  </section>
+</BaseLayout>

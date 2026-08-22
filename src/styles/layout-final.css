@@ -1,0 +1,31 @@
+.hero {
+  grid-template-columns: minmax(0, 42fr) minmax(0, 58fr);
+}
+
+.instruments {
+  grid-template-columns: minmax(0, 34fr) minmax(0, 66fr);
+}
+
+.method-band {
+  grid-template-columns: minmax(0, 48fr) minmax(0, 52fr);
+}
+
+.legacy-band {
+  grid-template-columns: minmax(0, 40fr) minmax(0, 60fr);
+}
+
+@media (min-width: 761px) {
+  .hero-copy h1 {
+    font-size: clamp(4.4rem, 5vw, 5.6rem);
+    letter-spacing: -.025em;
+  }
+}
+
+@media (max-width: 1050px) {
+  .hero,
+  .instruments,
+  .method-band,
+  .legacy-band {
+    grid-template-columns: 1fr;
+  }
+}

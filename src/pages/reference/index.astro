@@ -1,0 +1,22 @@
+---
+import ResourceIndex from "../../components/ResourceIndex.astro";
+import { referencePages } from "../../data/content";
+
+const entries = referencePages.map((page) => ({
+  title: page.title,
+  description: page.description,
+  href: `/reference/${page.slug}`,
+  meta: `${page.eyebrow} · checked 22 Aug 2026`,
+  status: "READ",
+}));
+---
+<ResourceIndex
+  title="Technical reference"
+  pageTitle="HTTP and crawler reference — AnalyseSpider"
+  description="Primary-source technical references for HTTP status codes, crawler user agents, and robots directives."
+  intro="Definitions and checklists for labels that are often over-interpreted in audits. Protocol meaning, platform guidance, and diagnostic inference stay separate."
+  canonicalPath="/reference"
+  index="50"
+  entries={entries}
+  note="Reference pages cite current primary documentation and show their review date. They clarify a result; they do not replace the source standard."
+/>
