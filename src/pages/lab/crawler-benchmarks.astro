@@ -1,35 +1,28 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import PageLead from "../../components/PageLead.astro";
+import { robotsFixtureResults } from "../../lib/robots";
+const allPassed = robotsFixtureResults.every((fixture) => fixture.passed);
 ---
-<BaseLayout title="Crawler benchmark protocol — AnalyseSpider" description="Predefined fixtures, expected observations, security gates, and publication rules for future crawler benchmark runs." canonicalPath="/lab/crawler-benchmarks">
-  <PageLead title="Benchmarks need fixtures, not vibes." intro="The lab publishes the test contract before results. No crawler score is claimed until a reproducible run and raw evidence exist." />
+<BaseLayout title="Crawler access fixture results — AnalyseSpider" description="Versioned RFC 9309 robots.txt fixtures with exact inputs, expected decisions, actual local parser outcomes, and publication boundaries." canonicalPath="/lab/crawler-benchmarks">
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><span aria-current="page">Crawler access fixtures</span></nav>
+  <PageLead title="Crawler evidence starts with executable fixtures." intro="Seven versioned robots-rule cases run through the same local evaluator as the public tool. Expected and actual decisions stay visible; no external crawler leaderboard is implied." index="42" />
+  <div class="article-meta" aria-label="Fixture details"><span>Fixture set REP-2026-08-22.1</span><span>RFC 9309 model</span><span>{robotsFixtureResults.length} cases</span><span>Build verified</span><strong>{allPassed ? "ALL PASS" : "FAILURES PRESENT"}</strong></div>
   <section class="content-grid">
     <div class="prose" style="max-width:none">
-      <h2>Candidate fixture matrix</h2>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Fixture</th><th>Signal under test</th><th>Expected observation</th><th>Current state</th></tr></thead>
-          <tbody>
-            <tr><td>R-01</td><td>single 301</td><td>one hop, stable Location, final 200</td><td class="status">PROTOCOL ONLY</td></tr>
-            <tr><td>R-02</td><td>redirect loop</td><td>bounded stop with loop evidence</td><td class="status">PROTOCOL ONLY</td></tr>
-            <tr><td>C-01</td><td>canonical conflict</td><td>header and HTML signals reported separately</td><td class="status">PROTOCOL ONLY</td></tr>
-            <tr><td>X-01</td><td>X-Robots-Tag</td><td>header directive preserved with response hop</td><td class="status">PROTOCOL ONLY</td></tr>
-            <tr><td>D-01</td><td>DNS change</td><td>resolved addresses checked before every hop</td><td class="status">SECURITY GATE</td></tr>
-            <tr><td>S-01</td><td>private redirect</td><td>blocked before request</td><td class="status">SECURITY GATE</td></tr>
-          </tbody>
-        </table>
-      </div>
+      <h2>Executed result matrix</h2>
+      <div class="table-wrap"><table><thead><tr><th>Fixture</th><th>Rule job</th><th>Token and target</th><th>Expected</th><th>Actual</th></tr></thead><tbody>{robotsFixtureResults.map((fixture) => (<tr><td><code>{fixture.id}</code></td><td>{fixture.name}</td><td><code>{fixture.token}</code><br /><code>{fixture.target}</code></td><td>{fixture.expected ? "ALLOW" : "DISALLOW"}</td><td class:list={["status", fixture.passed ? "restore" : "retire"]}>{fixture.actual ? "ALLOW" : "DISALLOW"} · {fixture.passed ? "PASS" : "FAIL"}</td></tr>))}</tbody></table></div>
 
-      <h2>Required result object</h2>
-      <p>A valid benchmark run must preserve observation time, requested URL, response status, relevant headers, redirect hops, resolution time, test identity, tool version, fixture version, errors, and stop reason. A screenshot without raw evidence is not a benchmark.</p>
+      <h2>Inspect the exact fixtures</h2>
+      {robotsFixtureResults.map((fixture) => (<details><summary><code>{fixture.id}</code> — {fixture.name}</summary><pre>{fixture.robots}</pre><p><strong>Decision trace:</strong> {fixture.decision.reason}</p></details>))}
 
-      <h2>Why there is no leaderboard yet</h2>
-      <p>No public crawler run has passed the network-safety and operating gates for this site. Publishing vendor or crawler rankings now would invent evidence. The first release therefore exposes the fixture and reporting contract only.</p>
+      <h2>What this evidence can support</h2>
+      <p>The fixtures verify deterministic group selection, exact-token fallback, repeated-group merging, longest-match precedence, equal-specificity Allow ties, wildcard and end-anchor handling, query matching, and the no-applicable-group default in the current implementation.</p>
+      <p>They do not verify a live robots.txt response, redirects, content type, caching, network failures, crawler identity, vendor extensions, or whether a crawler obeys the file. Those require a separately dated external observation.</p>
+
+      <h2>Reproduction contract</h2>
+      <ol><li>Use fixture set <code>REP-2026-08-22.1</code> from the versioned source.</li><li>Run the repository build and QA; every expected decision must equal the actual result.</li><li>Repeat one case in the <a href="/tools/robots-rule-tester">public Robots.txt Rule Tester</a>.</li><li>Record tool version, input, product token, target, timestamp, output, and any parser warning.</li></ol>
     </div>
-    <aside class="side-note">
-      <h3>Publication gate</h3>
-      <p>At least three repeatable runs, a dated environment, raw outputs, documented failures, and a named reviewer are required before a result is described as a benchmark.</p>
-    </aside>
+    <aside class="side-note"><h3>Evidence status</h3><p><strong>{allPassed ? "VERIFIED LOCAL FIXTURES" : "FIXTURE FAILURE"}</strong></p><p>No vendor ranking, live crawler run, or hidden provider behavior is claimed.</p><p><a href="/guides/test-robots-txt-rules">Read the testing workflow</a>.</p></aside>
   </section>
 </BaseLayout>

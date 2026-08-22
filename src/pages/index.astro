@@ -4,7 +4,7 @@ import ArrowIcon from "../components/ArrowIcon.astro";
 import ToolBoundary from "../components/ToolBoundary.astro";
 import HomeLibrary from "../components/HomeLibrary.astro";
 ---
-<BaseLayout title="AnalyseSpider — Inspect web evidence locally" description="Browser-local tools and evidence-led guides for access logs, HTTP responses, crawler signals, and IP address properties." canonicalPath="/">
+<BaseLayout title="AnalyseSpider — Inspect web evidence locally" description="Browser-local tools and evidence-led guides for access logs, HTTP responses, robots.txt rules, crawler signals, and IP address properties." canonicalPath="/">
   <section class="hero">
     <div class="hero-copy">
       <div class="evidence-line" aria-hidden="true"></div>
@@ -59,7 +59,7 @@ import HomeLibrary from "../components/HomeLibrary.astro";
   <section class="instruments" aria-labelledby="instruments-heading">
     <div class="instruments-heading">
       <span class="section-index">21</span>
-      <h2 id="instruments-heading">Three instruments. One evidence trail.</h2>
+      <h2 id="instruments-heading">Four instruments. One evidence trail.</h2>
     </div>
     <div class="instrument-list">
       <a class="instrument" href="/tools/log-file-inspector">
@@ -74,8 +74,14 @@ import HomeLibrary from "../components/HomeLibrary.astro";
         <p>Paste HTTP headers and HTML. Read status, redirects, canonical signals, robots directives, and unknowns.</p>
         <span class="text-link">Open tool <ArrowIcon /></span>
       </a>
-      <a class="instrument" href="/tools/ip-location">
+      <a class="instrument" href="/tools/robots-rule-tester">
         <span class="section-index">03</span>
+        <h3>Robots.txt Rule Tester</h3>
+        <p>Test one product token and URL against RFC 9309 group and longest-match rules without fetching a site.</p>
+        <span class="text-link">Open tool <ArrowIcon /></span>
+      </a>
+      <a class="instrument" href="/tools/ip-location">
+        <span class="section-index">04</span>
         <h3>IP Address Check</h3>
         <p>Classify address syntax and range locally—without pretending an IP identifies a person or precise place.</p>
         <span class="text-link">Open tool <ArrowIcon /></span>

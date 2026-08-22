@@ -6,11 +6,13 @@ const dist = new URL("../dist/", import.meta.url);
 const distDir = fileURLToPath(dist);
 const origin = "https://analysespider.com";
 const { canonicalRoutes: routes, sitemapRoutes } = await import(new URL("../src/data/routes.ts", import.meta.url));
+const { robotsFixtureResults } = await import(new URL("../src/lib/robots.ts", import.meta.url));
 const editorialRoutes = new Set([
   "/guides/log-file-analysis",
   "/guides/crawler-log-analysis",
   "/guides/http-response-debugging",
   "/guides/redirect-chain-analysis",
+  "/guides/test-robots-txt-rules",
   "/blog/how-to-find-search-bots-in-server-logs",
   "/blog/what-a-301-response-does-not-prove",
   "/blog/private-data-in-access-logs",
@@ -19,14 +21,14 @@ const editorialRoutes = new Set([
   "/reference/robots-directives",
 ]);
 const collectionRoutes = new Set(["/tools", "/guides", "/blog", "/reference", "/for"]);
-const toolRoutes = new Set(["/tools/log-file-inspector", "/tools/url-inspector", "/tools/ip-location"]);
+const toolRoutes = new Set(["/tools/log-file-inspector", "/tools/url-inspector", "/tools/robots-rule-tester", "/tools/ip-location"]);
 
 const failures = [];
 const pass = (condition, message) => {
   if (!condition) failures.push(message);
 };
 
-pass(routes.length >= 35, `route inventory unexpectedly small: ${routes.length}`);
+pass(routes.length >= 37, `route inventory unexpectedly small: ${routes.length}`);
 pass(new Set(routes).size === routes.length, "duplicate canonical routes in central route registry");
 pass(new Set(sitemapRoutes).size === sitemapRoutes.length, "duplicate sitemap routes in central route registry");
 pass(routes.length === sitemapRoutes.length && routes.every((route) => sitemapRoutes.includes(route)), "all current canonical 200 routes must be sitemap eligible");
@@ -184,6 +186,23 @@ pass((notFound.match(/<h1(?:\s|>)/g) ?? []).length === 1, "404 page must contain
 
 pass(!config.headers.some((rule) => rule.headers?.some((header) => header.key.toLowerCase() === "x-robots-tag" && header.value.toLowerCase().includes("noindex"))), "global X-Robots-Tag noindex must be absent at launch");
 pass(!config.redirects.some((rule) => rule.source === "/(.*)" || rule.source.includes(":path*")), "catch-all redirects are forbidden");
+const csp = config.headers.flatMap((rule) => rule.headers ?? []).find((header) => header.key.toLowerCase() === "content-security-policy")?.value ?? "";
+for (const directive of ["default-src 'self'", "frame-ancestors 'none'", "object-src 'none'", "base-uri 'self'"]) {
+  pass(csp.includes(directive), "CSP missing required directive: " + directive);
+}
+
+const benchmark = await readFile(await findOutput("/lab/crawler-benchmarks"), "utf8");
+for (const fixture of robotsFixtureResults) {
+  pass(fixture.passed, "robots fixture failed: " + fixture.id);
+  pass(benchmark.includes(fixture.id), "benchmark page missing fixture: " + fixture.id);
+}
+
+const actionMatrix = await readFile(new URL("../docs/seo/page-action-matrix.md", import.meta.url), "utf8");
+for (const route of routes) pass(actionMatrix.includes(String.fromCharCode(96) + route + String.fromCharCode(96)), "page-action matrix missing " + route);
+for (const state of ["Verified", "Supported", "Hypothesis", "Experiment", "Rejected"]) {
+  const evidenceRegister = await readFile(new URL("../docs/seo/evidence-register.md", import.meta.url), "utf8");
+  pass(evidenceRegister.includes(state), "evidence register missing state: " + state);
+}
 
 await walk(distDir);
 const existingRoutes = new Set(routes);

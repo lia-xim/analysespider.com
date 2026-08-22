@@ -1,0 +1,30 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageLead from "../../components/PageLead.astro";
+---
+<BaseLayout
+  title="How to test robots.txt rules with evidence — AnalyseSpider"
+  description="A reproducible workflow for checking robots.txt status, group selection, URL matching, crawler-specific behavior, and the limits of a local rule decision."
+  canonicalPath="/guides/test-robots-txt-rules"
+  pageType="article"
+  publishedTime="2026-08-22"
+  modifiedTime="2026-08-22"
+>
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/guides">Guides</a><span aria-hidden="true">/</span><span aria-current="page">Test robots.txt rules</span></nav>
+  <PageLead title="Test robots.txt rules in evidence order" intro="A parser result is one layer of proof. Capture delivery, select the right crawler group, test the exact target, and keep crawl access separate from indexing." index="35" />
+  <div class="article-meta" aria-label="Publication details"><span>Guide 05</span><span>Published 22 Aug 2026</span><span>Updated 22 Aug 2026</span><span>7 min read</span><strong>PUBLIC · INDEXABLE</strong></div>
+
+  <div class="article-shell">
+    <article class="article-prose">
+      <div class="takeaway"><span>Decision rule</span><p>A rule match is valid only for the observed robots.txt representation, the named product token, and the exact path and query tested.</p></div>
+      <section aria-labelledby="robots-delivery"><span class="section-index">01</span><h2 id="robots-delivery">Capture delivery before parsing</h2><p>Request the lowercase <code>/robots.txt</code> URL on the exact scheme and host the crawler uses. Preserve the status, redirect chain, final content type, response body, observation time, and request identity. A pasted file cannot establish any of those delivery facts.</p><p>RFC 9309 treats successful access, 4xx unavailability, 5xx or network unreachability, and redirect chains differently. A syntactically perfect body attached to the wrong status is not equivalent to a successfully delivered robots.txt file.</p></section>
+      <section aria-labelledby="robots-group"><span class="section-index">02</span><h2 id="robots-group">Select one product token</h2><p>Use the product token declared by the crawler operator, not an arbitrary full user-agent string. Exact matching is case-insensitive. When the same exact token appears in more than one group, combine those rules. Use the wildcard group only when no exact-token group exists.</p><p>A declared token still does not authenticate a request. If crawler identity matters, follow the operator's documented IP or DNS verification method separately.</p></section>
+      <section aria-labelledby="robots-path"><span class="section-index">03</span><h2 id="robots-path">Test the exact path and query</h2><p>Match from the first octet of the path. The most specific matching rule wins; specificity is measured by matched octets. When equally specific Allow and Disallow rules conflict, Allow should win. Wildcards and the terminal dollar sign change the match and should remain visible in the evidence.</p><p>Test the production URL, not a shortened example. Case, percent encoding, query parameters, and a trailing slash can change the result.</p></section>
+      <section aria-labelledby="robots-boundary"><span class="section-index">04</span><h2 id="robots-boundary">Keep crawl, index, and security decisions separate</h2><p>robots.txt asks conforming crawlers not to request matching resources. It is not authentication, and a disallowed URL may still be discovered or represented in search from external links. Use access controls for confidential content and an appropriate indexing control when the job is exclusion from search.</p><p>Record the local rule decision as <strong>supported</strong> until delivery and crawler-specific behavior are verified. The <a href="/tools/robots-rule-tester">Robots.txt Rule Tester</a> produces that bounded local decision; the <a href="/lab/crawler-benchmarks">fixture register</a> shows the exact cases exercised by the implementation.</p></section>
+    </article>
+    <aside class="article-aside" aria-label="Guide context"><div><span class="aside-label">Primary job</span><p>Turn one robots.txt access question into a reproducible diagnostic record.</p></div><div><span class="aside-label">Boundary</span><p>No live file, crawler, Search Console property, or index state is inspected by this guide.</p></div></aside>
+  </div>
+
+  <section class="source-section" aria-labelledby="robots-sources"><header><span class="section-index">90</span><h2 id="robots-sources">Primary sources</h2><p>Checked 22 August 2026.</p></header><ol class="source-list"><li><span>01</span><div><a href="https://www.rfc-editor.org/rfc/rfc9309.html" rel="noreferrer">RFC 9309 — Robots Exclusion Protocol</a><p>Normative group, matching, access-result, caching, and parser-limit behavior.</p></div></li><li><span>02</span><div><a href="https://developers.google.com/search/docs/crawling-indexing/robots/intro" rel="noreferrer">Google Search Central — Introduction to robots.txt</a><p>Current Google guidance on crawl control, indexing limits, and security boundaries.</p></div></li></ol></section>
+  <section class="related-section" aria-labelledby="robots-related"><header><span class="section-index">99</span><h2 id="robots-related">Continue the trace</h2></header><div class="related-grid"><a href="/tools/robots-rule-tester"><span class="section-index">01</span><h3>Test one rule set</h3><p>Run the RFC-style parser locally.</p><span class="text-link">Open tool</span></a><a href="/reference/robots-directives"><span class="section-index">02</span><h3>Read page directives</h3><p>Keep robots.txt apart from meta robots and X-Robots-Tag.</p><span class="text-link">Open reference</span></a><a href="/lab/crawler-benchmarks"><span class="section-index">03</span><h3>Inspect fixtures</h3><p>See versioned inputs and expected decisions.</p><span class="text-link">Open lab evidence</span></a></div></section>
+</BaseLayout>

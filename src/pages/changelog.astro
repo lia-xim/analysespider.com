@@ -16,6 +16,19 @@ import ArrowIcon from "../components/ArrowIcon.astro";
   />
   <section class="change-log" aria-label="Changelog entries">
     <article>
+      <div class="change-date"><time datetime="2026-08-22">22 AUG 2026</time><span>EVIDENCE RELEASE</span></div>
+      <div>
+        <h2>Robots rule testing and executed fixtures</h2>
+        <p>Added a browser-local RFC 9309 rule tester, a reproducible testing guide, and seven versioned fixtures whose expected decisions run during build verification.</p>
+        <ul>
+          <li>The tool performs no network request and does not claim crawler-vendor parity.</li>
+          <li>The benchmark page now publishes actual local fixture outcomes instead of a protocol-only placeholder.</li>
+          <li>The repository records one primary job for every indexable canonical URL.</li>
+        </ul>
+        <a class="text-link" href="/tools/robots-rule-tester">Open the robots tester <ArrowIcon /></a>
+      </div>
+    </article>
+    <article>
       <div class="change-date"><time datetime="2026-08-22">22 AUG 2026</time><span>PUBLIC LAUNCH</span></div>
       <div>
         <h2>Canonical pages released for indexing</h2>

@@ -10,17 +10,23 @@ const entries = [
     meta: `${guide.eyebrow} · ${guide.readingMinutes} min`,
   })),
   {
+    title: "Test robots.txt rules in evidence order",
+    description: "Check delivery, product-token groups, exact path matching, and crawl-versus-indexing boundaries with a reproducible local workflow.",
+    href: "/guides/test-robots-txt-rules",
+    meta: "Guide 05 · RFC 9309",
+  },
+  {
     title: "IP geolocation data: limits and safe use",
     description: "Understand what an IP-location result can estimate, what it cannot establish, and which decisions need stronger evidence.",
     href: "/guides/ip-geolocation-data",
-    meta: "Guide 05 · data limits",
+    meta: "Guide 06 · data limits",
   },
 ];
 ---
 <ResourceIndex
   title="Diagnostic guides"
   pageTitle="Web diagnostics guides — AnalyseSpider"
-  description="Evidence-led guides for server log analysis, crawler verification, HTTP response debugging, redirects, and IP data limits."
+  description="Evidence-led guides for server logs, crawler verification, HTTP responses, redirects, robots.txt rules, and IP data limits."
   intro="Stable workflows for inspecting the evidence you already have. Each guide states what the source can support, what remains unknown, and which check should come next."
   canonicalPath="/guides"
   index="30"

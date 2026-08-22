@@ -1,0 +1,154 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ToolBoundary from "../../components/ToolBoundary.astro";
+---
+<BaseLayout
+  title="Robots.txt Rule Tester — AnalyseSpider"
+  description="Test one robots.txt product token and URL against RFC 9309 group selection, longest-match, Allow, Disallow, wildcard, and end-anchor rules locally."
+  canonicalPath="/tools/robots-rule-tester"
+  bodyClass="tool-page"
+>
+  <section class="tool-shell">
+    <aside class="tool-sidebar">
+      <h1>Robots.txt Rule Tester</h1>
+      <p>Paste a robots.txt file, name one crawler product token, and test one URL or path without fetching a site.</p>
+      <button class="button sidebar-action" id="load-robots-sample" type="button">Load sample</button>
+      <div class="sidebar-meta">
+        <strong>RULE MODEL</strong><br />
+        RFC 9309 groups<br />
+        Exact product token<br />
+        Longest path match<br />
+        Allow wins equal tie
+      </div>
+    </aside>
+
+    <div class="tool-main">
+      <ToolBoundary />
+      <section class="workspace" aria-labelledby="robots-input-heading">
+        <div class="workspace-toolbar"><span class="active">1. TEST INPUT</span><span>RFC 9309</span><span>NO FETCH</span></div>
+        <div class="workspace-content">
+          <h2 id="robots-input-heading" class="visually-hidden">Robots rule input</h2>
+          <div class="input-grid">
+            <div>
+              <label for="robots-input">robots.txt content</label>
+              <textarea id="robots-input" spellcheck="false" placeholder="User-agent: *&#10;Disallow: /private/&#10;Allow: /private/preview/"></textarea>
+              <p class="field-help">Input is capped at 500 KiB and stays in this browser tab.</p>
+            </div>
+            <div class="or-divider" aria-hidden="true">+</div>
+            <div>
+              <label for="product-token">Crawler product token</label>
+              <input id="product-token" value="ExampleBot" autocomplete="off" spellcheck="false" />
+              <label for="target-url">URL or path to test</label>
+              <input id="target-url" value="/private/preview/report" autocomplete="off" spellcheck="false" />
+              <p class="field-help">Use the product token from the robots.txt user-agent line, not a full browser user-agent string.</p>
+            </div>
+          </div>
+          <div class="workspace-actions">
+            <button class="button" id="clear-robots" type="button">Clear</button>
+            <button class="button primary" id="test-robots" type="button">Test rule locally</button>
+          </div>
+          <p class="form-status" id="robots-status" role="status" aria-live="polite">Waiting for a robots.txt rule set.</p>
+        </div>
+      </section>
+
+      <section class="result-surface" id="robots-results" hidden aria-labelledby="robots-result-heading">
+        <div class="workspace-toolbar"><span class="active">2. DECISION TRACE</span><span id="robots-observation-time"></span></div>
+        <h2 id="robots-result-heading" class="visually-hidden">Robots rule decision</h2>
+        <div class="diagnostic-output">
+          <section class="evidence-group">
+            <h3>DECISION</h3>
+            <div><p id="robots-decision"></p><p id="robots-reason"></p></div>
+          </section>
+          <section class="evidence-group">
+            <h3>MATCHED EVIDENCE</h3>
+            <div><ul id="robots-evidence"></ul></div>
+          </section>
+          <section class="evidence-group">
+            <h3>BOUNDARIES</h3>
+            <div><ul id="robots-boundaries"></ul></div>
+          </section>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <section class="content-grid">
+    <div class="prose">
+      <h2>What this result establishes</h2>
+      <p>The tester applies RFC 9309 group selection and path matching to the exact text, token, and target you entered. It combines repeated exact-token groups, falls back to the wildcard group only when no exact group exists, and chooses the most specific matching path rule.</p>
+      <p>It does not fetch <code>/robots.txt</code>, verify its HTTP status or content type, model a crawler vendor's undocumented behavior, or prove that a crawler will obey the file. Robots rules are crawl controls, not authentication and not a reliable way to keep a URL out of search results.</p>
+      <p><a href="/guides/test-robots-txt-rules">Follow the complete robots.txt testing workflow</a> or inspect the <a href="/lab/crawler-benchmarks">versioned fixture evidence</a>.</p>
+    </div>
+    <aside class="side-note">
+      <h3>Primary references</h3>
+      <p><a href="https://www.rfc-editor.org/rfc/rfc9309.html" rel="noreferrer">RFC 9309</a> defines groups, matching, special characters, access results, and limits.</p>
+      <p><a href="https://developers.google.com/search/docs/crawling-indexing/robots/intro" rel="noreferrer">Google Search Central</a> explains why robots.txt is not an indexing or security control.</p>
+    </aside>
+  </section>
+
+  <script>
+    import { evaluateRobots } from "../../lib/robots";
+    const source = document.querySelector<HTMLTextAreaElement>("#robots-input")!;
+    const token = document.querySelector<HTMLInputElement>("#product-token")!;
+    const target = document.querySelector<HTMLInputElement>("#target-url")!;
+    const status = document.querySelector<HTMLElement>("#robots-status")!;
+    const results = document.querySelector<HTMLElement>("#robots-results")!;
+    const sample = `User-agent: *
+Disallow: /private/
+
+User-agent: ExampleBot
+Disallow: /private/
+Allow: /private/preview/`;
+
+    const setList = (selector: string, items: string[]) => {
+      const list = document.querySelector<HTMLUListElement>(selector)!;
+      list.replaceChildren(...items.map((item) => {
+        const entry = document.createElement("li");
+        entry.textContent = item;
+        return entry;
+      }));
+    };
+
+    const test = () => {
+      try {
+        const decision = evaluateRobots(source.value, token.value, target.value);
+        document.querySelector("#robots-decision")!.textContent = decision.allowed ? "ALLOWED" : "DISALLOWED";
+        document.querySelector("#robots-reason")!.textContent = decision.reason;
+        setList("#robots-evidence", [
+          `Target compared: ${decision.target}`,
+          `Applicable agents: ${decision.matchedAgents.join(", ") || "none"}`,
+          decision.selectedRule ? `Selected rule: ${decision.selectedRule.type}: ${decision.selectedRule.pattern}` : "Selected rule: none",
+          `${decision.matchedRules.length} rule(s) in the applicable group set.`,
+        ]);
+        setList("#robots-boundaries", [
+          "No robots.txt URL or crawler was contacted.",
+          "HTTP status, redirects, encoding headers, caching, and vendor-specific extensions remain unverified.",
+          ...(decision.warnings.length ? decision.warnings : ["No parser warnings for this input."]),
+        ]);
+        document.querySelector("#robots-observation-time")!.textContent = `TESTED ${new Date().toISOString()}`;
+        results.hidden = false;
+        status.textContent = `Local rule decision: ${decision.allowed ? "allowed" : "disallowed"}.`;
+      } catch (error) {
+        results.hidden = true;
+        status.textContent = error instanceof Error ? error.message : "The input could not be evaluated.";
+      }
+    };
+
+    document.querySelector("#load-robots-sample")!.addEventListener("click", () => {
+      source.value = sample;
+      token.value = "ExampleBot";
+      target.value = "/private/preview/report";
+      status.textContent = "Sample rules loaded locally.";
+      source.focus();
+    });
+    document.querySelector("#clear-robots")!.addEventListener("click", () => {
+      source.value = "";
+      token.value = "ExampleBot";
+      target.value = "/";
+      results.hidden = true;
+      status.textContent = "Local input cleared.";
+      source.focus();
+    });
+    document.querySelector("#test-robots")!.addEventListener("click", test);
+  </script>
+</BaseLayout>

@@ -604,8 +604,9 @@ export const referencePages: ContentPage[] = [
     sources: [sources.googleRobots],
     related: [
       { label: "Response debugging", href: "/guides/http-response-debugging", note: "Capture headers and HTML in evidence order." },
-      { label: "Response Inspector", href: "/tools/url-inspector", note: "Paste both surfaces and compare observed directives." },
-      { label: "Method and privacy", href: "/methodology-and-privacy", note: "See what the current inspector does and does not fetch." },
+      { label: "Robots.txt Rule Tester", href: "/tools/robots-rule-tester", note: "Evaluate one product token and path locally under the RFC rule model." },
+      { label: "Response Inspector", href: "/tools/url-inspector", note: "Compare page-level header and HTML directives." },
+      { label: "Robots testing guide", href: "/guides/test-robots-txt-rules", note: "Capture delivery, matching, and decision boundaries in order." },
     ],
   },
 ];
