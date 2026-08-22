@@ -32,6 +32,20 @@ const {
 } = Astro.props;
 const canonical = new URL(canonicalPath, site.origin).toString();
 const robots = site.indexing === "public" ? "index, follow" : "noindex, nofollow, noarchive";
+const operatorEntity = {
+  "@type": "Person",
+  "@id": site.operator.schemaId,
+  name: site.operator.name,
+  email: site.operator.email,
+  telephone: site.operator.telephone,
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: site.operator.streetAddress,
+    postalCode: site.operator.postalCode,
+    addressLocality: site.operator.addressLocality,
+    addressCountry: site.operator.addressCountry,
+  },
+};
 const structuredData = pageType === "article"
   ? {
       "@context": "https://schema.org",
@@ -42,7 +56,7 @@ const structuredData = pageType === "article"
       dateModified: modifiedTime ?? publishedTime,
       mainEntityOfPage: canonical,
       author: { "@type": "Organization", name: site.name, url: site.origin },
-      publisher: { "@type": "Organization", name: site.name, url: site.origin },
+      publisher: operatorEntity,
     }
   : {
       "@context": "https://schema.org",
@@ -50,7 +64,7 @@ const structuredData = pageType === "article"
       name: title,
       description,
       url: canonical,
-      isPartOf: { "@type": "WebSite", name: site.name, url: site.origin },
+      isPartOf: { "@type": "WebSite", name: site.name, url: site.origin, publisher: operatorEntity },
     };
 ---
 <!doctype html>

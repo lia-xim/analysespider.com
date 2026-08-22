@@ -11,6 +11,16 @@ export interface SiteConfig {
   purpose: string;
   ownershipDisclosure: string;
   operatorDisclosure: string;
+  operator: {
+    schemaId: string;
+    name: string;
+    streetAddress: string;
+    postalCode: string;
+    addressLocality: string;
+    addressCountry: "DE";
+    email: string;
+    telephone: string;
+  };
   boundary: string;
   indexing: IndexingState;
   analytics: { enabled: false; provider: null };
@@ -30,7 +40,17 @@ export const site: SiteConfig = {
   description: "Browser-local tools for inspecting access logs, HTTP response signals, directives, and IP address properties with visible limits.",
   purpose: "Inspect crawler and response evidence without uploading logs or enabling unrestricted server-side fetching.",
   ownershipDisclosure: "AnalyseSpider is a new implementation under new ownership in 2026. Former software, users, downloads, customers, and operator identity did not transfer.",
-  operatorDisclosure: "Operated by the team behind Contextter. Common ownership is disclosed; this site is not independent corroboration.",
+  operatorDisclosure: "Owned and legally operated by Matthias Ramahi. Product work is associated with Contextter; common ownership is disclosed and this site is not independent corroboration.",
+  operator: {
+    schemaId: "https://analysespider.com/#operator",
+    name: "Matthias Ramahi",
+    streetAddress: "Kempener Straße 44",
+    postalCode: "40699",
+    addressLocality: "Erkrath",
+    addressCountry: "DE",
+    email: "info@matthiasramahi.de",
+    telephone: "+49 176 42 44 98 58",
+  },
   boundary: "No former software, users, downloads, or operator identity transferred. No unrestricted server-side fetching or active security scanning.",
   primaryProject: {
     id: "contextter",

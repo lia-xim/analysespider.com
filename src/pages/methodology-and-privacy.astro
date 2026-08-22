@@ -14,6 +14,10 @@ import PageLead from "../components/PageLead.astro";
       <p>The Log File Inspector, Response Inspector, and IP Address Check run in your browser. The current implementation does not upload the submitted text or file, request an entered URL, query a geolocation provider, or store a result.</p>
       <p>Browser-local processing reduces exposure, but it does not make unsafe input harmless. Do not paste confidential logs into any device or browser you do not control. Results remain an interpretation of the supplied material—not proof of live server behavior.</p>
 
+      <h2>Hosting boundary</h2>
+      <p>The public site is delivered by Vercel. Loading a page necessarily sends connection and request metadata—such as the IP address, requested path, timestamp, user agent, and response status—to that hosting layer for delivery, reliability, and security. This is separate from the browser-local tool input, which the current application does not transmit.</p>
+      <p>There is no current analytics script, advertising tag, account system, or contact form. The complete controller, hosting, email, external-link, retention, and data-subject information is published in the <a href="/privacy">privacy notice</a>.</p>
+
       <h2>Result vocabulary</h2>
       <h3>Observed</h3>
       <p>A literal value found in the supplied evidence: a status line, header, canonical tag, address syntax, log request, user agent, or response code.</p>
@@ -43,7 +47,8 @@ import PageLead from "../components/PageLead.astro";
         <div><dt>Upload</dt><dd>None in current tools</dd></div>
         <div><dt>URL fetch</dt><dd>Disabled</dd></div>
         <div><dt>Analytics</dt><dd>Disabled</dd></div>
-        <div><dt>Retention</dt><dd>No application storage</dd></div>
+        <div><dt>App storage</dt><dd>None for tool input/results</dd></div>
+        <div><dt>Hosting</dt><dd>Vercel request layer</dd></div>
         <div><dt>Updated</dt><dd>2026-08-22</dd></div>
       </dl>
     </aside>

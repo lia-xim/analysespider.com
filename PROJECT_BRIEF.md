@@ -48,6 +48,7 @@ The site is assigned to Contextter. Common ownership must be disclosed near any 
 - Production responses verified for canonical host, redirects, `404`, and `410` actions.
 - Noindex metadata, `X-Robots-Tag`, robots policy, and sitemap changed together.
 - Public privacy, methodology, corrections, new-ownership, and abuse-contact routes verified.
+- Verified operator details and a technology-specific legal notice are publicly reachable from every page.
 - All high-value legacy targets reviewed against current backlink and archive evidence.
 - Core tools pass desktop/mobile browser QA, accessibility checks, and broken-link checks.
 - Portfolio implementation state updated with reproducible evidence.

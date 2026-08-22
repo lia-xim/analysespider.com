@@ -25,7 +25,7 @@ const pass = (condition, message) => {
   if (!condition) failures.push(message);
 };
 
-pass(routes.length >= 30, `route inventory unexpectedly small: ${routes.length}`);
+pass(routes.length >= 35, `route inventory unexpectedly small: ${routes.length}`);
 pass(new Set(routes).size === routes.length, "duplicate canonical routes in src/data/routes.ts");
 
 const findOutput = async (pathname) => {
@@ -67,6 +67,7 @@ for (const route of routes) {
   const canonical = new URL(route, origin).href;
   pass(html.includes(`rel="canonical" href="${canonical}"`), `canonical mismatch for ${route}`);
   pass(html.includes('content="noindex, nofollow, noarchive"'), `noindex missing for ${route}`);
+  pass(html.includes('"@context":"https://schema.org"'), `structured data missing for ${route}`);
   pass(!html.includes("Project setup"), `placeholder copy remains on ${route}`);
   pass(!/lorem ipsum|as an ai language model/i.test(html), `draft filler remains on ${route}`);
 
@@ -92,6 +93,32 @@ for (const route of routes) {
     pass(html.includes("Primary sources"), `primary sources section missing for ${route}`);
   }
 }
+
+const imprint = await readFile(await findOutput("/impressum"), "utf8");
+for (const required of [
+  "Matthias Ramahi",
+  "Kempener Straße 44",
+  "40699 Erkrath",
+  "info@matthiasramahi.de",
+  "+49 176 42 44 98 58",
+  "§ 5 DDG",
+  "New ownership",
+]) {
+  pass(imprint.includes(required), `impressum missing verified operator or ownership fact: ${required}`);
+}
+
+const privacy = await readFile(await findOutput("/privacy"), "utf8");
+for (const required of [
+  "Vercel",
+  "browser-local",
+  "No analytics",
+  "No application cookies",
+  "No contact form",
+  "data-subject",
+]) {
+  pass(privacy.includes(required), `privacy notice missing technology fact: ${required}`);
+}
+pass(!/Google Analytics|Umami/i.test(privacy), "privacy notice must not claim an inactive analytics provider");
 
 const robots = await readFile(new URL("robots.txt", dist), "utf8");
 const sitemap = await readFile(new URL("sitemap.xml", dist), "utf8");
@@ -139,7 +166,7 @@ for (const file of htmlFiles) {
   const html = await readFile(file, "utf8");
   const hrefs = [...html.matchAll(/href="([^"]+)"/g)].map((match) => match[1]);
   for (const href of hrefs) {
-    if (/^(https?:|mailto:|#)/.test(href)) continue;
+    if (/^(https?:|mailto:|tel:|#)/.test(href)) continue;
     if (href.startsWith("/_astro/")) continue;
     const pathname = new URL(href, origin).pathname.replace(/\/$/, "") || "/";
     pass(existingRoutes.has(pathname) || redirects.has(pathname), `broken internal link ${href} in ${relative(distDir, file)}`);
@@ -155,4 +182,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`QA passed: ${routes.length} canonical routes, unique metadata, article evidence, legacy actions, noindex, sitemap, redirects, broken links, and forbidden claims.`);
+console.log(`QA passed: ${routes.length} canonical routes, unique metadata, legal/privacy facts, structured data, legacy actions, noindex, sitemap, redirects, broken links, and forbidden claims.`);

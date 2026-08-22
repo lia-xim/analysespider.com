@@ -29,6 +29,8 @@ export const canonicalRoutes = [
   "/new-ownership",
   "/legacy",
   "/contact",
+  "/impressum",
+  "/privacy",
   "/analysespider.html",
   "/ip2country/country_code.html",
   "/geo-targeting/geo-targeting.html",

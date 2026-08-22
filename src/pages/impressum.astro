@@ -1,0 +1,46 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageLead from "../components/PageLead.astro";
+import { site } from "../data/site";
+---
+<BaseLayout
+  title="Legal notice (Impressum) — AnalyseSpider"
+  description="Verified operator details, editorial responsibility, and new-ownership boundary for the current AnalyseSpider website."
+  canonicalPath="/impressum"
+>
+  <PageLead
+    title="Legal notice / Impressum"
+    intro="Operator identification for the current AnalyseSpider website, with a clear boundary from the domain's former software and operator."
+  />
+  <section class="content-grid">
+    <article class="prose">
+      <h2>Information under § 5 DDG</h2>
+      <p><strong>{site.operator.name}</strong><br />{site.operator.streetAddress}<br />{site.operator.postalCode} {site.operator.addressLocality}<br />Germany</p>
+      <p><strong>Email:</strong> <a href={`mailto:${site.operator.email}`}>{site.operator.email}</a><br /><strong>Telephone:</strong> <a href="tel:+4917642449858">{site.operator.telephone}</a></p>
+
+      <h2>Editorial responsibility</h2>
+      <p>Responsible for editorial content under § 18 (2) MStV: {site.operator.name}, address as stated above.</p>
+
+      <h2>Site-specific contact</h2>
+      <p>Corrections, rights concerns, security reports, and legacy URL questions can also be sent to <a href={`mailto:${site.contactEmail}?subject=AnalyseSpider`}>{site.contactEmail}</a>. This operational route does not replace the legal operator contact above.</p>
+
+      <h2>New ownership and rights boundary</h2>
+      <p>AnalyseSpider is an acquired domain under new ownership and a newly implemented website in 2026. The current operator did not acquire or assume the former operator's identity, company, authorship, customers, users, accounts, orders, warranties, software, source code, databases, documentation, media, logos, or downloads.</p>
+      <p>Historical references are used only to document broad topic and URL intent. Current pages, tools, explanations, and visual assets are new work unless a source is explicitly identified. See <a href="/new-ownership">New ownership</a> and the <a href="/legacy">legacy URL map</a> for the operational boundary.</p>
+
+      <h2>External links and content</h2>
+      <p>External sources are linked to support technical definitions or methodology. Their operators are responsible for their content. If a linked page or current AnalyseSpider page raises a legal or rights concern, use the contact routes above so it can be reviewed.</p>
+    </article>
+    <aside class="side-note">
+      <h3>Current website</h3>
+      <dl class="facts-list">
+        <div><dt>Domain</dt><dd>{site.domain}</dd></div>
+        <div><dt>Operator</dt><dd>{site.operator.name}</dd></div>
+        <div><dt>Location</dt><dd>{site.operator.addressLocality}, Germany</dd></div>
+        <div><dt>Ownership</dt><dd>New implementation, 2026</dd></div>
+        <div><dt>Former assets</dt><dd>Not transferred</dd></div>
+        <div><dt>Indexing</dt><dd>Pre-launch noindex</dd></div>
+      </dl>
+    </aside>
+  </section>
+</BaseLayout>

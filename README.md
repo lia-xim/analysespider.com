@@ -40,7 +40,7 @@ corepack pnpm verify
 
 Vercel project: `analysespider-com`.
 
-Do not deploy, connect DNS, or remove indexing blocks without separate authorization. The current `vercel.json`, page metadata, and `robots.txt` intentionally block indexing.
+The apex domain and `www` are attached to the Vercel project through Vercel DNS. Do not remove indexing blocks without separate authorization. The current `vercel.json`, page metadata, and `robots.txt` intentionally block indexing.
 
 ## Rights
 
