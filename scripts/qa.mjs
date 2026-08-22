@@ -7,6 +7,7 @@ const distDir = fileURLToPath(dist);
 const origin = "https://analysespider.com";
 const { canonicalRoutes: routes, sitemapRoutes } = await import(new URL("../src/data/routes.ts", import.meta.url));
 const { robotsFixtureResults } = await import(new URL("../src/lib/robots.ts", import.meta.url));
+const { redirectChainFixtureResults } = await import(new URL("../src/lib/redirect-chain.ts", import.meta.url));
 const editorialRoutes = new Set([
   "/guides/log-file-analysis",
   "/guides/crawler-log-analysis",
@@ -19,16 +20,17 @@ const editorialRoutes = new Set([
   "/reference/http-status-codes",
   "/reference/crawler-user-agents",
   "/reference/robots-directives",
+  "/reference/crawler-verification-methods",
 ]);
 const collectionRoutes = new Set(["/tools", "/guides", "/blog", "/reference", "/for"]);
-const toolRoutes = new Set(["/tools/log-file-inspector", "/tools/url-inspector", "/tools/robots-rule-tester", "/tools/ip-location"]);
+const toolRoutes = new Set(["/tools/log-file-inspector", "/tools/url-inspector", "/tools/redirect-chain", "/tools/robots-rule-tester", "/tools/ip-location"]);
 
 const failures = [];
 const pass = (condition, message) => {
   if (!condition) failures.push(message);
 };
 
-pass(routes.length >= 37, `route inventory unexpectedly small: ${routes.length}`);
+pass(routes.length >= 39, `route inventory unexpectedly small: ${routes.length}`);
 pass(new Set(routes).size === routes.length, "duplicate canonical routes in central route registry");
 pass(new Set(sitemapRoutes).size === sitemapRoutes.length, "duplicate sitemap routes in central route registry");
 pass(routes.length === sitemapRoutes.length && routes.every((route) => sitemapRoutes.includes(route)), "all current canonical 200 routes must be sitemap eligible");
@@ -195,6 +197,9 @@ const benchmark = await readFile(await findOutput("/lab/crawler-benchmarks"), "u
 for (const fixture of robotsFixtureResults) {
   pass(fixture.passed, "robots fixture failed: " + fixture.id);
   pass(benchmark.includes(fixture.id), "benchmark page missing fixture: " + fixture.id);
+}
+for (const fixture of redirectChainFixtureResults) {
+  pass(fixture.passed, "redirect-chain fixture failed: " + fixture.id);
 }
 
 const actionMatrix = await readFile(new URL("../docs/seo/page-action-matrix.md", import.meta.url), "utf8");

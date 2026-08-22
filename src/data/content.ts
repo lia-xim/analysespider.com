@@ -300,6 +300,7 @@ export const guides: ContentPage[] = [
     ],
     sources: [sources.rfc9110, sources.googleRedirects],
     related: [
+      { label: "Redirect Chain Builder", href: "/tools/redirect-chain", note: "Resolve pasted Location fields and expose chain gaps or loops locally." },
       { label: "What a 301 does not prove", href: "/blog/what-a-301-response-does-not-prove", note: "A short note on the gaps after the status is observed." },
       { label: "Response Inspector", href: "/tools/url-inspector", note: "Inspect pasted response evidence without a network fetch." },
       { label: "Legacy URL map", href: "/legacy", note: "See why redirects, restorations, and retirements are decided per URL." },
@@ -607,6 +608,67 @@ export const referencePages: ContentPage[] = [
       { label: "Robots.txt Rule Tester", href: "/tools/robots-rule-tester", note: "Evaluate one product token and path locally under the RFC rule model." },
       { label: "Response Inspector", href: "/tools/url-inspector", note: "Compare page-level header and HTML directives." },
       { label: "Robots testing guide", href: "/guides/test-robots-txt-rules", note: "Capture delivery, matching, and decision boundaries in order." },
+    ],
+  },
+  {
+    slug: "crawler-verification-methods",
+    kind: "reference",
+    eyebrow: "Reference 04",
+    title: "Crawler verification methods compared",
+    description: "Compare user-agent matching, published IP ranges, forward-confirmed reverse DNS, operator tools, and request-log evidence without overstating identity.",
+    intro: "Crawler verification is not one lookup. The useful method depends on whether you are filtering a sample, attributing load, blocking traffic, or making a public claim about who requested a URL.",
+    takeaway: "Use the user agent to find candidates; use operator-published IP or DNS evidence when identity changes the decision; keep the original log row and verification time together.",
+    publishedAt: "2026-08-22",
+    updatedAt: "2026-08-22",
+    readingMinutes: 8,
+    sections: [
+      {
+        heading: "Comparison matrix",
+        paragraphs: ["No single field establishes every part of crawler identity. Treat the methods as evidence layers with different failure modes."],
+        bullets: [
+          "User-agent token — fast candidate filter; supplied by the requester and easy to spoof; never sufficient for a genuine-bot claim.",
+          "Published IP range — strong when the operator publishes current machine-readable ranges; requires fresh range data and exact address matching.",
+          "Forward-confirmed reverse DNS — strong for operators that document hostname masks; requires both reverse lookup and a forward lookup back to the original IP.",
+          "Operator verification tool — useful operator verdict for a specific address, such as Verify Bingbot; preserve the lookup time and input address.",
+          "Access-log row — primary evidence that your logging layer observed a request, status, path, address, and user agent; it does not by itself verify the requester.",
+          "Search Console crawl or indexing report — platform evidence about Google processing; it is not a row-level identity check for arbitrary server traffic.",
+        ],
+      },
+      {
+        heading: "Choose the minimum evidence for the decision",
+        paragraphs: [
+          "Exploratory log analysis can label user-agent matches as claimed crawlers. Blocking an address, attributing an outage, publishing crawler shares, or escalating abuse needs stronger verification because the consequence is larger.",
+          "Google documents both published range files and a manual DNS workflow. Bing publishes crawler strings, warns that they can be spoofed, and provides an address-verification tool. Apply the method documented by the claimed operator rather than one universal hostname rule.",
+        ],
+        steps: [
+          "Preserve the original request time, IP, full user agent, method, path, and status.",
+          "Extract a product token only as a candidate label.",
+          "Select the operator's current verification method and record its source version or lookup time.",
+          "Store the result as claimed, verified, failed verification, or unknown; do not collapse unknown into human.",
+          "Repeat verification when the decision is delayed because IP allocations and documentation can change.",
+        ],
+      },
+      {
+        heading: "Failure modes worth preserving",
+        bullets: [
+          "Reverse DNS name matches an expected suffix, but forward resolution does not return the original address.",
+          "The address was checked against an old local copy of a published range file.",
+          "A proxy or load balancer log recorded its own address because the trusted client-IP chain was not configured.",
+          "A generic token grouped product fetchers, preview bots, advertising crawlers, and search crawlers into one family.",
+          "An operator tool returned no verdict or was unavailable, and the report silently promoted the request to verified.",
+        ],
+        callout: "A failed or unavailable verification is not proof that a request is malicious. Record the evidence state and choose a proportionate next check.",
+      },
+      {
+        heading: "A portable evidence record",
+        paragraphs: ["A useful handoff keeps observation and verification separate: observed request fields, claimed product token, verification method, source URL or range version, verification timestamp, result, and unresolved proxy or retention caveats."],
+      },
+    ],
+    sources: [sources.googleCrawlers, sources.googleVerify, sources.bingCrawlers, sources.bingVerify, sources.apacheLogs],
+    related: [
+      { label: "Log File Inspector", href: "/tools/log-file-inspector", note: "Build a bounded candidate inventory and export aggregate evidence locally." },
+      { label: "Crawler log analysis", href: "/guides/crawler-log-analysis", note: "Apply the verification threshold to an operational workflow." },
+      { label: "Crawler user-agent reference", href: "/reference/crawler-user-agents", note: "Keep string, token, address, identity state, and evidence separate." },
     ],
   },
 ];

@@ -52,6 +52,7 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
 
       <section class="result-surface" id="log-results" aria-labelledby="results-heading" hidden>
         <h2 id="results-heading" class="visually-hidden">Log analysis results</h2>
+        <div class="workspace-toolbar"><span class="active">2. AGGREGATE EVIDENCE</span><button class="button" id="export-log-evidence" type="button" disabled>Export evidence JSON</button></div>
         <div class="result-tabs" role="tablist" aria-label="Result views">
           <button id="tab-overview" role="tab" aria-selected="true" aria-controls="panel-overview">Overview</button>
           <button id="tab-crawlers" role="tab" aria-selected="false" aria-controls="panel-crawlers">Crawlers</button>
@@ -125,6 +126,8 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
     const file = document.querySelector<HTMLInputElement>("#log-file")!;
     const statusMessage = document.querySelector<HTMLElement>("#log-status")!;
     const results = document.querySelector<HTMLElement>("#log-results")!;
+    const exportButton = document.querySelector<HTMLButtonElement>("#export-log-evidence")!;
+    let latestEvidence: Record<string, unknown> | null = null;
 
     const crawlerRules: Array<[RegExp, string]> = [
       [/googlebot/i, "Googlebot"],
@@ -187,6 +190,25 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
       const statusCounts = countBy(parsed, (line) => String(line.status));
       const pathCounts = countBy(parsed, (line) => line.path);
       const share = (count: number) => total ? `${((count / total) * 100).toFixed(1)}%` : "0.0%";
+      latestEvidence = {
+        schemaVersion: 1,
+        tool: "AnalyseSpider Log File Inspector",
+        observedAt: new Date().toISOString(),
+        boundary: "browser-local aggregate; raw log lines excluded",
+        input: { acceptedLines: total, rejectedLines: rejected, cappedAtLineLimit: capped },
+        summary: {
+          requests: total,
+          uniqueIps: new Set(parsed.map((line) => line.ip)).size,
+          claimedCrawlerRequests: bots.length,
+          clientErrors: parsed.filter((line) => line.status >= 400 && line.status < 500).length,
+          serverErrors: parsed.filter((line) => line.status >= 500).length,
+        },
+        crawlerClaims: crawlerCounts.map(([name, count]) => ({ name, requests: count })),
+        statusDistribution: statusCounts.map(([code, count]) => ({ status: Number(code), requests: count })),
+        topPaths: pathCounts.slice(0, 100).map(([path, count]) => ({ path, requests: count })),
+        unknowns: ["Crawler identity was not verified.", "Indexing, rendering, origin ownership, and root cause were not checked."],
+      };
+      exportButton.disabled = false;
 
       document.querySelector("#metric-requests")!.textContent = total.toLocaleString();
       document.querySelector("#metric-ips")!.textContent = new Set(parsed.map((line) => line.ip)).size.toLocaleString();
@@ -252,6 +274,8 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
       input.value = "";
       file.value = "";
       results.hidden = true;
+      latestEvidence = null;
+      exportButton.disabled = true;
       statusMessage.textContent = "Local input cleared.";
       input.focus();
     });
@@ -268,6 +292,18 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
       }
       input.value = await selected.text();
       statusMessage.textContent = `${selected.name} loaded into this browser. Nothing was uploaded.`;
+    });
+
+    exportButton.addEventListener("click", () => {
+      if (!latestEvidence) return;
+      const blob = new Blob([JSON.stringify(latestEvidence, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `analysespider-log-evidence-${new Date().toISOString().slice(0, 10)}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+      statusMessage.textContent = "Aggregate evidence exported locally. Raw log lines were excluded.";
     });
 
     document.querySelectorAll<HTMLButtonElement>('[role="tab"]').forEach((tab) => {

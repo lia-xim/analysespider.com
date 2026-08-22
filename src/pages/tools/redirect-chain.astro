@@ -1,0 +1,173 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ToolBoundary from "../../components/ToolBoundary.astro";
+---
+<BaseLayout
+  title="Redirect Chain Builder — AnalyseSpider"
+  description="Build and validate a redirect chain from pasted HTTP response blocks, locally in your browser."
+  canonicalPath="/tools/redirect-chain"
+  bodyClass="tool-page"
+>
+  <section class="tool-shell">
+    <aside class="tool-sidebar">
+      <h1>Redirect Chain Builder</h1>
+      <p>Paste observed hops in request order. The tool resolves relative Location fields and exposes gaps or loops.</p>
+      <button class="button sidebar-action" id="load-chain-sample" type="button">Load sample</button>
+      <div class="sidebar-meta">
+        <strong>BOUNDARY</strong><br />
+        12 response blocks maximum<br />
+        64 KB input maximum<br />
+        HTTP(S) URLs only<br />
+        No request · no storage
+      </div>
+    </aside>
+
+    <div class="tool-main">
+      <ToolBoundary />
+      <section class="workspace" aria-labelledby="chain-input-heading">
+        <div class="workspace-toolbar"><span class="active">1. PASTE HOPS</span><span>BLANK LINE BETWEEN BLOCKS</span></div>
+        <div class="workspace-content">
+          <h2 id="chain-input-heading" class="visually-hidden">Redirect chain input</h2>
+          <label for="chain-input">Request URL and response headers for each hop</label>
+          <textarea id="chain-input" spellcheck="false" placeholder="URL: https://example.com/old&#10;HTTP/2 301&#10;Location: /new&#10;&#10;URL: https://example.com/new&#10;HTTP/2 200"></textarea>
+          <p class="field-help">Each block needs one <code>URL:</code> line and one HTTP status line. Add Location, Cache-Control, or X-Robots-Tag when observed.</p>
+          <div class="workspace-actions">
+            <button class="button" id="clear-chain" type="button">Clear</button>
+            <button class="button primary" id="analyse-chain" type="button">Build chain locally</button>
+          </div>
+          <p class="form-status" id="chain-status" role="status" aria-live="polite">Waiting for pasted response blocks.</p>
+        </div>
+      </section>
+
+      <section class="result-surface" id="chain-results" hidden aria-labelledby="chain-results-heading">
+        <div class="workspace-toolbar"><span class="active">2. CHAIN EVIDENCE</span><span id="chain-outcome"></span></div>
+        <h2 id="chain-results-heading" class="visually-hidden">Redirect chain result</h2>
+        <div class="result-panel">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Hop</th><th>Request URL</th><th>Status</th><th>Location</th><th>Resolved destination</th></tr></thead>
+              <tbody id="chain-rows"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="diagnostic-output">
+          <section class="evidence-group"><h3>FINDINGS</h3><div><ul id="chain-findings"></ul></div></section>
+          <section class="evidence-group"><h3>UNKNOWN</h3><div><ul id="chain-unknowns"></ul></div></section>
+        </div>
+        <div class="workspace-actions result-panel">
+          <button class="button" id="copy-chain-evidence" type="button">Copy evidence JSON</button>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <section class="content-grid">
+    <div class="prose">
+      <h2>One chain, several separate decisions</h2>
+      <p>A status and Location field establish an observed hop. They do not establish that the destination is indexable, canonical, live in every request context, or equivalent to the source page.</p>
+      <p>Capture each response before following it. Then inspect the final representation with the <a href="/tools/url-inspector">Response Inspector</a> and apply the <a href="/guides/redirect-chain-analysis">redirect-chain workflow</a> before changing routing rules.</p>
+      <h3>What the JSON contains</h3>
+      <p>The export contains normalised request URLs, statuses, Location fields, resolved destinations, findings, unknowns, and an analysis timestamp. It excludes the raw pasted block.</p>
+    </div>
+    <aside class="side-note">
+      <h3>Collection example</h3>
+      <p><code>curl -sS -D - -o /dev/null https://example.com/old</code></p>
+      <p>Repeat against the observed Location target. Avoid <code>-L</code> when you need each intermediate response separately.</p>
+    </aside>
+  </section>
+
+  <script>
+    import { MAX_REDIRECT_INPUT_BYTES, parseRedirectChain } from "../../lib/redirect-chain";
+
+    const input = document.querySelector<HTMLTextAreaElement>("#chain-input")!;
+    const status = document.querySelector<HTMLElement>("#chain-status")!;
+    const results = document.querySelector<HTMLElement>("#chain-results")!;
+    const copyButton = document.querySelector<HTMLButtonElement>("#copy-chain-evidence")!;
+    let latestEvidence: Record<string, unknown> | null = null;
+    const sample = `URL: https://example.com/legacy?ref=a
+HTTP/2 301
+Location: /moved?ref=a
+Cache-Control: public, max-age=300
+
+URL: https://example.com/moved?ref=a
+HTTP/2 308
+Location: https://www.example.com/final?ref=a
+
+URL: https://www.example.com/final?ref=a
+HTTP/2 200
+X-Robots-Tag: index, follow`;
+
+    const fillList = (selector: string, values: string[]) => {
+      const list = document.querySelector<HTMLUListElement>(selector)!;
+      list.replaceChildren();
+      values.forEach((value) => {
+        const item = document.createElement("li");
+        item.textContent = value;
+        list.append(item);
+      });
+    };
+
+    const analyse = () => {
+      const raw = input.value.trim();
+      if (!raw) {
+        results.hidden = true;
+        status.textContent = "Paste at least one response block before building the chain.";
+        return;
+      }
+      if (new Blob([raw]).size > MAX_REDIRECT_INPUT_BYTES) {
+        results.hidden = true;
+        status.textContent = "Input rejected: the 64 KB local limit was exceeded.";
+        return;
+      }
+      const result = parseRedirectChain(raw);
+      if (!result.hops.length) {
+        results.hidden = true;
+        status.textContent = "No complete URL plus HTTP status block was recognised.";
+        return;
+      }
+
+      const rows = document.querySelector<HTMLTableSectionElement>("#chain-rows")!;
+      rows.replaceChildren();
+      result.hops.forEach((hop, index) => {
+        const row = document.createElement("tr");
+        [String(index + 1), hop.requestUrl, String(hop.status), hop.location ?? "—", hop.resolvedLocation ?? "—"].forEach((value) => {
+          const cell = document.createElement("td");
+          cell.textContent = value;
+          row.append(cell);
+        });
+        rows.append(row);
+      });
+
+      fillList("#chain-findings", result.findings.length ? result.findings : ["No chain inconsistency was detected in the pasted blocks."]);
+      fillList("#chain-unknowns", result.unknowns);
+      const observedAt = new Date().toISOString();
+      latestEvidence = { schemaVersion: 1, tool: "AnalyseSpider Redirect Chain Builder", observedAt, boundary: "pasted evidence; no network request", ...result };
+      document.querySelector("#chain-outcome")!.textContent = `${result.outcome.toUpperCase()} · ${result.hops.length} HOPS`;
+      results.hidden = false;
+      status.textContent = `Built ${result.hops.length} observed hop${result.hops.length === 1 ? "" : "s"} locally${result.rejectedBlocks ? `; ${result.rejectedBlocks} invalid block${result.rejectedBlocks === 1 ? "" : "s"} skipped` : ""}.`;
+    };
+
+    document.querySelector("#load-chain-sample")!.addEventListener("click", () => {
+      input.value = sample;
+      status.textContent = "Sample chain loaded locally.";
+      input.focus();
+    });
+    document.querySelector("#clear-chain")!.addEventListener("click", () => {
+      input.value = "";
+      latestEvidence = null;
+      results.hidden = true;
+      status.textContent = "Local input and result cleared.";
+      input.focus();
+    });
+    document.querySelector("#analyse-chain")!.addEventListener("click", analyse);
+    copyButton.addEventListener("click", async () => {
+      if (!latestEvidence) return;
+      try {
+        await navigator.clipboard.writeText(JSON.stringify(latestEvidence, null, 2));
+        status.textContent = "Structured chain evidence copied to the clipboard.";
+      } catch {
+        status.textContent = "Clipboard access was unavailable. Select and copy from your browser developer tools instead.";
+      }
+    });
+  </script>
+</BaseLayout>

@@ -8,6 +8,7 @@ Every indexable canonical URL has one primary user job. “Keep” does not mean
 | `/tools` | Choose a browser-local inspector by input type. | Tools | Verified | Strengthen with the robots tester. |
 | `/tools/log-file-inspector` | Parse a bounded access-log sample locally. | Crawl logs | Verified | Keep. |
 | `/tools/url-inspector` | Interpret pasted HTTP headers and HTML directives. | HTTP response | Verified | Keep; do not turn into unrestricted fetching. |
+| `/tools/redirect-chain` | Assemble observed redirect hops and expose gaps, loops, and the final captured state. | HTTP response | Experiment | Replace interim alias with bounded local tool and measure completed chains. |
 | `/tools/ip-location` | Classify IP syntax and selected address ranges locally. | IP and geo | Verified | Keep accuracy boundary. |
 | `/tools/robots-rule-tester` | Decide one RFC-style robots rule match locally. | Robots access | Experiment | Build and measure completed tests. |
 | `/guides` | Choose a stable diagnostic workflow. | Guides | Verified | Strengthen with robots workflow. |
@@ -24,6 +25,7 @@ Every indexable canonical URL has one primary user job. “Keep” does not mean
 | `/reference` | Choose a primary-source technical definition. | Reference | Verified | Keep. |
 | `/reference/http-status-codes` | Separate HTTP semantics from SEO inference. | HTTP response | Supported | Keep. |
 | `/reference/crawler-user-agents` | Classify crawler strings and identity evidence. | Crawl logs | Supported | Keep. |
+| `/reference/crawler-verification-methods` | Choose proportionate crawler identity evidence for an operational decision. | Crawl logs | Supported | Publish one methods comparison; avoid vendor fan-out. |
 | `/reference/robots-directives` | Distinguish meta and response-header robots controls. | Robots access | Supported | Strengthen links to robots tester and guide. |
 | `/for` | Route an evidence owner to the relevant workflow. | Audience | Supported | Keep; no new variants without a new decision job. |
 | `/for/technical-seos` | Prepare a reproducible technical SEO handoff. | Audience | Supported | Keep. |
@@ -51,7 +53,7 @@ Every indexable canonical URL has one primary user job. “Keep” does not mean
 
 ## Cannibalisation decisions
 
-- Response Inspector evaluates pasted response and HTML evidence; Robots Rule Tester evaluates group and path matching. Do not merge these different inputs and decisions.
+- Response Inspector evaluates one pasted response and HTML; Redirect Chain Builder validates ordered hops; Robots Rule Tester evaluates group and path matching. Do not merge these different inputs and decisions.
 - Robots directives reference defines page-level controls; the new robots guide covers the workflow; the tester performs one bounded decision. Keep the roles distinct and cross-link them.
 - Log guide, crawler guide, and crawler lab note remain distinct: general inventory, identity verification, and a compact candidate-set field note.
 - Audience pages stay capped at three because each maps to a different owner decision. Further persona or keyword variants are rejected without evidence.

@@ -13,6 +13,7 @@ const staticRoutes = [
   "/tools",
   "/tools/log-file-inspector",
   "/tools/url-inspector",
+  "/tools/redirect-chain",
   "/tools/robots-rule-tester",
   "/tools/ip-location",
   "/guides",

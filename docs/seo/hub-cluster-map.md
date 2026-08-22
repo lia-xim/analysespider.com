@@ -8,13 +8,13 @@ Each cluster must remain useful without Contextter and must link tools, workflow
 - Tool: `/tools/log-file-inspector`
 - Guides: `/guides/log-file-analysis`, `/guides/crawler-log-analysis`
 - Lab note: `/blog/how-to-find-search-bots-in-server-logs`, `/blog/private-data-in-access-logs`
-- Reference: `/reference/crawler-user-agents`
+- Reference: `/reference/crawler-user-agents`, `/reference/crawler-verification-methods`
 - Legacy successor: `/analysespider.html`
 
 ## 2. HTTP response and redirect evidence
 
 - Hub: `/tools` and `/guides`
-- Tool: `/tools/url-inspector`
+- Tools: `/tools/url-inspector`, `/tools/redirect-chain`
 - Guides: `/guides/http-response-debugging`, `/guides/redirect-chain-analysis`
 - Lab note: `/blog/what-a-301-response-does-not-prove`
 - Reference: `/reference/http-status-codes`, `/reference/robots-directives`
