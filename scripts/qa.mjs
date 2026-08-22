@@ -174,6 +174,14 @@ for (const record of manifest.records) {
 for (const excludedPath of ["/404", ...redirects.keys(), ...rewrites.keys()]) {
   pass(!sitemap.includes(`<loc>${new URL(excludedPath, origin).href}</loc>`), `non-indexable status or redirect path leaked into sitemap: ${excludedPath}`);
 }
+
+const notFound = await readFile(new URL("404.html", dist), "utf8");
+pass(notFound.includes('content="noindex, follow"'), "404 page must declare noindex, follow");
+pass(!notFound.includes('rel="canonical"'), "404 page must not emit a misleading canonical");
+pass(!notFound.includes('property="og:url"'), "404 page must not emit an Open Graph URL");
+pass(!notFound.includes('type="application/ld+json"'), "404 page must not emit indexable structured data");
+pass((notFound.match(/<h1(?:\s|>)/g) ?? []).length === 1, "404 page must contain exactly one h1");
+
 pass(!config.headers.some((rule) => rule.headers?.some((header) => header.key.toLowerCase() === "x-robots-tag" && header.value.toLowerCase().includes("noindex"))), "global X-Robots-Tag noindex must be absent at launch");
 pass(!config.redirects.some((rule) => rule.source === "/(.*)" || rule.source.includes(":path*")), "catch-all redirects are forbidden");
 

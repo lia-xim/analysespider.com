@@ -19,6 +19,9 @@ interface Props {
   pageType?: "website" | "article";
   publishedTime?: string;
   modifiedTime?: string;
+  indexing?: "inherit" | "noindex";
+  includeCanonical?: boolean;
+  includeStructuredData?: boolean;
 }
 
 const {
@@ -29,9 +32,16 @@ const {
   pageType = "website",
   publishedTime,
   modifiedTime,
+  indexing = "inherit",
+  includeCanonical = true,
+  includeStructuredData = true,
 } = Astro.props;
 const canonical = new URL(canonicalPath, site.origin).toString();
-const robots = site.indexing === "public" ? "index, follow" : "noindex, nofollow, noarchive";
+const robots = indexing === "noindex"
+  ? "noindex, follow"
+  : site.indexing === "public"
+    ? "index, follow"
+    : "noindex, nofollow, noarchive";
 const operatorEntity = {
   "@type": "Person",
   "@id": site.operator.schemaId,
@@ -93,15 +103,15 @@ const structuredData = {
     <meta name="robots" content={robots} />
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="canonical" href={canonical} />
+    {includeCanonical && <link rel="canonical" href={canonical} />}
     <meta property="og:type" content={pageType} />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonical} />
+    {includeCanonical && <meta property="og:url" content={canonical} />}
     {pageType === "article" && publishedTime && <meta property="article:published_time" content={publishedTime} />}
     {pageType === "article" && modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
-    <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+    {includeStructuredData && <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />}
     <title>{title}</title>
   </head>
   <body class={bodyClass}>

@@ -2,7 +2,13 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ArrowIcon from "../components/ArrowIcon.astro";
 ---
-<BaseLayout title="Page not found — AnalyseSpider" description="The requested AnalyseSpider path was not found. Use the explicit legacy map or return to the diagnostics library." canonicalPath="/404">
+<BaseLayout
+  title="Page not found — AnalyseSpider"
+  description="The requested AnalyseSpider path was not found. Use the explicit legacy map or return to the diagnostics library."
+  indexing="noindex"
+  includeCanonical={false}
+  includeStructuredData={false}
+>
   <section class="not-found">
     <div>
       <p class="kicker">HTTP 404</p>
