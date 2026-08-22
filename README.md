@@ -10,7 +10,7 @@ The project continues the former domain's broad technical-utility theme, but not
 
 ## Current state
 
-The substantive site is under construction. It is assigned to Contextter in the canonical DomainPortfolio, with common ownership disclosed. It must remain `noindex, nofollow, noarchive` until an explicit launch decision and verified production evidence exist.
+The substantive site is publicly launched and indexable. It is assigned to Contextter in the canonical DomainPortfolio, with common ownership disclosed. The launch keeps the standalone user job, legal operator, privacy boundary, canonical host, rights limits, and explicit legacy URL decisions visible.
 
 ## Product boundaries
 
@@ -40,7 +40,7 @@ corepack pnpm verify
 
 Vercel project: `analysespider-com`.
 
-The apex domain and `www` are attached to the Vercel project through Vercel DNS. Do not remove indexing blocks without separate authorization. The current `vercel.json`, page metadata, and `robots.txt` intentionally block indexing.
+The apex domain is canonical. `www` is attached through an explicit Vercel DNS record and a permanent path-preserving domain redirect to the apex. The central route/content registry generates the sitemap from canonical indexable `200` pages. Production `robots.txt` allows crawling and references that sitemap.
 
 ## Rights
 

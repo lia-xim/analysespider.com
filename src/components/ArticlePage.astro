@@ -39,7 +39,7 @@ const article = page.kind !== "audience";
     <span>{article ? `Published ${formatDate(page.publishedAt)}` : "Audience route"}</span>
     <span>Updated {formatDate(page.updatedAt)}</span>
     <span>{page.readingMinutes} min read</span>
-    <strong>NOINDEX · PRE-LAUNCH</strong>
+    <strong>PUBLIC · INDEXABLE</strong>
   </div>
 
   <div class="article-shell">
@@ -76,7 +76,7 @@ const article = page.kind !== "audience";
       </div>
       <div>
         <span class="aside-label">Evidence state</span>
-        <p>Technical claims are tied to the primary documentation listed below. Product behavior is verified locally and remains pre-launch.</p>
+        <p>Technical claims are tied to the primary documentation listed below. Current tool behavior is verified against the browser-local implementation.</p>
       </div>
     </aside>
   </div>

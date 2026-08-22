@@ -1,7 +1,14 @@
 ---
 interface Props { compact?: boolean }
 const { compact = false } = Astro.props;
+const relatedByPath: Record<string, { href: string; label: string }> = {
+  "/tools/log-file-inspector": { href: "/guides/log-file-analysis", label: "Log analysis guide" },
+  "/tools/url-inspector": { href: "/guides/http-response-debugging", label: "Response debugging guide" },
+  "/tools/ip-location": { href: "/guides/ip-geolocation-data", label: "IP data limits guide" },
+};
+const related = relatedByPath[Astro.url.pathname];
 ---
 <div class:list={["tool-boundary", { compact }]} aria-label="Privacy boundary">
   <span>LOCAL ONLY</span><span aria-hidden="true">·</span><span>NO UPLOAD</span><span aria-hidden="true">·</span><span>NO NETWORK REQUEST</span>
+  {related && <><span aria-hidden="true">·</span><a class="text-link" href={related.href}>{related.label}</a></>}
 </div>

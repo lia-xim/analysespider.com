@@ -16,6 +16,19 @@ import ArrowIcon from "../components/ArrowIcon.astro";
   />
   <section class="change-log" aria-label="Changelog entries">
     <article>
+      <div class="change-date"><time datetime="2026-08-22">22 AUG 2026</time><span>PUBLIC LAUNCH</span></div>
+      <div>
+        <h2>Canonical pages released for indexing</h2>
+        <p>Removed the coordinated metadata, response-header, and robots blocking signals after the owner-approved minimum viable launch passed legal, legacy URL, sitemap, responsive, and production checks.</p>
+        <ul>
+          <li>The sitemap is generated from the canonical route and content registries and contains only indexable 200 pages.</li>
+          <li>The `www` host permanently preserves paths while redirecting to the canonical apex.</li>
+          <li>Tool, guide, reference, and article schema now describes the visible page role.</li>
+        </ul>
+        <a class="text-link" href="/sitemap.xml">Inspect the sitemap <ArrowIcon /></a>
+      </div>
+    </article>
+    <article>
       <div class="change-date"><time datetime="2026-08-22">22 AUG 2026</time><span>LEGAL</span></div>
       <div>
         <h2>Operator and privacy boundary published</h2>
@@ -34,9 +47,9 @@ import ArrowIcon from "../components/ArrowIcon.astro";
         <h2>Diagnostic library and responsive type hardening</h2>
         <p>Added dedicated Tools, Guides, Lab Notes, Reference, and audience hubs. Published four diagnostic guides, three primary-source reference pages, three dated lab notes, About, and this changelog.</p>
         <ul>
-          <li>Large headings now wrap inside their grid track instead of being clipped by fixed sidebar widths or no-wrap rules.</li>
+          <li>Large headings wrap inside their grid track instead of being clipped by fixed sidebar widths or no-wrap rules.</li>
           <li>Navigation, content rows, tables, source links, and technical strings have explicit narrow-screen behavior.</li>
-          <li>All new pages remain noindex while the site is under construction.</li>
+          <li>This release remained noindex until the later public-launch gate passed.</li>
         </ul>
         <a class="text-link" href="/guides">Inspect the guide library <ArrowIcon /></a>
       </div>

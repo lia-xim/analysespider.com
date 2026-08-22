@@ -1,27 +1,24 @@
-export const canonicalRoutes = [
+import { contentPages, type ContentKind } from "./content.ts";
+
+export interface RouteRecord {
+  path: string;
+  status: 200;
+  canonical: true;
+  indexable: true;
+  source: "static" | "content-registry";
+}
+
+const staticRoutes = [
   "/",
   "/tools",
   "/tools/log-file-inspector",
   "/tools/url-inspector",
   "/tools/ip-location",
   "/guides",
-  "/guides/log-file-analysis",
-  "/guides/crawler-log-analysis",
-  "/guides/http-response-debugging",
-  "/guides/redirect-chain-analysis",
   "/guides/ip-geolocation-data",
   "/blog",
-  "/blog/how-to-find-search-bots-in-server-logs",
-  "/blog/what-a-301-response-does-not-prove",
-  "/blog/private-data-in-access-logs",
   "/reference",
-  "/reference/http-status-codes",
-  "/reference/crawler-user-agents",
-  "/reference/robots-directives",
   "/for",
-  "/for/technical-seos",
-  "/for/web-developers",
-  "/for/site-owners",
   "/about",
   "/changelog",
   "/lab/crawler-benchmarks",
@@ -35,3 +32,29 @@ export const canonicalRoutes = [
   "/ip2country/country_code.html",
   "/geo-targeting/geo-targeting.html",
 ] as const;
+
+const rootByKind: Record<ContentKind, string> = {
+  guide: "/guides",
+  "lab-note": "/blog",
+  reference: "/reference",
+  audience: "/for",
+};
+
+export const routeRegistry: RouteRecord[] = [
+  ...staticRoutes.map((path) => ({ path, status: 200 as const, canonical: true as const, indexable: true as const, source: "static" as const })),
+  ...contentPages.map((page) => ({
+    path: `${rootByKind[page.kind]}/${page.slug}`,
+    status: 200 as const,
+    canonical: true as const,
+    indexable: true as const,
+    source: "content-registry" as const,
+  })),
+];
+
+export const canonicalRoutes = routeRegistry
+  .filter((route) => route.status === 200 && route.canonical)
+  .map((route) => route.path);
+
+export const sitemapRoutes = routeRegistry
+  .filter((route) => route.status === 200 && route.canonical && route.indexable)
+  .map((route) => route.path);

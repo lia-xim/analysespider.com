@@ -57,7 +57,7 @@ export const site: SiteConfig = {
     name: "Contextter",
     relationship: "Common operator and optional downstream workflow after a complete standalone result.",
   },
-  indexing: "blocked",
+  indexing: "public",
   analytics: { enabled: false, provider: null },
   githubUrl: "https://github.com/lia-xim/analysespider.com",
   contactEmail: "info@contextter.com",

@@ -1,8 +1,8 @@
 # AnalyseSpider project brief
 
-Version: 1.0
+Version: 1.1
 Decision date: 2026-08-22
-Launch state: pre-launch, noindex
+Launch state: public, indexable
 
 ## Job
 
@@ -42,13 +42,13 @@ The site is assigned to Contextter. Common ownership must be disclosed near any 
 - Review cadence: monthly functional/privacy review; quarterly methodology and source review.
 - Stop condition: do not launch a networked tool without a reviewed fetch boundary, named engineering owner, abuse monitoring, clean target sample, rate limits, redirect and DNS-rebinding controls, response-size caps, and a retention policy.
 
-## Launch gates
+## Launch proof
 
-- Explicit owner approval to launch and remove noindex.
-- Production responses verified for canonical host, redirects, `404`, and `410` actions.
-- Noindex metadata, `X-Robots-Tag`, robots policy, and sitemap changed together.
-- Public privacy, methodology, corrections, new-ownership, and abuse-contact routes verified.
-- Verified operator details and a technology-specific legal notice are publicly reachable from every page.
-- All high-value legacy targets reviewed against current backlink and archive evidence.
-- Core tools pass desktop/mobile browser QA, accessibility checks, and broken-link checks.
-- Portfolio implementation state updated with reproducible evidence.
+- Owner explicitly approved the public indexing launch on 2026-08-22.
+- Production responses must remain verified for the canonical host, permanent redirects, `404`, and `410` actions.
+- Meta robots, `X-Robots-Tag`, robots policy, and sitemap are released together.
+- Public privacy, methodology, corrections, new-ownership, and abuse-contact routes remain reachable.
+- Verified operator details and a technology-specific legal notice remain reachable from every page.
+- High-value legacy targets retain their explicit restore, redirect, or retirement actions.
+- Core tools must continue to pass desktop/mobile browser QA, accessibility-critical checks, and broken-link checks.
+- Material implementation and measurement changes must continue to be recorded in the canonical DomainPortfolio.

@@ -5,8 +5,7 @@ import { fileURLToPath } from "node:url";
 const dist = new URL("../dist/", import.meta.url);
 const distDir = fileURLToPath(dist);
 const origin = "https://analysespider.com";
-const routeSource = await readFile(new URL("../src/data/routes.ts", import.meta.url), "utf8");
-const routes = [...routeSource.matchAll(/^\s+"([^"]+)",$/gm)].map((match) => match[1]);
+const { canonicalRoutes: routes, sitemapRoutes } = await import(new URL("../src/data/routes.ts", import.meta.url));
 const editorialRoutes = new Set([
   "/guides/log-file-analysis",
   "/guides/crawler-log-analysis",
@@ -19,6 +18,8 @@ const editorialRoutes = new Set([
   "/reference/crawler-user-agents",
   "/reference/robots-directives",
 ]);
+const collectionRoutes = new Set(["/tools", "/guides", "/blog", "/reference", "/for"]);
+const toolRoutes = new Set(["/tools/log-file-inspector", "/tools/url-inspector", "/tools/ip-location"]);
 
 const failures = [];
 const pass = (condition, message) => {
@@ -26,7 +27,9 @@ const pass = (condition, message) => {
 };
 
 pass(routes.length >= 35, `route inventory unexpectedly small: ${routes.length}`);
-pass(new Set(routes).size === routes.length, "duplicate canonical routes in src/data/routes.ts");
+pass(new Set(routes).size === routes.length, "duplicate canonical routes in central route registry");
+pass(new Set(sitemapRoutes).size === sitemapRoutes.length, "duplicate sitemap routes in central route registry");
+pass(routes.length === sitemapRoutes.length && routes.every((route) => sitemapRoutes.includes(route)), "all current canonical 200 routes must be sitemap eligible");
 
 const findOutput = async (pathname) => {
   if (pathname === "/") return new URL("index.html", dist);
@@ -66,10 +69,13 @@ for (const route of routes) {
 
   const canonical = new URL(route, origin).href;
   pass(html.includes(`rel="canonical" href="${canonical}"`), `canonical mismatch for ${route}`);
-  pass(html.includes('content="noindex, nofollow, noarchive"'), `noindex missing for ${route}`);
+  pass(html.includes('content="index, follow"'), `index/follow meta missing for ${route}`);
+  pass(!html.includes("noindex, nofollow, noarchive"), `stale noindex remains on ${route}`);
   pass(html.includes('"@context":"https://schema.org"'), `structured data missing for ${route}`);
+  pass(html.includes('"@graph"'), `structured-data graph missing for ${route}`);
   pass(!html.includes("Project setup"), `placeholder copy remains on ${route}`);
   pass(!/lorem ipsum|as an ai language model/i.test(html), `draft filler remains on ${route}`);
+  pass(!html.includes('href="https://contextter.com'), `artificial Contextter link found on ${route}`);
 
   const h1Count = (html.match(/<h1(?:\s|>)/g) ?? []).length;
   pass(h1Count === 1, `expected exactly one h1 on ${route}, found ${h1Count}`);
@@ -89,8 +95,18 @@ for (const route of routes) {
 
   if (editorialRoutes.has(route)) {
     pass(html.includes('property="og:type" content="article"'), `article Open Graph type missing for ${route}`);
-    pass(html.includes('"@type":"Article"'), `Article structured data missing for ${route}`);
+    pass(html.includes('"@type":"TechArticle"'), `TechArticle structured data missing for ${route}`);
     pass(html.includes("Primary sources"), `primary sources section missing for ${route}`);
+  }
+  if (route.startsWith("/guides/") && route !== "/guides/ip-geolocation-data") {
+    pass(/href="\/tools\//.test(html), `guide must link to a relevant tool: ${route}`);
+  }
+  if (collectionRoutes.has(route)) {
+    pass(html.includes('"@type":"CollectionPage"'), `CollectionPage structured data missing for ${route}`);
+  }
+  if (toolRoutes.has(route)) {
+    pass(html.includes('"@type":"WebApplication"'), `WebApplication structured data missing for ${route}`);
+    pass(/href="\/guides\//.test(html), `tool must link to a relevant guide: ${route}`);
   }
 }
 
@@ -122,18 +138,20 @@ pass(!/Google Analytics|Umami/i.test(privacy), "privacy notice must not claim an
 
 const robots = await readFile(new URL("robots.txt", dist), "utf8");
 const sitemap = await readFile(new URL("sitemap.xml", dist), "utf8");
-pass(robots.includes("Disallow: /"), "robots.txt must block every route before launch");
+pass(robots.includes("Allow: /"), "robots.txt must allow crawling at launch");
+pass(!robots.includes("Disallow: /"), "robots.txt still blocks crawling at launch");
 pass(robots.includes(`Sitemap: ${origin}/sitemap.xml`), "robots.txt must reference the canonical sitemap");
-for (const route of routes) {
+for (const route of sitemapRoutes) {
   pass(sitemap.includes(`<loc>${new URL(route, origin).href}</loc>`), `sitemap missing ${route}`);
 }
-pass((sitemap.match(/<url>/g) ?? []).length === routes.length, "sitemap URL count must match canonical route inventory");
+pass((sitemap.match(/<url>/g) ?? []).length === sitemapRoutes.length, "sitemap URL count must match indexable canonical 200 route inventory");
 
 const manifest = JSON.parse(await readFile(new URL("../src/data/legacy-url-actions.json", import.meta.url), "utf8"));
 const config = JSON.parse(await readFile(new URL("../vercel.json", import.meta.url), "utf8"));
 const redirects = new Map(config.redirects.map((item) => [item.source, item]));
 const rewrites = new Map(config.rewrites.map((item) => [item.source, item]));
 
+pass(manifest.launchState === "public_indexable", `legacy launch state must be public_indexable, got ${manifest.launchState}`);
 for (const record of manifest.records) {
   if (record.action === "restore_200") {
     try {
@@ -153,7 +171,10 @@ for (const record of manifest.records) {
   }
 }
 
-pass(config.headers.some((rule) => rule.headers?.some((header) => header.key === "X-Robots-Tag" && header.value.includes("noindex"))), "global X-Robots-Tag noindex header missing");
+for (const excludedPath of ["/404", ...redirects.keys(), ...rewrites.keys()]) {
+  pass(!sitemap.includes(`<loc>${new URL(excludedPath, origin).href}</loc>`), `non-indexable status or redirect path leaked into sitemap: ${excludedPath}`);
+}
+pass(!config.headers.some((rule) => rule.headers?.some((header) => header.key.toLowerCase() === "x-robots-tag" && header.value.toLowerCase().includes("noindex"))), "global X-Robots-Tag noindex must be absent at launch");
 pass(!config.redirects.some((rule) => rule.source === "/(.*)" || rule.source.includes(":path*")), "catch-all redirects are forbidden");
 
 await walk(distDir);
@@ -182,4 +203,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`QA passed: ${routes.length} canonical routes, unique metadata, legal/privacy facts, structured data, legacy actions, noindex, sitemap, redirects, broken links, and forbidden claims.`);
+console.log(`QA passed: ${routes.length} canonical indexable 200 routes, unique metadata, legal/privacy facts, typed structured data, tool-guide links, launch robots, automatic sitemap, legacy actions, redirects, broken links, and forbidden claims.`);

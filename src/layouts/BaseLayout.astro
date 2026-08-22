@@ -46,26 +46,42 @@ const operatorEntity = {
     addressCountry: site.operator.addressCountry,
   },
 };
-const structuredData = pageType === "article"
-  ? {
-      "@context": "https://schema.org",
-      "@type": "Article",
-      headline: title.replace(/ — AnalyseSpider$/, ""),
-      description,
-      datePublished: publishedTime,
-      dateModified: modifiedTime ?? publishedTime,
-      mainEntityOfPage: canonical,
-      author: { "@type": "Organization", name: site.name, url: site.origin },
-      publisher: operatorEntity,
-    }
-  : {
-      "@context": "https://schema.org",
-      "@type": "WebPage",
-      name: title,
-      description,
-      url: canonical,
-      isPartOf: { "@type": "WebSite", name: site.name, url: site.origin, publisher: operatorEntity },
-    };
+const websiteEntity = {
+  "@type": "WebSite",
+  "@id": `${site.origin}/#website`,
+  name: site.name,
+  url: site.origin,
+  publisher: { "@id": site.operator.schemaId },
+};
+const collectionPaths = new Set(["/tools", "/guides", "/blog", "/reference", "/for"]);
+const schemaType = pageType === "article"
+  ? "TechArticle"
+  : canonicalPath.startsWith("/tools/")
+    ? "WebApplication"
+    : collectionPaths.has(canonicalPath)
+      ? "CollectionPage"
+      : "WebPage";
+const pageEntity = {
+  "@type": schemaType,
+  "@id": canonical,
+  name: title.replace(/ — AnalyseSpider$/, ""),
+  headline: pageType === "article" ? title.replace(/ — AnalyseSpider$/, "") : undefined,
+  description,
+  url: canonical,
+  mainEntityOfPage: pageType === "article" ? canonical : undefined,
+  datePublished: pageType === "article" ? publishedTime : undefined,
+  dateModified: pageType === "article" ? (modifiedTime ?? publishedTime) : undefined,
+  author: pageType === "article" ? { "@id": site.operator.schemaId } : undefined,
+  publisher: pageType === "article" ? { "@id": site.operator.schemaId } : undefined,
+  applicationCategory: schemaType === "WebApplication" ? "DeveloperApplication" : undefined,
+  operatingSystem: schemaType === "WebApplication" ? "Any" : undefined,
+  browserRequirements: schemaType === "WebApplication" ? "JavaScript enabled" : undefined,
+  isPartOf: { "@id": `${site.origin}/#website` },
+};
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [operatorEntity, websiteEntity, pageEntity],
+};
 ---
 <!doctype html>
 <html lang={site.language}>
