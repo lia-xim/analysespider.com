@@ -4,10 +4,9 @@ interface Props {
   intro: string;
   index?: string;
 }
-const { title, intro, index = "01" } = Astro.props;
+const { title, intro } = Astro.props;
 ---
 <header class="page-lead">
-  <div class="rail-number" aria-hidden="true">{index}</div>
   <div>
     <h1>{title}</h1>
     <p>{intro}</p>

@@ -1,4 +1,4 @@
-# Hub and cluster map — 2026-08-22
+# Hub and cluster map — 2026-08-23
 
 Each cluster must remain useful without Contextter and must link tools, workflow, reference, and proof where those assets actually exist.
 
@@ -45,5 +45,19 @@ Each cluster must remain useful without Contextter and must link tools, workflow
 - Hub: `/for`
 - `/for/technical-seos`, `/for/web-developers`, `/for/site-owners`
 - These pages route a real audience to existing evidence; they are not keyword variants and should not multiply without a new user job.
+
+## 7. Crawler comparison
+
+- English hub: `/crawlers`
+- German hub: `/de/crawler`
+- Identity detail: `/reference/crawler-user-agents`, `/reference/crawler-verification-methods`
+- Evidence boundary: `/lab/crawler-benchmarks`
+- Related AI-answer evidence and page-decision tools may be linked only in the comparison context with common ownership visible.
+
+## 8. German entry layer
+
+- Entry pages: `/de`, `/de/tools`, `/de/wissen`, `/de/ueber`
+- These pages explain the current English detail library in simple German and do not pretend every linked tool or guide is already translated.
+- English and German core pages use reciprocal `hreflang` alternates; detail translations require a distinct maintained user job.
 
 Link rule: use descriptive HTML anchors in the relevant workflow. Do not add sitewide portfolio links, reciprocal exact-match links, or unrelated homepage redirects.

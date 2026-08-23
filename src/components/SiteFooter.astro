@@ -1,25 +1,45 @@
 ---
-import ArrowIcon from "./ArrowIcon.astro";
 import { site } from "../data/site";
+import { getLocale, localePaths } from "../data/i18n";
+const locale = getLocale(Astro.url.pathname);
+const paths = localePaths[locale];
+const copy = locale === "de"
+  ? {
+      summary: "Kostenlose Werkzeuge und verständliche Erklärungen für Crawling, Indexierung und technische SEO.",
+      ownership: "AnalyseSpider ist eine neue Website unter neuer Eigentümerschaft seit 2026. Alte Software, Kundendaten und Inhalte wurden nicht übernommen.",
+      legal: "Betrieben von Matthias Ramahi. Gemeinsame Betreiberschaft mit Contextter wird bei relevanten Verweisen direkt erklärt.",
+    }
+  : {
+      summary: "Free tools and plain-language guides for crawling, indexing and technical SEO.",
+      ownership: "AnalyseSpider is a new website under new ownership since 2026. Former software, customer data and content did not transfer.",
+      legal: "Operated by Matthias Ramahi. Common operation with Contextter is disclosed beside every relevant link.",
+    };
 ---
 <footer class="site-footer">
-  <div class="footer-disclosure">
-    <p>{site.ownershipDisclosure}</p>
-    <p>{site.operatorDisclosure}</p>
+  <div class="footer-intro">
+    <a href={paths.home}><strong>AnalyseSpider</strong></a>
+    <p>{copy.summary}</p>
   </div>
-  <nav aria-label="Footer navigation">
-    <a href="/new-ownership">NEW OWNERSHIP <ArrowIcon /></a>
-    <a href="/about">ABOUT <ArrowIcon /></a>
-    <a href="/changelog">CHANGELOG <ArrowIcon /></a>
-    <a href="/for">FOR TEAMS <ArrowIcon /></a>
-    <a href="/contact">CORRECTIONS <ArrowIcon /></a>
-    <a href="/impressum">IMPRINT <ArrowIcon /></a>
-    <a href="/privacy">PRIVACY <ArrowIcon /></a>
-    <a href={site.githubUrl}>GITHUB <ArrowIcon external /></a>
-  </nav>
-  <div class="launch-state">
-    <span>PUBLIC RELEASE</span>
-    <span aria-hidden="true">·</span>
-    <strong>INDEXING ALLOWED</strong>
+  <div class="footer-links">
+    <nav aria-label={locale === "de" ? "Bereiche" : "Sections"}>
+      <strong>{locale === "de" ? "Bereiche" : "Explore"}</strong>
+      <a href={paths.tools}>Tools</a>
+      <a href={paths.crawlers}>{locale === "de" ? "Crawler" : "Crawlers"}</a>
+      <a href={paths.learn}>{locale === "de" ? "Wissen" : "Learn"}</a>
+      <a href={paths.about}>{locale === "de" ? "Über" : "About"}</a>
+    </nav>
+    <nav aria-label={locale === "de" ? "Vertrauen und Rechtliches" : "Trust and legal"}>
+      <strong>{locale === "de" ? "Vertrauen" : "Trust"}</strong>
+      <a href="/new-ownership">{locale === "de" ? "Neue Eigentümerschaft" : "New ownership"}</a>
+      <a href="/methodology-and-privacy">{locale === "de" ? "Methode" : "Method"}</a>
+      <a href="/contact">{locale === "de" ? "Kontakt und Korrekturen" : "Contact and corrections"}</a>
+      <a href="/impressum">Impressum</a>
+      <a href="/privacy">{locale === "de" ? "Datenschutz" : "Privacy"}</a>
+      <a href={site.githubUrl}>GitHub</a>
+    </nav>
+  </div>
+  <div class="footer-disclosure">
+    <p>{copy.ownership}</p>
+    <p>{copy.legal}</p>
   </div>
 </footer>

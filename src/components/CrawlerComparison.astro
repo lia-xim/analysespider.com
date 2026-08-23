@@ -1,0 +1,108 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ArrowIcon from "./ArrowIcon.astro";
+import type { Locale } from "../data/i18n";
+
+interface Props { locale: Locale; }
+const { locale } = Astro.props;
+const de = locale === "de";
+const copy = de ? {
+  title: "Crawler vergleichen: Googlebot, Bingbot und AI-Crawler — AnalyseSpider",
+  description: "Vergleiche Aufgaben, robots.txt-Steuerung und Prüfmethoden von Googlebot, Bingbot, OAI-SearchBot, GPTBot und ClaudeBot.",
+  canonical: "/de/crawler", alternate: "/crawlers",
+  headline: "Crawler vergleichen, ohne verschiedene Aufgaben zu vermischen.",
+  intro: "Suchmaschinen-Bots, AI-Crawler und Site-Audit-Tools machen unterschiedliche Dinge. Wir trennen diese Gruppen und zeigen für jede veränderliche Angabe die Quelle.",
+  tableHeading: "Suchmaschinen- und AI-Crawler",
+  tableIntro: "Die Tabelle beschreibt veröffentlichte Funktionen. Sie beweist nicht, dass eine einzelne Anfrage wirklich von diesem Betreiber kam.",
+  headers: ["Crawler", "Wofür er eingesetzt wird", "robots.txt", "So prüfst du ihn", "Geprüft"],
+  source: "Quelle",
+  methodHeading: "So entsteht der Vergleich",
+  methodText: "Wir nutzen die aktuelle Dokumentation des Betreibers, notieren das Prüfdatum und trennen veröffentlichte Angaben von eigenen Tests. Ein User-Agent allein beweist keine Bot-Identität.",
+  methodLink: "Vollständige Methode lesen",
+  auditHeading: "Und was ist mit Site-Audit-Crawlern?",
+  auditText: "Tools wie Contextter, Screaming Frog oder Sitebulb müssen anders verglichen werden. Dort zählen gefundene URLs, Redirect-Behandlung, Canonicals, wiederholbare Ergebnisse, Kosten und der Zugriff auf Rohdaten.",
+  auditStatus: "Diesen Vergleich veröffentlichen wir erst nach mehreren Läufen auf derselben unveränderten Testwebsite. Ein einzelner grüner Crawl reicht nicht für einen fairen Testsieger.",
+  fixtureLink: "Vorhandene Test-Fixtures ansehen",
+  relatedHeading: "Nächster Schritt für AI-Sichtbarkeit und Inhalte",
+  relatedText: "Das AI Answer Evidence Lab vergleicht öffentliche AI-Antworten, die du selbst einfügst. Der SEO Fan-out Explorer hilft danach bei einer konkreten Seitenentscheidung.",
+  aiLabel: "AI-Antworten vergleichen", seoLabel: "SEO-Seitenentscheidung treffen",
+  disclosure: "AnalyseSpider, AI Fanout und SEO Fan-out werden von Matthias Ramahi betrieben. Die Links sind verwandte Werkzeuge und keine unabhängigen Empfehlungen.",
+} : {
+  title: "Compare Googlebot, Bingbot and AI crawlers — AnalyseSpider",
+  description: "Compare the jobs, robots.txt controls and verification methods of Googlebot, Bingbot, OAI-SearchBot, GPTBot and ClaudeBot.",
+  canonical: "/crawlers", alternate: "/de/crawler",
+  headline: "Compare crawlers without mixing different jobs.",
+  intro: "Search bots, AI crawlers and site-audit tools do different things. We separate those groups and show a source for every changing fact.",
+  tableHeading: "Search and AI crawlers",
+  tableIntro: "The table describes published functions. It does not prove that one request really came from the named operator.",
+  headers: ["Crawler", "What it is used for", "robots.txt", "How to verify it", "Checked"],
+  source: "Source",
+  methodHeading: "How this comparison works",
+  methodText: "We use current operator documentation, record the check date and separate a published statement from our own tests. A user-agent string alone does not prove bot identity.",
+  methodLink: "Read the full method",
+  auditHeading: "What about site-audit crawlers?",
+  auditText: "Tools such as Contextter, Screaming Frog or Sitebulb need a different comparison. Useful measures include discovered URLs, redirect handling, canonicals, repeatability, cost and access to raw evidence.",
+  auditStatus: "We will publish that comparison after several runs on the same unchanged fixture site. One green crawl is not enough to name a fair winner.",
+  fixtureLink: "View the current test fixtures",
+  relatedHeading: "A next step for AI visibility and content",
+  relatedText: "AI Answer Evidence Lab compares public AI answers that you provide. SEO Fan-out Explorer then helps you make one concrete page decision.",
+  aiLabel: "Compare AI answers", seoLabel: "Make an SEO page decision",
+  disclosure: "AnalyseSpider, AI Fanout and SEO Fan-out are operated by Matthias Ramahi. These are related tools, not independent recommendations.",
+};
+
+const crawlers = de ? [
+  ["Googlebot", "Baut den Google-Suchindex auf.", "Automatische Standard-Crawler befolgen robots.txt.", "Veröffentlichte IP-Bereiche oder bestätigter Reverse- und Forward-DNS.", "https://developers.google.com/crawling/docs/crawlers-fetchers/verify-google-requests"],
+  ["Bingbot", "Baut den Bing-Suchindex auf.", "Bing veröffentlicht einen eigenen robots.txt-Token.", "Bingbot-Verify-Tool und die von Bing beschriebene DNS-Prüfung.", "https://www.bing.com/webmasters/help/Verify-Bingbot-2195837f"],
+  ["OAI-SearchBot", "Kann Websites für die Suchfunktionen in ChatGPT erfassen.", "Eigener Token, getrennt von GPTBot.", "User-Agent plus die von OpenAI veröffentlichten IP-Bereiche.", "https://developers.openai.com/api/docs/bots"],
+  ["GPTBot", "Sammelt Inhalte, die für Modelltraining genutzt werden können.", "Eigener Token; eine Sperre signalisiert den Ausschluss vom Training.", "User-Agent plus die von OpenAI veröffentlichten IP-Bereiche.", "https://developers.openai.com/api/docs/bots"],
+  ["ClaudeBot / Claude-SearchBot", "Anthropic trennt Modelltraining und AI-Suche.", "Anthropic erklärt, dass diese Bots robots.txt beachten.", "Bot-Token plus die von Anthropic verlinkte IP-Liste.", "https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler"],
+] : [
+  ["Googlebot", "Builds Google's search index.", "Automated common crawlers obey robots.txt.", "Published IP ranges or confirmed reverse and forward DNS.", "https://developers.google.com/crawling/docs/crawlers-fetchers/verify-google-requests"],
+  ["Bingbot", "Builds Bing's search index.", "Bing publishes a dedicated robots.txt token.", "Bingbot verification tool and Bing's documented DNS check.", "https://www.bing.com/webmasters/help/Verify-Bingbot-2195837f"],
+  ["OAI-SearchBot", "May collect pages for search features in ChatGPT.", "Has its own token, separate from GPTBot.", "User agent plus IP ranges published by OpenAI.", "https://developers.openai.com/api/docs/bots"],
+  ["GPTBot", "Collects content that may be used to train generative models.", "Its own token; blocking signals exclusion from training.", "User agent plus IP ranges published by OpenAI.", "https://developers.openai.com/api/docs/bots"],
+  ["ClaudeBot / Claude-SearchBot", "Anthropic separates model training and AI search.", "Anthropic says these bots honor robots.txt.", "Bot token plus the IP list linked by Anthropic.", "https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler"],
+];
+---
+<BaseLayout title={copy.title} description={copy.description} canonicalPath={copy.canonical} alternatePath={copy.alternate} lang={locale} bodyClass="simple-content crawler-page">
+  <header class="simple-page-lead">
+    <h1>{copy.headline}</h1>
+    <p>{copy.intro}</p>
+  </header>
+
+  <section class="crawler-table-section" aria-labelledby="crawler-table-heading">
+    <header><h2 id="crawler-table-heading">{copy.tableHeading}</h2><p>{copy.tableIntro}</p></header>
+    <div class="table-wrap crawler-table-wrap">
+      <table class="crawler-table">
+        <thead><tr>{copy.headers.map((header) => <th scope="col">{header}</th>)}</tr></thead>
+        <tbody>
+          {crawlers.map((crawler) => (
+            <tr>
+              <th scope="row"><strong>{crawler[0]}</strong><a href={crawler[4]} rel="noreferrer">{copy.source}</a></th>
+              <td>{crawler[1]}</td><td>{crawler[2]}</td><td>{crawler[3]}</td><td>22 Aug 2026</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="method-summary" aria-labelledby="method-summary-heading">
+    <h2 id="method-summary-heading">{copy.methodHeading}</h2>
+    <div><p>{copy.methodText}</p><a href="/methodology-and-privacy">{copy.methodLink} <ArrowIcon /></a></div>
+  </section>
+
+  <section class="audit-comparison-note" aria-labelledby="audit-comparison-heading">
+    <h2 id="audit-comparison-heading">{copy.auditHeading}</h2>
+    <div><p>{copy.auditText}</p><p><strong>{copy.auditStatus}</strong></p><a href="/lab/crawler-benchmarks">{copy.fixtureLink} <ArrowIcon /></a></div>
+  </section>
+
+  <section class="related-work related-fanout" aria-labelledby="fanout-heading">
+    <div><h2 id="fanout-heading">{copy.relatedHeading}</h2><p>{copy.relatedText}</p></div>
+    <div class="related-actions">
+      <a class="button secondary" href="https://ai-fanout.com">{copy.aiLabel}</a>
+      <a class="button secondary" href="https://seo-fanout.com/tool/">{copy.seoLabel}</a>
+    </div>
+    <p class="disclosure">{copy.disclosure}</p>
+  </section>
+</BaseLayout>

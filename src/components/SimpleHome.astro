@@ -1,0 +1,155 @@
+---
+import ArrowIcon from "./ArrowIcon.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import type { Locale } from "../data/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const de = locale === "de";
+const copy = de
+  ? {
+      title: "Technische SEO verstehen und prüfen — AnalyseSpider",
+      description: "Prüfe Redirects, robots.txt, HTTP-Antworten und Server-Logs mit kostenlosen browserlokalen Werkzeugen und verständlichen Erklärungen.",
+      canonicalPath: "/de",
+      alternatePath: "/",
+      headline: "Sieh, was Crawler auf deiner Website sehen.",
+      intro: "Prüfe Weiterleitungen, robots.txt, HTTP-Antworten und Server-Logs. Kostenlos, ohne Anmeldung und ohne deine Eingaben hochzuladen.",
+      primary: "Kostenloses Tool wählen",
+      secondary: "Crawling einfach erklärt",
+      problemHeading: "Was möchtest du prüfen?",
+      areaHeading: "Zwei Bereiche. Ein klares Ziel.",
+      areaIntro: "Nutze ein Tool, wenn du schon Daten hast. Lies eine Erklärung, wenn du erst verstehen möchtest, was ein Ergebnis bedeutet.",
+      crawlerHeading: "Crawler sind nicht alle gleich.",
+      crawlerText: "Googlebot, Bingbot und AI-Crawler haben unterschiedliche Aufgaben. Wir zeigen, was der Betreiber veröffentlicht, wie du einen Bot prüfen kannst und wann die Angabe zuletzt kontrolliert wurde.",
+      crawlerAction: "Crawler vergleichen",
+      historyHeading: "Warum heißt die Seite AnalyseSpider?",
+      historyText: "Die Domain wurde früher für Log-Analyse und IP-Werkzeuge genutzt. Die heutige Website ist eine neue Entwicklung unter neuer Eigentümerschaft. Alte Software, Texte, Daten und Kunden wurden nicht übernommen.",
+      historyAction: "Mehr über die neue Eigentümerschaft",
+    }
+  : {
+      title: "Understand crawling and technical SEO — AnalyseSpider",
+      description: "Check redirects, robots.txt, HTTP responses and server logs with free browser-local tools and plain-language guides.",
+      canonicalPath: "/",
+      alternatePath: "/de",
+      headline: "See what crawlers see on your website.",
+      intro: "Check redirects, robots.txt, HTTP responses and server logs. Free, without an account and without uploading your input.",
+      primary: "Choose a free tool",
+      secondary: "Learn how crawling works",
+      problemHeading: "What do you want to check?",
+      areaHeading: "Two sections. One clear purpose.",
+      areaIntro: "Use a tool when you already have data. Read a guide when you first need to understand what a result means.",
+      crawlerHeading: "Crawlers do different jobs.",
+      crawlerText: "Googlebot, Bingbot and AI crawlers are built for different purposes. We show what each operator publishes, how a bot can be checked and when the information was reviewed.",
+      crawlerAction: "Compare crawlers",
+      historyHeading: "Why is the site called AnalyseSpider?",
+      historyText: "The domain was formerly used for log analysis and IP tools. Today's website is a new implementation under new ownership. Former software, copy, data and customers did not transfer.",
+      historyAction: "Read about the new ownership",
+    };
+
+const problems = de
+  ? [
+      { title: "Warum wird meine Seite nicht indexiert?", text: "Prüfe Statuscode, robots-Angaben und Canonical.", href: "/tools/url-inspector", icon: "search" },
+      { title: "Wohin führt diese Weiterleitung?", text: "Baue die einzelnen Redirect-Schritte nach.", href: "/tools/redirect-chain", icon: "redirect" },
+      { title: "Darf dieser Crawler meine Seite aufrufen?", text: "Teste eine robots.txt-Regel für einen Bot.", href: "/tools/robots-rule-tester", icon: "lock" },
+      { title: "Was zeigen meine Server-Logs?", text: "Finde Statuscodes, Pfade und angegebene Bots.", href: "/tools/log-file-inspector", icon: "file" },
+    ]
+  : [
+      { title: "Why is my page not indexed?", text: "Check the status, robots directives and canonical.", href: "/tools/url-inspector", icon: "search" },
+      { title: "Where does this redirect lead?", text: "Build the redirect steps one by one.", href: "/tools/redirect-chain", icon: "redirect" },
+      { title: "Can this crawler access my page?", text: "Test one robots.txt rule for a bot.", href: "/tools/robots-rule-tester", icon: "lock" },
+      { title: "What do my server logs show?", text: "Find status codes, paths and claimed bots.", href: "/tools/log-file-inspector", icon: "file" },
+    ];
+
+const areas = de
+  ? [
+      { title: "Tools", text: "Fünf kleine Werkzeuge für Logs, HTTP-Antworten, Redirects, robots.txt und IP-Adressen.", href: "/de/tools", action: "Tools öffnen" },
+      { title: "Wissen", text: "Kurze Antworten auf echte Fragen zu Crawling, Indexierung, Redirects und Server-Logs.", href: "/de/wissen", action: "Wissen öffnen" },
+    ]
+  : [
+      { title: "Tools", text: "Five small tools for logs, HTTP responses, redirects, robots.txt and IP addresses.", href: "/tools", action: "Open tools" },
+      { title: "Learn", text: "Plain answers to practical questions about crawling, indexing, redirects and server logs.", href: "/guides", action: "Open guides" },
+    ];
+---
+<BaseLayout
+  title={copy.title}
+  description={copy.description}
+  canonicalPath={copy.canonicalPath}
+  lang={locale}
+  alternatePath={copy.alternatePath}
+  bodyClass="simple-home"
+>
+  <section class="simple-hero">
+    <div class="simple-hero-copy">
+      <h1>{copy.headline}</h1>
+      <p>{copy.intro}</p>
+      <div class="simple-actions">
+        <a class="button primary" href={de ? "/de/tools" : "/tools"}>{copy.primary}</a>
+        <a class="button secondary" href={de ? "/de/wissen" : "/guides"}>{copy.secondary}</a>
+      </div>
+    </div>
+    <div class="signal-preview" aria-label={de ? "Beispiel einer technischen Prüfung" : "Example technical check"}>
+      <div class="signal-preview-head">
+        <strong>{de ? "Beispiel: eine URL prüfen" : "Example: check one URL"}</strong>
+        <span>{de ? "Keine Live-Abfrage" : "Not a live fetch"}</span>
+      </div>
+      <dl>
+        <div><dt>Status</dt><dd><strong>200 OK</strong><span>{de ? "Die Seite antwortet erfolgreich." : "The page returned a successful response."}</span></dd></div>
+        <div><dt>Robots</dt><dd><strong>index, follow</strong><span>{de ? "Die Seite erlaubt Indexierung." : "The page allows indexing."}</span></dd></div>
+        <div><dt>Canonical</dt><dd><strong>{de ? "Verweist auf sich selbst" : "Self-referencing"}</strong><span>{de ? "Kein Konflikt in diesem Beispiel." : "No conflict in this example."}</span></dd></div>
+        <div><dt>Redirect</dt><dd><strong>{de ? "Keine Weiterleitung" : "No redirect"}</strong><span>{de ? "Die URL bleibt gleich." : "The URL stays the same."}</span></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="problem-section" aria-labelledby="problem-heading">
+    <h2 id="problem-heading">{copy.problemHeading}</h2>
+    <div class="problem-list">
+      {problems.map((problem) => (
+        <a href={problem.href}>
+          <span class={"problem-icon problem-icon-" + problem.icon} aria-hidden="true"></span>
+          <span><strong>{problem.title}</strong><small>{problem.text}</small></span>
+          <ArrowIcon />
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="area-section" aria-labelledby="area-heading">
+    <header>
+      <h2 id="area-heading">{copy.areaHeading}</h2>
+      <p>{copy.areaIntro}</p>
+    </header>
+    <div class="area-list">
+      {areas.map((area) => (
+        <a href={area.href}>
+          <h3>{area.title}</h3>
+          <p>{area.text}</p>
+          <span>{area.action} <ArrowIcon /></span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="crawler-intro" aria-labelledby="crawler-heading">
+    <div>
+      <h2 id="crawler-heading">{copy.crawlerHeading}</h2>
+      <p>{copy.crawlerText}</p>
+      <a class="text-link" href={de ? "/de/crawler" : "/crawlers"}>{copy.crawlerAction} <ArrowIcon /></a>
+    </div>
+    <div class="crawler-sample" aria-hidden="true">
+      <span>Googlebot</span><span>Bingbot</span><span>OAI-SearchBot</span><span>GPTBot</span><span>ClaudeBot</span>
+    </div>
+  </section>
+
+
+  <section class="history-note" aria-labelledby="history-heading">
+    <h2 id="history-heading">{copy.historyHeading}</h2>
+    <div>
+      <p>{copy.historyText}</p>
+      <a href="/new-ownership">{copy.historyAction} <ArrowIcon /></a>
+    </div>
+  </section>
+</BaseLayout>

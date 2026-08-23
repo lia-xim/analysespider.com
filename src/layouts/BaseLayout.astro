@@ -2,6 +2,7 @@
 import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import { site } from "../data/site";
+import { getAlternatePath, getLocale, type Locale } from "../data/i18n";
 import "../styles/global.css";
 import "../styles/accessibility.css";
 import "../styles/polish.css";
@@ -10,6 +11,7 @@ import "../styles/layout-final.css";
 import "../styles/content.css";
 import "../styles/overflow-fixes.css";
 import "../styles/navigation-expansion.css";
+import "../styles/simple-redesign.css";
 
 interface Props {
   title?: string;
@@ -22,6 +24,8 @@ interface Props {
   indexing?: "inherit" | "noindex";
   includeCanonical?: boolean;
   includeStructuredData?: boolean;
+  lang?: Locale;
+  alternatePath?: string | null;
 }
 
 const {
@@ -35,8 +39,12 @@ const {
   indexing = "inherit",
   includeCanonical = true,
   includeStructuredData = true,
+  lang = getLocale(Astro.url.pathname),
+  alternatePath = getAlternatePath(canonicalPath),
 } = Astro.props;
 const canonical = new URL(canonicalPath, site.origin).toString();
+const alternateLocale: Locale = lang === "en" ? "de" : "en";
+const alternateUrl = alternatePath ? new URL(alternatePath, site.origin).toString() : null;
 const robots = indexing === "noindex"
   ? "noindex, follow"
   : site.indexing === "public"
@@ -63,7 +71,7 @@ const websiteEntity = {
   url: site.origin,
   publisher: { "@id": site.operator.schemaId },
 };
-const collectionPaths = new Set(["/tools", "/guides", "/blog", "/reference", "/for"]);
+const collectionPaths = new Set(["/tools", "/guides", "/crawlers", "/blog", "/reference", "/for", "/de/tools", "/de/wissen", "/de/crawler"]);
 const schemaType = pageType === "article"
   ? "TechArticle"
   : canonicalPath.startsWith("/tools/")
@@ -94,16 +102,19 @@ const structuredData = {
 };
 ---
 <!doctype html>
-<html lang={site.language}>
+<html lang={lang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="color-scheme" content="dark" />
-    <meta name="theme-color" content="#0d0f0f" />
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#ffffff" />
     <meta name="robots" content={robots} />
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     {includeCanonical && <link rel="canonical" href={canonical} />}
+    {alternateUrl && <link rel="alternate" hreflang={lang} href={canonical} />}
+    {alternateUrl && <link rel="alternate" hreflang={alternateLocale} href={alternateUrl} />}
+    {alternateUrl && <link rel="alternate" hreflang="x-default" href={lang === "en" ? canonical : alternateUrl} />}
     <meta property="og:type" content={pageType} />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={title} />
@@ -115,7 +126,7 @@ const structuredData = {
     <title>{title}</title>
   </head>
   <body class={bodyClass}>
-    <a class="skip-link" href="#main">Skip to content</a>
+    <a class="skip-link" href="#main">{lang === "de" ? "Zum Inhalt" : "Skip to content"}</a>
     <div class="page-frame">
       <SiteHeader />
       <main id="main" tabindex="-1">

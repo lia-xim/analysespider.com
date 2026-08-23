@@ -1,35 +1,56 @@
 ---
-import ResourceIndex from "../../components/ResourceIndex.astro";
-import { guides } from "../../data/content";
-
-const entries = [
-  ...guides.map((guide) => ({
-    title: guide.title,
-    description: guide.description,
-    href: `/guides/${guide.slug}`,
-    meta: `${guide.eyebrow} · ${guide.readingMinutes} min`,
-  })),
-  {
-    title: "Test robots.txt rules in evidence order",
-    description: "Check delivery, product-token groups, exact path matching, and crawl-versus-indexing boundaries with a reproducible local workflow.",
-    href: "/guides/test-robots-txt-rules",
-    meta: "Guide 05 · RFC 9309",
-  },
-  {
-    title: "IP geolocation data: limits and safe use",
-    description: "Understand what an IP-location result can estimate, what it cannot establish, and which decisions need stronger evidence.",
-    href: "/guides/ip-geolocation-data",
-    meta: "Guide 06 · data limits",
-  },
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ArrowIcon from "../../components/ArrowIcon.astro";
+const groups = [
+  { title: "Crawling and indexing", links: [
+    ["Why is my page not indexed?", "Check the status, robots directives and canonical in a useful order.", "/guides/http-response-debugging"],
+    ["How does robots.txt work?", "Understand which bot can request which URL.", "/guides/test-robots-txt-rules"],
+    ["How do I check a real crawler?", "Use the user agent, IP ranges and DNS evidence correctly.", "/reference/crawler-verification-methods"],
+  ]},
+  { title: "Redirects and HTTP", links: [
+    ["How do I read a redirect chain?", "Check every hop and record the final destination.", "/guides/redirect-chain-analysis"],
+    ["What do HTTP status codes mean?", "Keep protocol meaning separate from an SEO conclusion.", "/reference/http-status-codes"],
+    ["Which robots directive wins?", "Read meta robots and X-Robots-Tag separately.", "/reference/robots-directives"],
+  ]},
+  { title: "Server logs and bot traffic", links: [
+    ["What is recorded in a server log?", "Confirm the fields, format and limits before analysis.", "/guides/log-file-analysis"],
+    ["How do I find crawler requests?", "Filter claimed bots and verify important identities.", "/guides/crawler-log-analysis"],
+    ["What can an IP address show?", "Understand network ranges without identifying a person or exact place.", "/guides/ip-geolocation-data"],
+  ]},
 ];
 ---
-<ResourceIndex
-  title="Diagnostic guides"
-  pageTitle="Web diagnostics guides — AnalyseSpider"
-  description="Evidence-led guides for server logs, crawler verification, HTTP responses, redirects, robots.txt rules, and IP data limits."
-  intro="Stable workflows for inspecting the evidence you already have. Each guide states what the source can support, what remains unknown, and which check should come next."
+<BaseLayout
+  title="Learn technical SEO without the jargon — AnalyseSpider"
+  description="Plain-language guides to crawling, indexing, robots.txt, redirects, HTTP responses and server logs."
   canonicalPath="/guides"
-  index="30"
-  entries={entries}
-  note="A guide earns its own URL only when it covers a distinct diagnostic job. Query variations stay inside the strongest relevant page."
-/>
+  alternatePath="/de/wissen"
+  bodyClass="simple-content"
+>
+  <header class="simple-page-lead">
+    <h1>Learn technical SEO without the jargon.</h1>
+    <p>Each guide answers one practical question. Start with the problem you can see on your website today.</p>
+  </header>
+  <section class="knowledge-groups" aria-label="Knowledge topics">
+    {groups.map((group) => (
+      <div class="knowledge-group">
+        <h2>{group.title}</h2>
+        <div>
+          {group.links.map((link) => (
+            <a href={link[2]}>
+              <span><strong>{link[0]}</strong><small>{link[1]}</small></span>
+              <ArrowIcon />
+            </a>
+          ))}
+        </div>
+      </div>
+    ))}
+  </section>
+  <section class="fanout-knowledge" aria-labelledby="fanout-knowledge-heading">
+    <div>
+      <h2 id="fanout-knowledge-heading">Planning new content?</h2>
+      <p>SEO Fan-out Explorer helps you decide whether a topic needs a new page, a new section, better evidence or no new URL at all.</p>
+      <p class="disclosure">SEO Fan-out and AnalyseSpider are operated by Matthias Ramahi. This is a related tool, not an independent recommendation.</p>
+    </div>
+    <a class="button secondary" href="https://seo-fanout.com/tool/">Start an SEO page decision</a>
+  </section>
+</BaseLayout>

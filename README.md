@@ -1,16 +1,16 @@
 # analysespider.com
 
-Public source repository for the new `analysespider.com` Web Diagnostics Lab.
+Public source repository for the new `analysespider.com` crawling and technical SEO resource.
 
 ## Purpose
 
-AnalyseSpider provides bounded, inspectable browser tools for technical SEOs, developers, site owners, and web-operations teams. The first implementation parses access logs, raw HTTP responses, HTML directives, and IP-address properties locally in the browser.
+AnalyseSpider provides plain-language guidance, crawler comparisons, and bounded browser tools for technical SEOs, developers, site owners, and web-operations teams. The current tools parse access logs, raw HTTP responses, HTML directives, redirect steps, robots rules, and IP-address properties locally in the browser.
 
 The project continues the former domain's broad technical-utility theme, but not its software, code, content, operator identity, users, customers, downloads, or claims.
 
 ## Current state
 
-The substantive site is publicly launched and indexable. It is assigned to Contextter in the canonical DomainPortfolio, with common ownership disclosed. The launch keeps the standalone user job, legal operator, privacy boundary, canonical host, rights limits, and explicit legacy URL decisions visible.
+The substantive site is publicly launched and indexable. Its primary navigation is Tools, Crawlers, Learn/Wissen, and About/Über, with an English baseline and German core entry layer. It is assigned to Contextter in the canonical DomainPortfolio, with common ownership disclosed. The launch keeps the standalone user job, legal operator, privacy boundary, canonical host, rights limits, and explicit legacy URL decisions visible.
 
 ## Product boundaries
 

@@ -1,51 +1,31 @@
 ---
-import ResourceIndex from "../../components/ResourceIndex.astro";
-
-const entries = [
-  {
-    title: "Log File Inspector",
-    description: "Parse a bounded Apache or Nginx access-log sample. Review accepted rows, status families, request paths, and declared user agents.",
-    href: "/tools/log-file-inspector",
-    meta: "Browser-local · no upload",
-    status: "OPEN TOOL",
-  },
-  {
-    title: "Response Inspector",
-    description: "Paste raw HTTP response headers and HTML. Separate observed status, redirect, canonical, robots, and unknown fields.",
-    href: "/tools/url-inspector",
-    meta: "Paste-only · no fetch",
-    status: "OPEN TOOL",
-  },
-  {
-    title: "Redirect Chain Builder",
-    description: "Assemble pasted response hops, resolve relative Location fields, detect gaps or loops, and copy a structured evidence object.",
-    href: "/tools/redirect-chain",
-    meta: "Paste-only · 12-hop cap",
-    status: "OPEN TOOL",
-  },
-  {
-    title: "Robots.txt Rule Tester",
-    description: "Test one crawler product token and URL against RFC 9309 group selection, longest-match, Allow, Disallow, wildcard, and end-anchor rules.",
-    href: "/tools/robots-rule-tester",
-    meta: "Browser-local · RFC fixtures",
-    status: "OPEN TOOL",
-  },
-  {
-    title: "IP Address Check",
-    description: "Classify IPv4 or IPv6 syntax and selected reserved ranges without claiming identity or precise location.",
-    href: "/tools/ip-location",
-    meta: "Browser-local · no dataset lookup",
-    status: "OPEN TOOL",
-  },
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ArrowIcon from "../../components/ArrowIcon.astro";
+const tools = [
+  { title: "Check server logs", text: "Paste a small Apache or Nginx sample. Find paths, status codes and claimed bots.", href: "/tools/log-file-inspector", note: "Runs in your browser · no upload" },
+  { title: "Understand an HTTP response", text: "Paste headers and HTML. Check status, canonical, robots directives and missing fields.", href: "/tools/url-inspector", note: "Paste-only · no fetch" },
+  { title: "Check a redirect chain", text: "Build redirect hops and find loops, gaps or an unexpected final URL.", href: "/tools/redirect-chain", note: "Up to 12 hops" },
+  { title: "Test a robots.txt rule", text: "Check whether one URL is allowed or blocked for a specific crawler.", href: "/tools/robots-rule-tester", note: "Browser-local test" },
+  { title: "Classify an IP address", text: "Recognise public, private and reserved ranges without claiming a person or precise place.", href: "/tools/ip-location", note: "No location database" },
 ];
 ---
-<ResourceIndex
-  title="Browser-local tools"
-  pageTitle="Web diagnostics tools — AnalyseSpider"
-  description="Browser-local tools for access logs, redirect chains, HTTP responses, robots.txt rules, HTML directives, and IP address properties."
-  intro="Inspect evidence already in your possession. The current tools run locally in your browser and do not issue arbitrary network requests."
+<BaseLayout
+  title="Free crawling and technical SEO tools — AnalyseSpider"
+  description="Five free browser-local tools for server logs, HTTP responses, redirect chains, robots.txt and IP addresses."
   canonicalPath="/tools"
-  index="20"
-  entries={entries}
-  note="Every result remains available without signup. Observations, inferences, unknowns, and input limits are shown on the tool surface."
-/>
+  alternatePath="/de/tools"
+  bodyClass="simple-content"
+>
+  <header class="simple-page-lead">
+    <h1>Free tools for specific technical questions.</h1>
+    <p>Choose the smallest tool that fits the data you already have. The current tools run in your browser and do not send your input to AnalyseSpider.</p>
+  </header>
+  <section class="plain-resource-list" aria-label="Tools">
+    {tools.map((tool) => (
+      <a href={tool.href}>
+        <div><h2>{tool.title}</h2><p>{tool.text}</p></div>
+        <span><small>{tool.note}</small><ArrowIcon /></span>
+      </a>
+    ))}
+  </section>
+</BaseLayout>

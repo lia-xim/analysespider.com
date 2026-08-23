@@ -22,15 +22,21 @@ const editorialRoutes = new Set([
   "/reference/robots-directives",
   "/reference/crawler-verification-methods",
 ]);
-const collectionRoutes = new Set(["/tools", "/guides", "/blog", "/reference", "/for"]);
+const collectionRoutes = new Set(["/tools", "/guides", "/crawlers", "/blog", "/reference", "/for", "/de/tools", "/de/wissen", "/de/crawler"]);
 const toolRoutes = new Set(["/tools/log-file-inspector", "/tools/url-inspector", "/tools/redirect-chain", "/tools/robots-rule-tester", "/tools/ip-location"]);
+const approvedPortfolioLinks = new Map([
+  ["/guides", new Set(["https://seo-fanout.com/tool/"])],
+  ["/crawlers", new Set(["https://ai-fanout.com", "https://seo-fanout.com/tool/"])],
+  ["/de/wissen", new Set(["https://seo-fanout.com/tool/"])],
+  ["/de/crawler", new Set(["https://ai-fanout.com", "https://seo-fanout.com/tool/"])],
+]);
 
 const failures = [];
 const pass = (condition, message) => {
   if (!condition) failures.push(message);
 };
 
-pass(routes.length >= 39, `route inventory unexpectedly small: ${routes.length}`);
+pass(routes.length >= 45, `route inventory unexpectedly small: ${routes.length}`);
 pass(new Set(routes).size === routes.length, "duplicate canonical routes in central route registry");
 pass(new Set(sitemapRoutes).size === sitemapRoutes.length, "duplicate sitemap routes in central route registry");
 pass(routes.length === sitemapRoutes.length && routes.every((route) => sitemapRoutes.includes(route)), "all current canonical 200 routes must be sitemap eligible");
@@ -79,7 +85,18 @@ for (const route of routes) {
   pass(html.includes('"@graph"'), `structured-data graph missing for ${route}`);
   pass(!html.includes("Project setup"), `placeholder copy remains on ${route}`);
   pass(!/lorem ipsum|as an ai language model/i.test(html), `draft filler remains on ${route}`);
-  pass(!html.includes('href="https://contextter.com'), `artificial Contextter link found on ${route}`);
+  const portfolioLinks = [...html.matchAll(/href="(https:\/\/(?:contextter\.com|ai-fanout\.com|seo-fanout\.com)[^"]*)"/g)].map((match) => match[1]);
+  const approvedLinks = approvedPortfolioLinks.get(route) ?? new Set();
+  for (const link of portfolioLinks) {
+    pass(approvedLinks.has(link), `unapproved common-owner link ${link} found on ${route}`);
+  }
+  if (portfolioLinks.length) {
+    pass(
+      /(?:operated by Matthias Ramahi|betrieben von Matthias Ramahi)/i.test(html)
+        && /(?:not (?:an )?independent recommendation|keine unabhängige(?:n)? Empfehlung(?:en)?)/i.test(html),
+      `common-owner disclosure missing on ${route}`,
+    );
+  }
 
   const h1Count = (html.match(/<h1(?:\s|>)/g) ?? []).length;
   pass(h1Count === 1, `expected exactly one h1 on ${route}, found ${h1Count}`);

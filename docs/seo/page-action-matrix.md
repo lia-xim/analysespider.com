@@ -1,4 +1,4 @@
-# Page action matrix — 2026-08-22
+# Page action matrix — 2026-08-23
 
 Every indexable canonical URL has one primary user job. “Keep” does not mean “finished forever”; it means no merge, redirect, or expansion is justified by current evidence.
 
@@ -43,6 +43,14 @@ Every indexable canonical URL has one primary user job. “Keep” does not mean
 | `/analysespider.html` | Reach the rights-safe successor for historical log-analysis intent. | Crawl logs | Verified | Keep 200 successor. |
 | `/ip2country/country_code.html` | Find a maintained country-code reference without identity claims. | IP and geo | Verified | Keep 200 successor. |
 | `/geo-targeting/geo-targeting.html` | Design geo routing that fails open and avoids brittle IP assumptions. | IP and geo | Supported | Keep 200 successor. |
+| `/crawlers` | Compare the roles and verification options of search and AI crawlers. | Crawler comparison | Supported | Keep primary-source table; add product scores only after repeatable tests. |
+| `/de` | Choose a tool, answer or crawler comparison in German. | German entry | Experiment | Measure use before translating the full library. |
+| `/de/tools` | Choose a browser-local tool from a German explanation. | German tools | Experiment | Keep one hub; tool interfaces remain English in this phase. |
+| `/de/crawler` | Compare search and AI crawler roles in German. | Crawler comparison | Supported | Keep in sync with the official-source English table. |
+| `/de/wissen` | Start with a plain German question and reach the best maintained answer. | German knowledge | Experiment | Translate detail pages only where demand and maintenance justify it. |
+| `/de/wissen/warum-wird-meine-seite-nicht-indexiert` | Diagnose a missing-indexing report in a fixed technical order. | German knowledge | Supported | Keep as the first full German workflow; measure impressions and next-step clicks. |
+| `/de/wissen/crawler-erkennen` | Verify a claimed crawler with evidence proportionate to the decision. | German knowledge | Supported | Keep aligned with current operator documentation. |
+| `/de/ueber` | Understand purpose, processing limits and new ownership in German. | Governance | Verified | Keep synchronized with `/about`. |
 
 ## Non-canonical status paths
 

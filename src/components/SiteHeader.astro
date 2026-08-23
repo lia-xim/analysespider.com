@@ -1,24 +1,45 @@
 ---
-const path = Astro.url.pathname;
-const items = [
-  { number: "01", label: "TOOLS", href: "/tools", active: path.startsWith("/tools") },
-  { number: "02", label: "GUIDES", href: "/guides", active: path.startsWith("/guides") },
-  { number: "03", label: "LAB NOTES", href: "/blog", active: path.startsWith("/blog") || path.startsWith("/lab") },
-  { number: "04", label: "REFERENCE", href: "/reference", active: path.startsWith("/reference") },
-  { number: "05", label: "LEGACY", href: "/legacy", active: path.startsWith("/legacy") || path.includes(".html") },
-  { number: "06", label: "METHOD", href: "/methodology-and-privacy", active: path.startsWith("/methodology") || path.startsWith("/new-ownership") },
-];
+import { getAlternatePath, getLocale, localePaths } from "../data/i18n";
+
+const path = Astro.url.pathname.replace(/\/$/, "") || "/";
+const locale = getLocale(path);
+const paths = localePaths[locale];
+const items = locale === "de"
+  ? [
+      { label: "Tools", href: paths.tools, active: path === paths.tools },
+      { label: "Crawler", href: paths.crawlers, active: path === paths.crawlers },
+      { label: "Wissen", href: paths.learn, active: path === paths.learn },
+      { label: "Über", href: paths.about, active: path === paths.about },
+    ]
+  : [
+      { label: "Tools", href: paths.tools, active: path.startsWith("/tools") },
+      { label: "Crawlers", href: paths.crawlers, active: path === paths.crawlers || path.startsWith("/reference/crawler") || path.startsWith("/lab/crawler") },
+      { label: "Learn", href: paths.learn, active: path.startsWith("/guides") || path.startsWith("/blog") || path.startsWith("/reference") },
+      { label: "About", href: paths.about, active: path === paths.about || path.startsWith("/new-ownership") || path.startsWith("/methodology") },
+    ];
+const alternatePath = getAlternatePath(path);
 ---
 <header class="site-header">
-  <a class="brand" href="/" aria-label="AnalyseSpider home">
-    <span>ANALYSE</span><span class="brand-slash">/</span><span>SPIDER</span>
+  <a class="brand" href={paths.home} aria-label={locale === "de" ? "AnalyseSpider Startseite" : "AnalyseSpider home"}>
+    <svg class="brand-mark" viewBox="0 0 48 36" aria-hidden="true">
+      <circle cx="6" cy="18" r="2.5"></circle>
+      <circle cx="38" cy="5" r="2.5"></circle>
+      <circle cx="38" cy="18" r="2.5"></circle>
+      <circle cx="38" cy="31" r="2.5"></circle>
+      <path d="M8.5 18H17M17 18 29 5h6.5M17 18h18.5M17 18l12 13h6.5"></path>
+    </svg>
+    <span>AnalyseSpider</span>
   </a>
   <nav aria-label="Primary navigation">
     {items.map((item) => (
       <a href={item.href} aria-current={item.active ? "page" : undefined}>
-        <span class="nav-number">{item.number}</span>
         <span>{item.label}</span>
       </a>
     ))}
   </nav>
+  <div class="language-switch" aria-label={locale === "de" ? "Sprache" : "Language"}>
+    <a href={alternatePath && locale === "de" ? alternatePath : path} aria-current={locale === "en" ? "page" : undefined}>EN</a>
+    <span aria-hidden="true">|</span>
+    <a href={alternatePath && locale === "en" ? alternatePath : "/de"} aria-current={locale === "de" ? "page" : undefined}>DE</a>
+  </div>
 </header>

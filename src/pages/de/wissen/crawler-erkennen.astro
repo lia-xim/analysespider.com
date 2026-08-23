@@ -1,0 +1,89 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+---
+<BaseLayout
+  title="Wie erkenne ich einen echten Crawler? — AnalyseSpider"
+  description="So prüfst du User-Agent, IP-Bereich und DNS, bevor du Googlebot, Bingbot oder einen AI-Crawler als echt einstufst."
+  canonicalPath="/de/wissen/crawler-erkennen"
+  alternatePath="/reference/crawler-verification-methods"
+  lang="de"
+  pageType="article"
+  publishedTime="2026-08-23"
+  modifiedTime="2026-08-23"
+  bodyClass="simple-content"
+>
+  <header class="simple-page-lead">
+    <p class="eyebrow">Wissen · Crawler und Server-Logs</p>
+    <h1>Wie erkenne ich einen echten Crawler?</h1>
+    <p>Ein Name im User-Agent ist nur eine Behauptung. Für wichtige Entscheidungen brauchst du zusätzliche Belege.</p>
+  </header>
+
+  <article class="simple-prose">
+    <section>
+      <h2>Die kurze Antwort</h2>
+      <p>Beginne mit dem User-Agent, aber höre dort nicht auf. Vergleiche die Quell-IP mit den offiziellen Angaben des Betreibers. Nutze veröffentlichte IP-Bereiche oder die vom Anbieter beschriebene DNS-Prüfung. Bewahre den Zeitpunkt und die ursprüngliche Log-Zeile auf.</p>
+    </section>
+
+    <section>
+      <h2>Warum der User-Agent allein nicht reicht</h2>
+      <p>Jeder HTTP-Client kann sich einen bekannten Bot-Namen geben. Eine Zeile mit „Googlebot“ beweist deshalb nur, dass dieser Text gesendet wurde. Sie beweist nicht, dass die Anfrage von Google kam.</p>
+      <p>Der User-Agent bleibt trotzdem nützlich: Er hilft dir, Kandidaten aus großen Log-Dateien zu filtern. Nenne das Ergebnis dann „angegebener Crawler“ oder „Crawler-Behauptung“, bis die Identität zusätzlich geprüft ist.</p>
+    </section>
+
+    <section>
+      <h2>1. Sichere die ursprüngliche Beobachtung</h2>
+      <p>Halte Zeitstempel, Quell-IP, angefragte URL, Methode, Statuscode und vollständigen User-Agent fest. Entferne personenbezogene oder vertrauliche Daten, die du für die Prüfung nicht brauchst.</p>
+      <p><a class="button secondary" href="/tools/log-file-inspector">Log-Beispiel lokal filtern</a></p>
+    </section>
+
+    <section>
+      <h2>2. Nutze die Methode des Betreibers</h2>
+      <p>Google beschreibt zwei Wege: Abgleich mit veröffentlichten IP-Bereichen oder eine Vorwärts- und Rückwärts-DNS-Prüfung. Bing bietet ebenfalls ein offizielles Verifikationsverfahren. OpenAI und Anthropic veröffentlichen eigene Bot-Rollen und technische Angaben.</p>
+      <p>Übertrage eine Methode nicht ungeprüft auf einen anderen Anbieter. Eine passende Host-Endung bei Google sagt nichts über einen OpenAI-Crawler aus.</p>
+    </section>
+
+    <section>
+      <h2>3. Prüfe DNS in beide Richtungen</h2>
+      <p>Bei einer DNS-Prüfung suchst du zuerst den Hostnamen zur Quell-IP. Danach löst du genau diesen Hostnamen wieder in IP-Adressen auf. Die ursprüngliche IP muss in der zweiten Antwort enthalten sein. Zusätzlich muss die Host-Endung zur offiziellen Dokumentation passen.</p>
+      <p>Nur eine beliebige Rückwärtsauflösung reicht nicht. DNS-Antworten können außerdem zwischengespeichert sein. Speichere deshalb Zeitpunkt, Resolver und Ergebnis.</p>
+    </section>
+
+    <section>
+      <h2>4. Entscheide nach dem Risiko</h2>
+      <p>Für eine grobe Statistik kann eine User-Agent-Gruppe genügen, solange du sie als Behauptung beschriftest. Für Freigaben, Sperren, Sicherheitsentscheidungen oder Abrechnung brauchst du stärkere und aktuellere Belege.</p>
+      <ul>
+        <li><strong>Niedriges Risiko:</strong> Kandidaten nach User-Agent gruppieren.</li>
+        <li><strong>Mittleres Risiko:</strong> offizielle IP-Bereiche oder dokumentierte DNS-Prüfung ergänzen.</li>
+        <li><strong>Hohes Risiko:</strong> wiederholt prüfen, Änderungen protokollieren und eine zweite Kontrollquelle nutzen.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Suchcrawler und AI-Crawler sind nicht dieselbe Sache</h2>
+      <p>Ein Anbieter kann verschiedene Bots für Suche, Training oder eine vom Nutzer ausgelöste Anfrage verwenden. Bei OpenAI sind OAI-SearchBot und GPTBot getrennte Rollen. Anthropic nennt ebenfalls unterschiedliche Bots für Suche, Training und Nutzerabrufe.</p>
+      <p>Prüfe deshalb nicht nur „Ist der Bot echt?“, sondern auch: „Welche Aufgabe beschreibt der Betreiber für genau diesen Bot?“</p>
+      <p><a class="button secondary" href="/de/crawler">Crawler-Rollen vergleichen</a></p>
+    </section>
+
+    <section>
+      <h2>Was ein sauberer Nachweis enthält</h2>
+      <ul>
+        <li>die unveränderte Quellbeobachtung,</li>
+        <li>die verwendete offizielle Dokumentation,</li>
+        <li>Prüfmethode, Zeitpunkt und Ergebnis,</li>
+        <li>eine klare Aussage darüber, was noch nicht bewiesen ist,</li>
+        <li>eine neue Prüfung, wenn sich IP-Bereiche oder Anbieterangaben ändern.</li>
+      </ul>
+    </section>
+
+    <section class="source-section">
+      <h2>Primärquellen</h2>
+      <ul>
+        <li><a href="https://developers.google.com/search/docs/crawling-indexing/verifying-googlebot">Google Search Central: Google-Crawler verifizieren</a></li>
+        <li><a href="https://www.bing.com/webmasters/help/how-to-verify-bingbot-3905dc26">Bing Webmaster Tools: Bingbot verifizieren</a></li>
+        <li><a href="https://developers.openai.com/api/docs/bots">OpenAI: OAI-SearchBot, GPTBot und ChatGPT-User</a></li>
+        <li><a href="https://support.anthropic.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler">Anthropic: ClaudeBot, Claude-SearchBot und Claude-User</a></li>
+      </ul>
+    </section>
+  </article>
+</BaseLayout>

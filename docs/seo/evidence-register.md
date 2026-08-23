@@ -1,4 +1,4 @@
-# SEO evidence register — 2026-08-22
+# SEO evidence register — 2026-08-23
 
 This register separates facts from interpretations. It does not promise indexing or rankings.
 
@@ -16,7 +16,7 @@ This register separates facts from interpretations. It does not promise indexing
 | E-10 | Experiment | Versioned RFC fixtures can become a useful crawler-access evidence asset. | Seven deterministic cases now execute at build/QA time; no external crawler run exists. | Publish fixture results, not a vendor leaderboard. |
 | E-11 | Hypothesis | Search demand may justify deeper robots and crawler-access coverage. | Intent fit and standards evidence only; no fresh paid keyword endpoint or GSC performance export was used. | Measure impressions and completed tests before expanding. |
 | E-12 | Rejected | More audience variants, city pages, PAA fan-out, or generic AI articles would strengthen this release. | No unique maintained job or original evidence identified. | Do not build. |
-| E-13 | Rejected | AnalyseSpider can independently endorse Contextter. | Common ownership and operating contract. | No artificial Contextter links or corroboration. |
+| E-13 | Rejected | AnalyseSpider can independently endorse Contextter. | Common ownership and operating contract. | Allow only relevant product links with adjacent common-owner disclosure; never claim independence. |
 | E-14 | Supported | A CSP reduces exposure even with current inline-script allowances. | Current site uses only self-hosted assets and inline Astro scripts; prior live headers lacked CSP. | Add a restrictive self-origin policy with explicit inline exceptions. |
 | E-15 | Hypothesis | Unique social preview images could improve shared-link presentation. | No `og:image` was present in the baseline build; no sharing performance evidence exists. | Defer until a maintained visual asset and measurement plan exist. |
 | E-16 | Verified | The planned redirect-chain job was not implemented as its own tool. | Baseline Vercel config permanently redirected `/tools/redirect-chain` to the single-response inspector. | Replace the interim alias with a bounded multi-hop evidence tool. |
@@ -24,5 +24,10 @@ This register separates facts from interpretations. It does not promise indexing
 | E-18 | Experiment | Aggregate JSON exports make local log findings more portable without repeating raw personal data. | Existing inspector produced only rendered tables; the new export excludes raw rows and labels crawler matches as claims. | Measure actual export use before adding more formats. |
 | E-19 | Rejected | The content gap requires a remote crawler, unrestricted fetcher, or automated bot verification service. | Security contract forbids unrestricted network behavior; the user job can be satisfied with pasted evidence and operator instructions. | Keep browser-local boundary. |
 | E-20 | Verified | Production redirected HTTP to HTTPS but did not return an HSTS policy in the baseline header capture. | Live header audit on 2026-08-22. | Add one-year apex HSTS after HTTPS and www redirect verification; do not preload or force subdomains. |
+| E-21 | Supported | Users need a clearer first choice than the internal labels Lab Notes and References. | User review of the live interface plus the existing route inventory. | Lead with Tools, Crawlers and Learn/Wissen; keep technical content types secondary. |
+| E-22 | Supported | Search crawlers and AI crawlers need a role-based comparison rather than one generic bot list. | Current official Google, Bing, OpenAI and Anthropic documentation defines different purposes, controls and verification paths. | Publish one maintained comparison table with source links. |
+| E-23 | Experiment | German core entry pages can make the site easier to understand without duplicating the entire library. | Explicit owner direction; no GSC language-demand proof was available in this pass. | Localise home, tools, crawler, knowledge and about; measure before deeper translation. |
+| E-24 | Rejected | A fair Site Audit, Screaming Frog or Sitebulb winner can be named from one successful run. | Results vary with configuration and deploy state; current fixtures do not yet compare vendor crawlers repeatedly. | Require multiple runs on the same unchanged fixture and publish raw measures first. |
+| E-25 | Verified | Related portfolio links can be constrained to a small route allowlist and checked for adjacent ownership disclosure at build time. | Central QA scans generated HTML for exact destinations and disclosure language. | Keep links contextual; do not create a sitewide portfolio footer. |
 
 Evidence labels: **Verified** = directly observed; **Supported** = primary-source and implementation evidence support the decision; **Hypothesis** = plausible but not yet measured; **Experiment** = bounded test with explicit success criteria; **Rejected** = considered and intentionally excluded.

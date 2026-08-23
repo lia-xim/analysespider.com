@@ -1,0 +1,32 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ArrowIcon from "../../components/ArrowIcon.astro";
+const tools = [
+  { title: "Server-Logs prüfen", text: "Füge einen kleinen Apache- oder Nginx-Logausschnitt ein. Das Tool zeigt Pfade, Statuscodes und angegebene Bots.", href: "/tools/log-file-inspector", note: "Läuft im Browser · kein Upload" },
+  { title: "HTTP-Antwort verstehen", text: "Füge Header und HTML ein. Prüfe Status, Canonical, robots-Angaben und unbekannte Felder getrennt.", href: "/tools/url-inspector", note: "Einfügen statt Abrufen" },
+  { title: "Redirect-Kette prüfen", text: "Baue mehrere Weiterleitungen nach und finde Schleifen, Lücken oder ein unerwartetes Ziel.", href: "/tools/redirect-chain", note: "Bis zu 12 Schritte" },
+  { title: "robots.txt-Regel testen", text: "Prüfe, ob eine konkrete URL für einen bestimmten Crawler erlaubt oder gesperrt ist.", href: "/tools/robots-rule-tester", note: "Browserlokaler Test" },
+  { title: "IP-Adresse einordnen", text: "Erkenne öffentliche, private und reservierte Bereiche, ohne eine Person oder einen genauen Ort zu behaupten.", href: "/tools/ip-location", note: "Keine Standortdatenbank" },
+];
+---
+<BaseLayout
+  title="Kostenlose Tools für Crawling und technische SEO — AnalyseSpider"
+  description="Fünf kostenlose browserlokale Tools für Server-Logs, HTTP-Antworten, Redirects, robots.txt und IP-Adressen."
+  canonicalPath="/de/tools"
+  alternatePath="/tools"
+  lang="de"
+  bodyClass="simple-content"
+>
+  <header class="simple-page-lead">
+    <h1>Kostenlose Tools für konkrete technische Fragen.</h1>
+    <p>Wähle das kleinste Werkzeug, das zu deinen vorhandenen Daten passt. Die aktuellen Tools laufen im Browser und senden deine Eingaben nicht an AnalyseSpider.</p>
+  </header>
+  <section class="plain-resource-list" aria-label="Tools">
+    {tools.map((tool) => (
+      <a href={tool.href}>
+        <div><h2>{tool.title}</h2><p>{tool.text}</p></div>
+        <span><small>{tool.note}</small><ArrowIcon /></span>
+      </a>
+    ))}
+  </section>
+</BaseLayout>

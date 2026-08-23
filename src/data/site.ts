@@ -36,9 +36,9 @@ export const site: SiteConfig = {
   origin: "https://analysespider.com",
   language: "en",
   name: "AnalyseSpider",
-  title: "AnalyseSpider Web Diagnostics Lab",
-  description: "Browser-local tools for inspecting access logs, HTTP response signals, directives, and IP address properties with visible limits.",
-  purpose: "Inspect crawler and response evidence without uploading logs or enabling unrestricted server-side fetching.",
+  title: "AnalyseSpider — free crawling and technical SEO tools",
+  description: "Free browser tools and plain-language guides for checking crawler traffic, redirects, robots rules, HTTP responses and server logs.",
+  purpose: "Help people understand crawler and response signals with small local tools, clear explanations and visible evidence limits.",
   ownershipDisclosure: "AnalyseSpider is a new implementation under new ownership in 2026. Former software, users, downloads, customers, and operator identity did not transfer.",
   operatorDisclosure: "Owned and legally operated by Matthias Ramahi. Product work is associated with Contextter; common ownership is disclosed and this site is not independent corroboration.",
   operator: {
@@ -61,7 +61,7 @@ export const site: SiteConfig = {
   analytics: { enabled: false, provider: null },
   githubUrl: "https://github.com/lia-xim/analysespider.com",
   contactEmail: "info@contextter.com",
-  buildDate: "2026-08-22",
+  buildDate: "2026-08-23",
 };
 
 export const robotsContent = site.indexing === "public"

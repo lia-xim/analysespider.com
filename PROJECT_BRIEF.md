@@ -1,12 +1,12 @@
 # AnalyseSpider project brief
 
-Version: 1.1
-Decision date: 2026-08-22
+Version: 1.2
+Decision date: 2026-08-23
 Launch state: public, indexable
 
 ## Job
 
-Build a standalone Web Diagnostics Lab for technical SEOs, developers, site owners, and web-operations teams. The site must let a visitor inspect evidence before asking them to create an account or use another product.
+Build a standalone, plain-language crawling and technical SEO resource for technical SEOs, developers, site owners, and web-operations teams. The site must let a visitor use a tool, answer one practical question, or compare crawler roles before asking them to use another product.
 
 The first release is browser-local:
 
@@ -14,6 +14,14 @@ The first release is browser-local:
 2. Inspect pasted HTTP response headers and HTML directives.
 3. Classify an IP address without pretending that an IP proves a person or precise location.
 4. Publish explicit legacy URL decisions and current methodology.
+
+## Experience and information architecture
+
+- Lead with the user-facing labels Tools, Crawlers, and Learn/Wissen. Lab notes and references remain evidence formats, not primary navigation concepts.
+- Use readable system sans-serif typography, moderate heading weights, short introductions, and explicit next steps.
+- Maintain English as the complete baseline and a German core layer with reciprocal language alternates.
+- Add German detail pages only when they answer a maintained user question; do not mass-translate thin variants.
+- Related AI Fanout or SEO Fan-out links must be contextually useful and carry an adjacent common-owner disclosure. Contextter remains limited to a real export or documented migration surface until the canonical portfolio policy is explicitly changed.
 
 ## Positioning
 

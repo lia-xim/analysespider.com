@@ -1,63 +1,34 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import PageLead from "../components/PageLead.astro";
-import ArrowIcon from "../components/ArrowIcon.astro";
-import { site } from "../data/site";
 ---
 <BaseLayout
-  title="About the AnalyseSpider Web Diagnostics Lab"
-  description="Purpose, ownership, editorial standard, product boundary, and operating model for the new AnalyseSpider implementation."
+  title="About AnalyseSpider — free crawling and SEO tools"
+  description="Why AnalyseSpider exists, what its tools process and how the new website is separated from the former domain."
   canonicalPath="/about"
+  alternatePath="/de/ueber"
+  bodyClass="simple-content"
 >
-  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><span aria-current="page">About</span></nav>
-  <PageLead
-    title="A new web diagnostics lab, built in public"
-    intro="AnalyseSpider is a 2026 implementation for people who need to inspect web evidence without turning a partial signal into a confident verdict."
-    index="70"
-  />
-  <div class="article-shell">
-    <article class="article-prose">
-      <div class="takeaway"><span>Identity</span><p>{site.ownershipDisclosure}</p></div>
-      <section>
-        <span class="section-index">01</span>
-        <h2>Why this site exists</h2>
-        <p>Technical SEO and web operations produce fragments: a server-log row, a response capture, a redirect, an IP address, or a crawler string. AnalyseSpider helps organise those fragments into observed facts, bounded inferences, and explicit unknowns.</p>
-        <p>The site continues the domain's broad historical technical-utility topic. The current tools, interface, writing, methods, and code are newly created.</p>
-      </section>
-      <section>
-        <span class="section-index">02</span>
-        <h2>What did not transfer</h2>
-        <p>Former software, binaries, source code, documentation, branding, screenshots, users, customers, subscribers, authorship, and operator identity did not transfer with the domain. AnalyseSpider does not offer an old download under a new label.</p>
-        <p>The <a href="/legacy">legacy map</a> records a current decision for important historical URLs: restore a legitimate user job with new work, redirect only to an equivalent successor, or retire the path.</p>
-      </section>
-      <section>
-        <span class="section-index">03</span>
-        <h2>Editorial standard</h2>
-        <ul>
-          <li>Answer the diagnostic question before expanding its context.</li>
-          <li>Use current primary technical documentation for changing or disputed claims.</li>
-          <li>Label original observations, supported inference, and missing evidence separately.</li>
-          <li>Show publication and review dates on guides, references, and lab notes.</li>
-          <li>Correct factual errors without preserving a misleading earlier claim.</li>
-          <li>Do not invent customers, benchmarks, field results, endorsements, or independence.</li>
-        </ul>
-      </section>
-      <section>
-        <span class="section-index">04</span>
-        <h2>Product and privacy boundary</h2>
-        <p>The current tools parse pasted or selected data in the browser. They do not provide unrestricted server-side fetching, active security testing, port scanning, or general crawling. No current tool uploads the submitted sample to AnalyseSpider.</p>
-        <p>Local processing narrows the transfer boundary; it does not remove the user's responsibility to minimise confidential or personal data before analysis.</p>
-      </section>
-      <section>
-        <span class="section-index">05</span>
-        <h2>Ownership and Contextter</h2>
-        <p>{site.operatorDisclosure} AnalyseSpider must remain useful without visiting or buying another product. A future Contextter workflow may be linked only after a complete standalone result and with the common ownership visible.</p>
-      </section>
-    </article>
-    <aside class="article-aside">
-      <div><span class="aside-label">Current state</span><p>Public release. Canonical content pages are crawlable and indexable.</p></div>
-      <div><span class="aside-label">Repository</span><p><a href={site.githubUrl}>Read the public source <ArrowIcon external /></a></p></div>
-      <div><span class="aside-label">Corrections</span><p><a href="/contact">Report an error, privacy concern, or legacy issue <ArrowIcon /></a></p></div>
-    </aside>
-  </div>
+  <header class="simple-page-lead">
+    <h1>AnalyseSpider helps you understand technical website signals.</h1>
+    <p>The site combines small free tools with plain explanations about crawling, indexing, redirects and server logs.</p>
+  </header>
+  <article class="simple-prose">
+    <section>
+      <h2>What you can do here</h2>
+      <p>You can inspect existing logs, HTTP headers, HTML directives, redirect steps or IP addresses in your browser. The result shows what was directly observed and which questions remain open.</p>
+    </section>
+    <section>
+      <h2>What AnalyseSpider does not do</h2>
+      <p>The site does not crawl arbitrary third-party websites, run security scans or promise indexing. The free tools currently do not send the data you enter to AnalyseSpider.</p>
+    </section>
+    <section>
+      <h2>The former domain</h2>
+      <p>AnalyseSpider was formerly used for log analysis, IP-to-country data and technical website tools. Today's website is a new implementation under new ownership since 2026.</p>
+      <p>Former software, copy, logos, databases, downloads, users and customers did not transfer. Historical URLs are restored individually, redirected to a matching successor or retired with a real error status.</p>
+    </section>
+    <section>
+      <h2>Connection to Contextter</h2>
+      <p>AnalyseSpider and Contextter are operated by Matthias Ramahi. AnalyseSpider remains useful without Contextter. When a Contextter link appears, the common operator is named beside it.</p>
+    </section>
+  </article>
 </BaseLayout>

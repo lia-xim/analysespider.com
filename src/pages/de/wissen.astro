@@ -1,0 +1,57 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ArrowIcon from "../../components/ArrowIcon.astro";
+const groups = [
+  { title: "Crawling und Indexierung", links: [
+    ["Warum wird meine Seite nicht indexiert?", "Statuscode, robots-Angaben und Canonical der Reihe nach prüfen.", "/de/wissen/warum-wird-meine-seite-nicht-indexiert"],
+    ["Wie funktioniert robots.txt?", "Verstehen, welcher Bot welche URL abrufen darf.", "/guides/test-robots-txt-rules"],
+    ["Wie erkenne ich einen echten Crawler?", "User-Agent, IP-Bereich und DNS-Prüfung richtig einordnen.", "/de/wissen/crawler-erkennen"],
+  ]},
+  { title: "Redirects und HTTP", links: [
+    ["Wie lese ich eine Redirect-Kette?", "Jeden Schritt einzeln prüfen und das endgültige Ziel festhalten.", "/guides/redirect-chain-analysis"],
+    ["Was bedeuten HTTP-Statuscodes?", "Protokollbedeutung und SEO-Folge nicht miteinander verwechseln.", "/reference/http-status-codes"],
+    ["Welche robots-Angabe gewinnt?", "Meta-Robots und X-Robots-Tag getrennt lesen.", "/reference/robots-directives"],
+  ]},
+  { title: "Server-Logs und Bot-Traffic", links: [
+    ["Was steht in einem Server-Log?", "Felder, Format und Grenzen vor der Auswertung klären.", "/guides/log-file-analysis"],
+    ["Wie finde ich Crawler-Anfragen?", "Angegebene Bots filtern und wichtige Identitäten zusätzlich prüfen.", "/guides/crawler-log-analysis"],
+    ["Was kann eine IP-Adresse zeigen?", "Netzwerkbereiche erkennen, ohne daraus eine Person oder einen genauen Ort abzuleiten.", "/guides/ip-geolocation-data"],
+  ]},
+];
+---
+<BaseLayout
+  title="Technische SEO einfach erklärt — AnalyseSpider"
+  description="Verständliche Antworten zu Crawling, Indexierung, robots.txt, Redirects, HTTP-Antworten und Server-Logs."
+  canonicalPath="/de/wissen"
+  alternatePath="/guides"
+  lang="de"
+  bodyClass="simple-content"
+>
+  <header class="simple-page-lead">
+    <h1>Technische SEO ohne unnötige Fachsprache.</h1>
+    <p>Jede Erklärung beantwortet eine praktische Frage. Beginne bei dem Problem, das du gerade auf deiner Website siehst.</p>
+  </header>
+  <section class="knowledge-groups" aria-label="Wissensbereiche">
+    {groups.map((group) => (
+      <div class="knowledge-group">
+        <h2>{group.title}</h2>
+        <div>
+          {group.links.map((link) => (
+            <a href={link[2]}>
+              <span><strong>{link[0]}</strong><small>{link[1]}</small></span>
+              <ArrowIcon />
+            </a>
+          ))}
+        </div>
+      </div>
+    ))}
+  </section>
+  <section class="fanout-knowledge" aria-labelledby="fanout-knowledge-heading">
+    <div>
+      <h2 id="fanout-knowledge-heading">Du planst neue Inhalte?</h2>
+      <p>Der SEO Fan-out Explorer hilft dir zu entscheiden, ob ein Thema eine neue Seite, einen neuen Abschnitt, bessere Belege oder gar keine neue URL braucht.</p>
+      <p class="disclosure">SEO Fan-out und AnalyseSpider werden von Matthias Ramahi betrieben. Dies ist ein verwandtes Werkzeug und keine unabhängige Empfehlung.</p>
+    </div>
+    <a class="button secondary" href="https://seo-fanout.com/tool/">SEO-Seitenentscheidung starten</a>
+  </section>
+</BaseLayout>
