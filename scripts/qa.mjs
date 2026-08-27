@@ -425,6 +425,14 @@ pass(
   csp.includes("worker-src 'self' blob:"),
   "CSP must allow the local Cap proof worker",
 );
+pass(
+  csp.includes("script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'"),
+  "CSP must allow WebAssembly compilation for the local Cap proof solver",
+);
+pass(
+  !csp.includes(" 'unsafe-eval'"),
+  "CSP must not enable unrestricted JavaScript eval",
+);
 
 const benchmark = await readFile(
   await findOutput("/lab/crawler-benchmarks"),
