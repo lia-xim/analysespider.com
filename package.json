@@ -9,14 +9,17 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro check && astro build",
+    "build": "node scripts/copy-cap-assets.mjs && astro check && astro build",
     "preview": "astro preview",
     "check": "astro check",
     "qa": "node scripts/qa.mjs",
     "verify": "pnpm build && pnpm qa"
   },
   "dependencies": {
-    "astro": "7.2.1"
+    "@cap.js/wasm": "0.0.7",
+    "@cap.js/widget": "0.1.56",
+    "astro": "7.2.1",
+    "pako": "2.1.0"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.10",
@@ -24,5 +27,3 @@
   },
   "packageManager": "pnpm@10.33.2"
 }
-
-

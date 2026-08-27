@@ -1,5 +1,6 @@
 ---
 import ArrowIcon from "./ArrowIcon.astro";
+import CrawlerViewTool from "./CrawlerViewTool.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import type { Locale } from "../data/i18n";
 
@@ -16,7 +17,7 @@ const copy = de
       canonicalPath: "/de",
       alternatePath: "/",
       headline: "Sieh, was Crawler auf deiner Website sehen.",
-      intro: "Prüfe Weiterleitungen, robots.txt, HTTP-Antworten und Server-Logs. Kostenlos, ohne Anmeldung und ohne deine Eingaben hochzuladen.",
+      intro: "Prüfe eine öffentliche URL und verstehe die Serverantwort in einfacher Sprache.",
       primary: "Kostenloses Tool wählen",
       secondary: "Crawling einfach erklärt",
       problemHeading: "Was möchtest du prüfen?",
@@ -35,7 +36,7 @@ const copy = de
       canonicalPath: "/",
       alternatePath: "/de",
       headline: "See what crawlers see on your website.",
-      intro: "Check redirects, robots.txt, HTTP responses and server logs. Free, without an account and without uploading your input.",
+      intro: "Check one public URL and understand its server response in plain language.",
       primary: "Choose a free tool",
       secondary: "Learn how crawling works",
       problemHeading: "What do you want to check?",
@@ -51,13 +52,13 @@ const copy = de
 
 const problems = de
   ? [
-      { title: "Warum wird meine Seite nicht indexiert?", text: "Prüfe Statuscode, robots-Angaben und Canonical.", href: "/tools/url-inspector", icon: "search" },
+      { title: "Was findet ein Crawler auf meiner URL?", text: "Rufe eine öffentliche URL ab und prüfe Zugriff, Indexierung und Hauptinhalt.", href: "/de/tools/crawler-sicht", icon: "search" },
       { title: "Wohin führt diese Weiterleitung?", text: "Baue die einzelnen Redirect-Schritte nach.", href: "/tools/redirect-chain", icon: "redirect" },
       { title: "Darf dieser Crawler meine Seite aufrufen?", text: "Teste eine robots.txt-Regel für einen Bot.", href: "/tools/robots-rule-tester", icon: "lock" },
       { title: "Was zeigen meine Server-Logs?", text: "Finde Statuscodes, Pfade und angegebene Bots.", href: "/tools/log-file-inspector", icon: "file" },
     ]
   : [
-      { title: "Why is my page not indexed?", text: "Check the status, robots directives and canonical.", href: "/tools/url-inspector", icon: "search" },
+      { title: "What does a crawler find on my URL?", text: "Fetch a public URL and check access, indexing and main content.", href: "/tools/crawler-view", icon: "search" },
       { title: "Where does this redirect lead?", text: "Build the redirect steps one by one.", href: "/tools/redirect-chain", icon: "redirect" },
       { title: "Can this crawler access my page?", text: "Test one robots.txt rule for a bot.", href: "/tools/robots-rule-tester", icon: "lock" },
       { title: "What do my server logs show?", text: "Find status codes, paths and claimed bots.", href: "/tools/log-file-inspector", icon: "file" },
@@ -65,11 +66,11 @@ const problems = de
 
 const areas = de
   ? [
-      { title: "Tools", text: "Fünf kleine Werkzeuge für Logs, HTTP-Antworten, Redirects, robots.txt und IP-Adressen.", href: "/de/tools", action: "Tools öffnen" },
+      { title: "Tools", text: "Ein Live-URL-Check und fünf browserlokale Werkzeuge für konkrete technische Fragen.", href: "/de/tools", action: "Tools öffnen" },
       { title: "Wissen", text: "Kurze Antworten auf echte Fragen zu Crawling, Indexierung, Redirects und Server-Logs.", href: "/de/wissen", action: "Wissen öffnen" },
     ]
   : [
-      { title: "Tools", text: "Five small tools for logs, HTTP responses, redirects, robots.txt and IP addresses.", href: "/tools", action: "Open tools" },
+      { title: "Tools", text: "One live URL check and five browser-local tools for specific technical questions.", href: "/tools", action: "Open tools" },
       { title: "Learn", text: "Plain answers to practical questions about crawling, indexing, redirects and server logs.", href: "/guides", action: "Open guides" },
     ];
 ---
@@ -81,28 +82,7 @@ const areas = de
   alternatePath={copy.alternatePath}
   bodyClass="simple-home"
 >
-  <section class="simple-hero">
-    <div class="simple-hero-copy">
-      <h1>{copy.headline}</h1>
-      <p>{copy.intro}</p>
-      <div class="simple-actions">
-        <a class="button primary" href={de ? "/de/tools" : "/tools"}>{copy.primary}</a>
-        <a class="button secondary" href={de ? "/de/wissen" : "/guides"}>{copy.secondary}</a>
-      </div>
-    </div>
-    <div class="signal-preview" aria-label={de ? "Beispiel einer technischen Prüfung" : "Example technical check"}>
-      <div class="signal-preview-head">
-        <strong>{de ? "Beispiel: eine URL prüfen" : "Example: check one URL"}</strong>
-        <span>{de ? "Keine Live-Abfrage" : "Not a live fetch"}</span>
-      </div>
-      <dl>
-        <div><dt>Status</dt><dd><strong>200 OK</strong><span>{de ? "Die Seite antwortet erfolgreich." : "The page returned a successful response."}</span></dd></div>
-        <div><dt>Robots</dt><dd><strong>index, follow</strong><span>{de ? "Die Seite erlaubt Indexierung." : "The page allows indexing."}</span></dd></div>
-        <div><dt>Canonical</dt><dd><strong>{de ? "Verweist auf sich selbst" : "Self-referencing"}</strong><span>{de ? "Kein Konflikt in diesem Beispiel." : "No conflict in this example."}</span></dd></div>
-        <div><dt>Redirect</dt><dd><strong>{de ? "Keine Weiterleitung" : "No redirect"}</strong><span>{de ? "Die URL bleibt gleich." : "The URL stays the same."}</span></dd></div>
-      </dl>
-    </div>
-  </section>
+  <CrawlerViewTool locale={locale} />
 
   <section class="problem-section" aria-labelledby="problem-heading">
     <h2 id="problem-heading">{copy.problemHeading}</h2>

@@ -5,12 +5,12 @@ import { site } from "../data/site";
 ---
 <BaseLayout
   title="Privacy notice — AnalyseSpider"
-  description="How the current AnalyseSpider website handles hosting requests, browser-local tool input, email contact, external links, and data-subject rights."
+  description="How AnalyseSpider handles hosting requests, the protected live URL check, browser-local tools, email contact, retention, and data-subject rights."
   canonicalPath="/privacy"
 >
   <PageLead
     title="Privacy follows the actual data path"
-    intro="The current tools work locally in your browser. Hosting requests, email contact, and links are separate boundaries and are described here without claiming that all internet infrastructure is storage-free."
+    intro="Most tools work locally in your browser. The crawler check sends one public URL to a protected Contextter-operated gateway. Each data path is described separately here."
   />
   <section class="content-grid">
     <article class="prose">
@@ -23,8 +23,13 @@ import { site } from "../data/site";
       <p>This processing is used to deliver the website, maintain availability, prevent abuse, and diagnose technical failures. Hosting-level processing and retention are governed by the applicable Vercel configuration and service terms. It is separate from the contents you paste into the current diagnostic tools.</p>
 
       <h2>Browser-local diagnostic tools</h2>
-      <p>The Log File Inspector, Response Inspector, and IP Address Check run as browser-local JavaScript. The current application does not upload the selected log file, pasted response, entered IP address, or generated result to an AnalyseSpider application endpoint. It does not fetch a URL entered by a visitor.</p>
+      <p>The Log File Inspector, Response Inspector, Redirect Chain tool, Robots Rule Tester, and IP Address Check run as browser-local JavaScript. They do not upload the selected file, pasted response, entered rule, IP address, or generated result to an AnalyseSpider application endpoint.</p>
       <p>The input can still remain in your device memory, clipboard, browser history or extensions, screenshots, and any files you export or save. Redact confidential logs before using any diagnostic tool, including a local one.</p>
+
+      <h2>Protected live URL check</h2>
+      <p>The crawler check sends the public URL you enter to <strong>tools.contextter.com</strong>, a Hetzner-hosted gateway operated by Matthias Ramahi. The gateway fetches only public HTTP or HTTPS pages through an SSRF-protected transport. It blocks private and local addresses, pins DNS, checks every redirect, allows only ports 80 and 443, follows at most three redirects, stops after eight seconds, and limits the decoded response to 1.5 MB.</p>
+      <p>The gateway uses a browser-computed proof-of-work challenge, an exact origin allowlist, a pseudonymous HMAC client key derived from the request IP address and a coarse device family, rate limits, one concurrent AnalyseSpider slot, a circuit breaker, and an immediate scope kill switch. The raw IP address is needed at the network and proxy layer but is not used as the application-level rate-limit key.</p>
+      <p>Successful URL reports can be cached in encrypted Redis storage for up to 30 days; error reports for up to five minutes. Usage statistics keep the hostname, not the full submitted URL, for up to 90 days. Pseudonymous unique-client counters and aggregate run counters can remain for up to 400 days. This supports abuse prevention, capacity planning, cache efficiency, and service reliability. The check does not use DataForSEO, an LLM-mentions provider, an advertising service, or a customer account.</p>
 
       <h2>Cookies, analytics, and accounts</h2>
       <p><strong>No analytics</strong>, advertising pixels, behavioral tracking, account system, or profiling service is currently integrated. <strong>No application cookies</strong> are set by the current site. There is no newsletter signup, payment flow, or user account.</p>
@@ -37,25 +42,26 @@ import { site } from "../data/site";
       <p>The Google Search Console ownership TXT record is a DNS verification record. It does not add an analytics script or transmit visitor tool input.</p>
 
       <h2>Retention and recipients</h2>
-      <p>The current AnalyseSpider application does not create a database record for page visitors or tool input. Technical request information can be processed by the hosting provider, and email correspondence by the involved email providers. Information is retained only as needed for delivery, security, correspondence, evidence of handled requests, or legal obligations, subject to provider and account settings.</p>
+      <p>The browser-local tools do not create an application record. The live URL check creates the bounded cache and usage records described above. Technical request information can also be processed by Vercel, Hetzner, the reverse proxy, and involved network providers; email correspondence by the involved email providers. Information is retained only as needed for delivery, security, rate limiting, cache operation, correspondence, evidence of handled requests, or legal obligations.</p>
 
       <h2>Your data-subject rights</h2>
       <p>Where the GDPR applies, a data subject can request access, rectification, erasure, restriction, portability, or object to processing, subject to the statutory conditions. A complaint can also be made to a competent data-protection supervisory authority. Send privacy requests to <a href={`mailto:${site.operator.email}?subject=AnalyseSpider%20privacy`}>{site.operator.email}</a>.</p>
 
       <h2>Changes</h2>
-      <p>This notice describes the current static, browser-local implementation as reviewed on 22 August 2026. A future analytics service, server-side fetcher, upload, account, billing flow, or additional processor requires an updated technical and privacy review before activation.</p>
+      <p>This notice describes the current static site and protected crawler gateway as reviewed on 27 August 2026. A future analytics service, upload, account, billing flow, paid data provider, or additional processor requires an updated technical and privacy review before activation.</p>
     </article>
     <aside class="side-note">
       <h3>Current declaration</h3>
       <dl class="facts-list">
         <div><dt>Hosting</dt><dd>Vercel</dd></div>
-        <div><dt>Tool processing</dt><dd>Browser-local</dd></div>
-        <div><dt>Tool upload</dt><dd>None</dd></div>
+        <div><dt>Tool processing</dt><dd>Browser-local plus one protected live URL fetch</dd></div>
+        <div><dt>Live gateway</dt><dd>Hetzner / tools.contextter.com</dd></div>
+        <div><dt>Report cache</dt><dd>30 days success / 5 minutes error</dd></div>
         <div><dt>Analytics</dt><dd>None</dd></div>
         <div><dt>App cookies</dt><dd>None</dd></div>
         <div><dt>Contact form</dt><dd>None</dd></div>
         <div><dt>Accounts</dt><dd>None</dd></div>
-        <div><dt>Updated</dt><dd>22 August 2026</dd></div>
+        <div><dt>Updated</dt><dd>27 August 2026</dd></div>
       </dl>
     </aside>
   </section>

@@ -74,7 +74,7 @@ const websiteEntity = {
 const collectionPaths = new Set(["/tools", "/guides", "/crawlers", "/blog", "/reference", "/for", "/de/tools", "/de/wissen", "/de/crawler"]);
 const schemaType = pageType === "article"
   ? "TechArticle"
-  : canonicalPath.startsWith("/tools/")
+  : canonicalPath.startsWith("/tools/") || canonicalPath.startsWith("/de/tools/")
     ? "WebApplication"
     : collectionPaths.has(canonicalPath)
       ? "CollectionPage"

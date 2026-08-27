@@ -24,9 +24,9 @@ const copy = de ? {
   auditStatus: "Diesen Vergleich veröffentlichen wir erst nach mehreren Läufen auf derselben unveränderten Testwebsite. Ein einzelner grüner Crawl reicht nicht für einen fairen Testsieger.",
   fixtureLink: "Vorhandene Test-Fixtures ansehen",
   relatedHeading: "Nächster Schritt für AI-Sichtbarkeit und Inhalte",
-  relatedText: "Das AI Answer Evidence Lab vergleicht öffentliche AI-Antworten, die du selbst einfügst. Der SEO Fan-out Explorer hilft danach bei einer konkreten Seitenentscheidung.",
-  aiLabel: "AI-Antworten vergleichen", seoLabel: "SEO-Seitenentscheidung treffen",
-  disclosure: "AnalyseSpider, AI Fanout und SEO Fan-out werden von Matthias Ramahi betrieben. Die Links sind verwandte Werkzeuge und keine unabhängigen Empfehlungen.",
+  relatedText: "AI Fanout führt echte Abfragen über OpenAI und Gemini aus und zeigt gefundene Folgefragen und Quellen. Das ergänzt den technischen Crawler-Blick, misst aber keine garantierte Sichtbarkeit.",
+  aiLabel: "Fragen und Quellen prüfen",
+  disclosure: "AnalyseSpider und AI Fanout werden von Matthias Ramahi betrieben. Der Link ist ein verwandtes Werkzeug und keine unabhängige Empfehlung.",
 } : {
   title: "Compare Googlebot, Bingbot and AI crawlers — AnalyseSpider",
   description: "Compare the jobs, robots.txt controls and verification methods of Googlebot, Bingbot, OAI-SearchBot, GPTBot and ClaudeBot.",
@@ -45,9 +45,9 @@ const copy = de ? {
   auditStatus: "We will publish that comparison after several runs on the same unchanged fixture site. One green crawl is not enough to name a fair winner.",
   fixtureLink: "View the current test fixtures",
   relatedHeading: "A next step for AI visibility and content",
-  relatedText: "AI Answer Evidence Lab compares public AI answers that you provide. SEO Fan-out Explorer then helps you make one concrete page decision.",
-  aiLabel: "Compare AI answers", seoLabel: "Make an SEO page decision",
-  disclosure: "AnalyseSpider, AI Fanout and SEO Fan-out are operated by Matthias Ramahi. These are related tools, not independent recommendations.",
+  relatedText: "AI Fanout runs real OpenAI and Gemini queries and shows observed follow-up questions and sources. This complements the technical crawler view but does not promise visibility.",
+  aiLabel: "Check questions and sources",
+  disclosure: "AnalyseSpider and AI Fanout are operated by Matthias Ramahi. This is a related tool, not an independent recommendation.",
 };
 
 const crawlers = de ? [
@@ -100,8 +100,7 @@ const crawlers = de ? [
   <section class="related-work related-fanout" aria-labelledby="fanout-heading">
     <div><h2 id="fanout-heading">{copy.relatedHeading}</h2><p>{copy.relatedText}</p></div>
     <div class="related-actions">
-      <a class="button secondary" href="https://ai-fanout.com">{copy.aiLabel}</a>
-      <a class="button secondary" href="https://seo-fanout.com/tool/">{copy.seoLabel}</a>
+      <a class="button secondary" href={de ? "https://ai-fanout.com/de" : "https://ai-fanout.com/"}>{copy.aiLabel}</a>
     </div>
     <p class="disclosure">{copy.disclosure}</p>
   </section>

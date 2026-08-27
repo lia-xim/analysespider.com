@@ -1,0 +1,206 @@
+---
+import type { Locale } from "../data/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const de = locale === "de";
+const copy = de
+  ? {
+      title: "Sieh, was ein Crawler auf deiner Seite findet.",
+      intro:
+        "Prüfe eine öffentliche URL. Du bekommst vier klare Antworten und konkrete nächste Schritte.",
+      label: "Öffentliche URL",
+      placeholder: "https://example.com/seite",
+      submit: "URL prüfen",
+      note: "Eine URL pro Prüfung · kein Login · kein JavaScript-Rendering",
+      checking: "Die Seite wird sicher abgerufen und geprüft …",
+      errorHeading: "Die Prüfung konnte nicht abgeschlossen werden.",
+      actions: "Das solltest du als Nächstes tun",
+      details: "Technische Details",
+      crawlerRules: "Gefundene Crawler-Regeln",
+      limitations:
+        "Diese Prüfung untersucht nur die Serverantwort dieser einen URL. Keine Inhalte hinter Logins, kein JavaScript-Rendering und keine Garantie für Google-Indexierung oder AI-Zitationen.",
+      contextterHeading: "Ganze Website prüfen",
+      contextterText:
+        "Nutze einen vollständigen technischen Crawl, wenn du Probleme über viele Seiten hinweg finden und priorisieren möchtest.",
+      contextterLink: "Zu Contextter Site Audit",
+      fanoutHeading: "Fragen und Quellen für AI-Suche prüfen",
+      fanoutText:
+        "Sieh, welche Folgefragen und Quellen bei echten OpenAI- und Gemini-Abfragen erscheinen.",
+      fanoutLink: "Zu AI Fanout",
+      disclosure:
+        "AnalyseSpider, Contextter und AI Fanout werden von Matthias Ramahi betrieben und sind keine unabhängigen Empfehlungen.",
+      how: "So funktioniert der Check",
+      steps: [
+        ["URL prüfen", "Gib eine öffentliche URL ein und starte die Prüfung."],
+        ["Crawler-Antwort lesen", "Wir holen die Serverantwort wie ein einfacher HTTP-Crawler und ordnen sie ein."],
+        ["Nächste Schritte umsetzen", "Du erhältst wenige konkrete Hinweise statt eines erfundenen Gesamtscores."],
+      ],
+      learn: "Crawler einfach erklärt",
+      learnText: "Was ist ein Crawler und was kann diese Prüfung wirklich zeigen?",
+      learnLink: "/de/wissen/crawler-erkennen",
+    }
+  : {
+      title: "See what a crawler finds on your page.",
+      intro:
+        "Check one public URL. You get four clear answers and concrete next steps.",
+      label: "Public URL",
+      placeholder: "https://example.com/page",
+      submit: "Check URL",
+      note: "One URL per check · no login · no JavaScript rendering",
+      checking: "Fetching and checking the page safely …",
+      errorHeading: "The check could not be completed.",
+      actions: "What to do next",
+      details: "Technical details",
+      crawlerRules: "Observed crawler rules",
+      limitations:
+        "This check examines only the server response for this one URL. No logged-in content, no JavaScript rendering, and no guarantee of Google indexing or AI citations.",
+      contextterHeading: "Check the whole website",
+      contextterText:
+        "Use a full technical crawl when you need to find and prioritise problems across many pages.",
+      contextterLink: "Open Contextter Site Audit",
+      fanoutHeading: "Check questions and sources in AI search",
+      fanoutText:
+        "See which follow-up questions and sources appear in real OpenAI and Gemini queries.",
+      fanoutLink: "Open AI Fanout",
+      disclosure:
+        "AnalyseSpider, Contextter and AI Fanout are operated by Matthias Ramahi and are not independent recommendations.",
+      how: "How the check works",
+      steps: [
+        ["Check a URL", "Enter one public URL and start the check."],
+        ["Read the crawler response", "We fetch the server response like a simple HTTP crawler and explain it."],
+        ["Act on the result", "You get a few concrete pointers instead of an invented overall score."],
+      ],
+      learn: "Crawlers in plain language",
+      learnText: "What is a crawler, and what can this check actually show?",
+      learnLink: "/reference/crawler-verification-methods",
+    };
+---
+<section class="crawler-tool" data-crawler-tool data-locale={locale}>
+  <div class="crawler-tool-intro">
+    <h1>{copy.title}</h1>
+    <p>{copy.intro}</p>
+  </div>
+
+  <form class="crawler-check-form" data-crawler-form novalidate>
+    <label class="visually-hidden" for={`crawler-url-${locale}`}>{copy.label}</label>
+    <div class="crawler-input-row">
+      <input
+        id={`crawler-url-${locale}`}
+        name="url"
+        type="url"
+        inputmode="url"
+        autocomplete="url"
+        required
+        maxlength="2048"
+        placeholder={copy.placeholder}
+        aria-describedby={`crawler-note-${locale}`}
+      />
+      <button type="submit">{copy.submit}</button>
+    </div>
+    <p id={`crawler-note-${locale}`} class="crawler-form-note">{copy.note}</p>
+  </form>
+
+  <p class="crawler-progress" data-crawler-progress role="status" aria-live="polite" hidden>
+    <span aria-hidden="true"></span>{copy.checking}
+  </p>
+
+  <section class="crawler-error" data-crawler-error role="alert" hidden>
+    <h2>{copy.errorHeading}</h2>
+    <p data-crawler-error-text></p>
+  </section>
+
+  <div class="crawler-results" data-crawler-results hidden>
+    <div class="crawler-status-list" aria-live="polite">
+      <article class="crawler-status-row" data-status-row="pageFetch">
+        <span class="crawler-status-icon" aria-hidden="true"></span>
+        <h2>{de ? "Seite abrufbar" : "Page fetchable"}</h2>
+        <strong data-status-value></strong>
+        <p data-status-description></p>
+      </article>
+      <article class="crawler-status-row" data-status-row="searchCrawlerFetch">
+        <span class="crawler-status-icon" aria-hidden="true"></span>
+        <h2>{de ? "Crawler dürfen zugreifen" : "Crawlers can access it"}</h2>
+        <strong data-status-value></strong>
+        <p data-status-description></p>
+      </article>
+      <article class="crawler-status-row" data-status-row="indexingAllowed">
+        <span class="crawler-status-icon" aria-hidden="true"></span>
+        <h2>{de ? "Indexierung erlaubt" : "Indexing allowed"}</h2>
+        <strong data-status-value></strong>
+        <p data-status-description></p>
+      </article>
+      <article class="crawler-status-row" data-status-row="meaningfulContentExtractable">
+        <span class="crawler-status-icon" aria-hidden="true"></span>
+        <h2>{de ? "Hauptinhalt erkennbar" : "Main content detectable"}</h2>
+        <strong data-status-value></strong>
+        <p data-status-description></p>
+      </article>
+    </div>
+
+    <section class="crawler-actions" aria-labelledby={`crawler-actions-${locale}`}>
+      <h2 id={`crawler-actions-${locale}`}>{copy.actions}</h2>
+      <ol data-crawler-actions></ol>
+    </section>
+
+    <details class="crawler-technical">
+      <summary>{copy.details}</summary>
+      <dl data-crawler-details></dl>
+      <h3>{copy.crawlerRules}</h3>
+      <div class="crawler-rules-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Crawler</th>
+              <th scope="col">{de ? "Aufgabe" : "Purpose"}</th>
+              <th scope="col">robots.txt</th>
+            </tr>
+          </thead>
+          <tbody data-crawler-matrix></tbody>
+        </table>
+      </div>
+    </details>
+
+    <p class="crawler-limit-note"><span aria-hidden="true">i</span>{copy.limitations}</p>
+
+    <section class="crawler-handoffs" aria-label={de ? "Vertiefende Werkzeuge" : "Next-step tools"}>
+      <article>
+        <h2>{copy.contextterHeading}</h2>
+        <p>{copy.contextterText}</p>
+        <a href={de ? "https://contextter.com/de/features/site-audit" : "https://contextter.com/features/site-audit"}>
+          {copy.contextterLink} <span aria-hidden="true">→</span>
+        </a>
+      </article>
+      <article>
+        <h2>{copy.fanoutHeading}</h2>
+        <p>{copy.fanoutText}</p>
+        <a href={de ? "https://ai-fanout.com/de" : "https://ai-fanout.com/"}>
+          {copy.fanoutLink} <span aria-hidden="true">→</span>
+        </a>
+      </article>
+      <p>{copy.disclosure}</p>
+    </section>
+  </div>
+
+  <section class="crawler-how" aria-labelledby={`crawler-how-${locale}`}>
+    <h2 id={`crawler-how-${locale}`}>{copy.how}</h2>
+    <ol>
+      {copy.steps.map(([title, text]) => (
+        <li><strong>{title}</strong><span>{text}</span></li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="crawler-learn">
+    <h2>{copy.learn}</h2>
+    <a href={copy.learnLink}>{copy.learnText} <span aria-hidden="true">→</span></a>
+  </section>
+</section>
+
+<script>
+  import { mountCrawlerTools } from "../lib/crawler-view";
+  mountCrawlerTools();
+</script>

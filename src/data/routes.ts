@@ -11,6 +11,7 @@ export interface RouteRecord {
 const staticRoutes = [
   "/",
   "/tools",
+  "/tools/crawler-view",
   "/crawlers",
   "/tools/log-file-inspector",
   "/tools/url-inspector",
@@ -21,6 +22,7 @@ const staticRoutes = [
   "/guides/ip-geolocation-data",
   "/de",
   "/de/tools",
+  "/de/tools/crawler-sicht",
   "/de/crawler",
   "/de/wissen",
   "/de/wissen/warum-wird-meine-seite-nicht-indexiert",
@@ -52,7 +54,13 @@ const rootByKind: Record<ContentKind, string> = {
 };
 
 export const routeRegistry: RouteRecord[] = [
-  ...staticRoutes.map((path) => ({ path, status: 200 as const, canonical: true as const, indexable: true as const, source: "static" as const })),
+  ...staticRoutes.map((path) => ({
+    path,
+    status: 200 as const,
+    canonical: true as const,
+    indexable: true as const,
+    source: "static" as const,
+  })),
   ...contentPages.map((page) => ({
     path: `${rootByKind[page.kind]}/${page.slug}`,
     status: 200 as const,

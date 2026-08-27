@@ -5,9 +5,15 @@ import { fileURLToPath } from "node:url";
 const dist = new URL("../dist/", import.meta.url);
 const distDir = fileURLToPath(dist);
 const origin = "https://analysespider.com";
-const { canonicalRoutes: routes, sitemapRoutes } = await import(new URL("../src/data/routes.ts", import.meta.url));
-const { robotsFixtureResults } = await import(new URL("../src/lib/robots.ts", import.meta.url));
-const { redirectChainFixtureResults } = await import(new URL("../src/lib/redirect-chain.ts", import.meta.url));
+const { canonicalRoutes: routes, sitemapRoutes } = await import(
+  new URL("../src/data/routes.ts", import.meta.url)
+);
+const { robotsFixtureResults } = await import(
+  new URL("../src/lib/robots.ts", import.meta.url)
+);
+const { redirectChainFixtureResults } = await import(
+  new URL("../src/lib/redirect-chain.ts", import.meta.url)
+);
 const editorialRoutes = new Set([
   "/guides/log-file-analysis",
   "/guides/crawler-log-analysis",
@@ -22,13 +28,59 @@ const editorialRoutes = new Set([
   "/reference/robots-directives",
   "/reference/crawler-verification-methods",
 ]);
-const collectionRoutes = new Set(["/tools", "/guides", "/crawlers", "/blog", "/reference", "/for", "/de/tools", "/de/wissen", "/de/crawler"]);
-const toolRoutes = new Set(["/tools/log-file-inspector", "/tools/url-inspector", "/tools/redirect-chain", "/tools/robots-rule-tester", "/tools/ip-location"]);
+const collectionRoutes = new Set([
+  "/tools",
+  "/guides",
+  "/crawlers",
+  "/blog",
+  "/reference",
+  "/for",
+  "/de/tools",
+  "/de/wissen",
+  "/de/crawler",
+]);
+const toolRoutes = new Set([
+  "/tools/crawler-view",
+  "/de/tools/crawler-sicht",
+  "/tools/log-file-inspector",
+  "/tools/url-inspector",
+  "/tools/redirect-chain",
+  "/tools/robots-rule-tester",
+  "/tools/ip-location",
+]);
 const approvedPortfolioLinks = new Map([
+  [
+    "/",
+    new Set([
+      "https://contextter.com/features/site-audit",
+      "https://ai-fanout.com/",
+    ]),
+  ],
+  [
+    "/de",
+    new Set([
+      "https://contextter.com/de/features/site-audit",
+      "https://ai-fanout.com/de",
+    ]),
+  ],
+  [
+    "/tools/crawler-view",
+    new Set([
+      "https://contextter.com/features/site-audit",
+      "https://ai-fanout.com/",
+    ]),
+  ],
+  [
+    "/de/tools/crawler-sicht",
+    new Set([
+      "https://contextter.com/de/features/site-audit",
+      "https://ai-fanout.com/de",
+    ]),
+  ],
   ["/guides", new Set(["https://seo-fanout.com/tool/"])],
-  ["/crawlers", new Set(["https://ai-fanout.com", "https://seo-fanout.com/tool/"])],
+  ["/crawlers", new Set(["https://ai-fanout.com/"])],
   ["/de/wissen", new Set(["https://seo-fanout.com/tool/"])],
-  ["/de/crawler", new Set(["https://ai-fanout.com", "https://seo-fanout.com/tool/"])],
+  ["/de/crawler", new Set(["https://ai-fanout.com/de"])],
 ]);
 
 const failures = [];
@@ -36,10 +88,23 @@ const pass = (condition, message) => {
   if (!condition) failures.push(message);
 };
 
-pass(routes.length >= 45, `route inventory unexpectedly small: ${routes.length}`);
-pass(new Set(routes).size === routes.length, "duplicate canonical routes in central route registry");
-pass(new Set(sitemapRoutes).size === sitemapRoutes.length, "duplicate sitemap routes in central route registry");
-pass(routes.length === sitemapRoutes.length && routes.every((route) => sitemapRoutes.includes(route)), "all current canonical 200 routes must be sitemap eligible");
+pass(
+  routes.length >= 45,
+  `route inventory unexpectedly small: ${routes.length}`,
+);
+pass(
+  new Set(routes).size === routes.length,
+  "duplicate canonical routes in central route registry",
+);
+pass(
+  new Set(sitemapRoutes).size === sitemapRoutes.length,
+  "duplicate sitemap routes in central route registry",
+);
+pass(
+  routes.length === sitemapRoutes.length &&
+    routes.every((route) => sitemapRoutes.includes(route)),
+  "all current canonical 200 routes must be sitemap eligible",
+);
 
 const findOutput = async (pathname) => {
   if (pathname === "/") return new URL("index.html", dist);
@@ -78,22 +143,48 @@ for (const route of routes) {
   }
 
   const canonical = new URL(route, origin).href;
-  pass(html.includes(`rel="canonical" href="${canonical}"`), `canonical mismatch for ${route}`);
-  pass(html.includes('content="index, follow"'), `index/follow meta missing for ${route}`);
-  pass(!html.includes("noindex, nofollow, noarchive"), `stale noindex remains on ${route}`);
-  pass(html.includes('"@context":"https://schema.org"'), `structured data missing for ${route}`);
+  pass(
+    html.includes(`rel="canonical" href="${canonical}"`),
+    `canonical mismatch for ${route}`,
+  );
+  pass(
+    html.includes('content="index, follow"'),
+    `index/follow meta missing for ${route}`,
+  );
+  pass(
+    !html.includes("noindex, nofollow, noarchive"),
+    `stale noindex remains on ${route}`,
+  );
+  pass(
+    html.includes('"@context":"https://schema.org"'),
+    `structured data missing for ${route}`,
+  );
   pass(html.includes('"@graph"'), `structured-data graph missing for ${route}`);
   pass(!html.includes("Project setup"), `placeholder copy remains on ${route}`);
-  pass(!/lorem ipsum|as an ai language model/i.test(html), `draft filler remains on ${route}`);
-  const portfolioLinks = [...html.matchAll(/href="(https:\/\/(?:contextter\.com|ai-fanout\.com|seo-fanout\.com)[^"]*)"/g)].map((match) => match[1]);
+  pass(
+    !/lorem ipsum|as an ai language model/i.test(html),
+    `draft filler remains on ${route}`,
+  );
+  const portfolioLinks = [
+    ...html.matchAll(
+      /href="(https:\/\/(?:contextter\.com|ai-fanout\.com|seo-fanout\.com)[^"]*)"/g,
+    ),
+  ].map((match) => match[1]);
   const approvedLinks = approvedPortfolioLinks.get(route) ?? new Set();
   for (const link of portfolioLinks) {
-    pass(approvedLinks.has(link), `unapproved common-owner link ${link} found on ${route}`);
+    pass(
+      approvedLinks.has(link),
+      `unapproved common-owner link ${link} found on ${route}`,
+    );
   }
   if (portfolioLinks.length) {
     pass(
-      /(?:operated by Matthias Ramahi|betrieben von Matthias Ramahi)/i.test(html)
-        && /(?:not (?:an )?independent recommendation|keine unabhängige(?:n)? Empfehlung(?:en)?)/i.test(html),
+      /(?:operated by Matthias Ramahi|betrieben von Matthias Ramahi)/i.test(
+        html,
+      ) &&
+        /(?:not (?:an )?independent recommendation|keine unabhängige(?:n)? Empfehlung(?:en)?)/i.test(
+          html,
+        ),
       `common-owner disclosure missing on ${route}`,
     );
   }
@@ -102,32 +193,61 @@ for (const route of routes) {
   pass(h1Count === 1, `expected exactly one h1 on ${route}, found ${h1Count}`);
 
   const title = html.match(/<title>(.*?)<\/title>/)?.[1];
-  const description = html.match(/<meta name="description" content="([^"]+)"/)?.[1];
+  const description = html.match(
+    /<meta name="description" content="([^"]+)"/,
+  )?.[1];
   pass(Boolean(title), `title missing for ${route}`);
   pass(Boolean(description), `description missing for ${route}`);
   if (title) {
-    pass(!titles.has(title), `duplicate title on ${route} and ${titles.get(title)}`);
+    pass(
+      !titles.has(title),
+      `duplicate title on ${route} and ${titles.get(title)}`,
+    );
     titles.set(title, route);
   }
   if (description) {
-    pass(!descriptions.has(description), `duplicate description on ${route} and ${descriptions.get(description)}`);
+    pass(
+      !descriptions.has(description),
+      `duplicate description on ${route} and ${descriptions.get(description)}`,
+    );
     descriptions.set(description, route);
   }
 
   if (editorialRoutes.has(route)) {
-    pass(html.includes('property="og:type" content="article"'), `article Open Graph type missing for ${route}`);
-    pass(html.includes('"@type":"TechArticle"'), `TechArticle structured data missing for ${route}`);
-    pass(html.includes("Primary sources"), `primary sources section missing for ${route}`);
+    pass(
+      html.includes('property="og:type" content="article"'),
+      `article Open Graph type missing for ${route}`,
+    );
+    pass(
+      html.includes('"@type":"TechArticle"'),
+      `TechArticle structured data missing for ${route}`,
+    );
+    pass(
+      html.includes("Primary sources"),
+      `primary sources section missing for ${route}`,
+    );
   }
   if (route.startsWith("/guides/") && route !== "/guides/ip-geolocation-data") {
-    pass(/href="\/tools\//.test(html), `guide must link to a relevant tool: ${route}`);
+    pass(
+      /href="\/tools\//.test(html),
+      `guide must link to a relevant tool: ${route}`,
+    );
   }
   if (collectionRoutes.has(route)) {
-    pass(html.includes('"@type":"CollectionPage"'), `CollectionPage structured data missing for ${route}`);
+    pass(
+      html.includes('"@type":"CollectionPage"'),
+      `CollectionPage structured data missing for ${route}`,
+    );
   }
   if (toolRoutes.has(route)) {
-    pass(html.includes('"@type":"WebApplication"'), `WebApplication structured data missing for ${route}`);
-    pass(/href="\/guides\//.test(html), `tool must link to a relevant guide: ${route}`);
+    pass(
+      html.includes('"@type":"WebApplication"'),
+      `WebApplication structured data missing for ${route}`,
+    );
+    pass(
+      /href="\/(?:guides|de\/wissen|reference)\//.test(html),
+      `tool must link to a relevant guide: ${route}`,
+    );
   }
 }
 
@@ -141,7 +261,10 @@ for (const required of [
   "§ 5 DDG",
   "New ownership",
 ]) {
-  pass(imprint.includes(required), `impressum missing verified operator or ownership fact: ${required}`);
+  pass(
+    imprint.includes(required),
+    `impressum missing verified operator or ownership fact: ${required}`,
+  );
 }
 
 const privacy = await readFile(await findOutput("/privacy"), "utf8");
@@ -153,26 +276,54 @@ for (const required of [
   "No contact form",
   "data-subject",
 ]) {
-  pass(privacy.includes(required), `privacy notice missing technology fact: ${required}`);
+  pass(
+    privacy.includes(required),
+    `privacy notice missing technology fact: ${required}`,
+  );
 }
-pass(!/Google Analytics|Umami/i.test(privacy), "privacy notice must not claim an inactive analytics provider");
+pass(
+  !/Google Analytics|Umami/i.test(privacy),
+  "privacy notice must not claim an inactive analytics provider",
+);
 
 const robots = await readFile(new URL("robots.txt", dist), "utf8");
 const sitemap = await readFile(new URL("sitemap.xml", dist), "utf8");
 pass(robots.includes("Allow: /"), "robots.txt must allow crawling at launch");
-pass(!robots.includes("Disallow: /"), "robots.txt still blocks crawling at launch");
-pass(robots.includes(`Sitemap: ${origin}/sitemap.xml`), "robots.txt must reference the canonical sitemap");
+pass(
+  !robots.includes("Disallow: /"),
+  "robots.txt still blocks crawling at launch",
+);
+pass(
+  robots.includes(`Sitemap: ${origin}/sitemap.xml`),
+  "robots.txt must reference the canonical sitemap",
+);
 for (const route of sitemapRoutes) {
-  pass(sitemap.includes(`<loc>${new URL(route, origin).href}</loc>`), `sitemap missing ${route}`);
+  pass(
+    sitemap.includes(`<loc>${new URL(route, origin).href}</loc>`),
+    `sitemap missing ${route}`,
+  );
 }
-pass((sitemap.match(/<url>/g) ?? []).length === sitemapRoutes.length, "sitemap URL count must match indexable canonical 200 route inventory");
+pass(
+  (sitemap.match(/<url>/g) ?? []).length === sitemapRoutes.length,
+  "sitemap URL count must match indexable canonical 200 route inventory",
+);
 
-const manifest = JSON.parse(await readFile(new URL("../src/data/legacy-url-actions.json", import.meta.url), "utf8"));
-const config = JSON.parse(await readFile(new URL("../vercel.json", import.meta.url), "utf8"));
+const manifest = JSON.parse(
+  await readFile(
+    new URL("../src/data/legacy-url-actions.json", import.meta.url),
+    "utf8",
+  ),
+);
+const config = JSON.parse(
+  await readFile(new URL("../vercel.json", import.meta.url), "utf8"),
+);
 const redirects = new Map(config.redirects.map((item) => [item.source, item]));
 const rewrites = new Map(config.rewrites.map((item) => [item.source, item]));
 
-pass(manifest.launchState === "public_indexable", `legacy launch state must be public_indexable, got ${manifest.launchState}`);
+pass(
+  manifest.launchState === "public_indexable",
+  `legacy launch state must be public_indexable, got ${manifest.launchState}`,
+);
 for (const record of manifest.records) {
   if (record.action === "restore_200") {
     try {
@@ -180,50 +331,142 @@ for (const record of manifest.records) {
     } catch {
       failures.push(`restore_200 target missing: ${record.target_url}`);
     }
-  } else if (["redirect_301", "redirect_308", "consolidate_redirect"].includes(record.action)) {
+  } else if (
+    ["redirect_301", "redirect_308", "consolidate_redirect"].includes(
+      record.action,
+    )
+  ) {
     const redirect = redirects.get(record.normalized_path);
-    pass(Boolean(redirect), `redirect config missing for ${record.normalized_path}`);
+    pass(
+      Boolean(redirect),
+      `redirect config missing for ${record.normalized_path}`,
+    );
     if (redirect) {
-      pass(redirect.destination === record.target_url, `redirect target mismatch for ${record.normalized_path}`);
-      pass(redirect.permanent === true, `redirect must be permanent for ${record.normalized_path}`);
+      pass(
+        redirect.destination === record.target_url,
+        `redirect target mismatch for ${record.normalized_path}`,
+      );
+      pass(
+        redirect.permanent === true,
+        `redirect must be permanent for ${record.normalized_path}`,
+      );
     }
   } else if (record.action === "410") {
-    pass(rewrites.has(record.normalized_path), `410 rewrite missing for ${record.normalized_path}`);
+    pass(
+      rewrites.has(record.normalized_path),
+      `410 rewrite missing for ${record.normalized_path}`,
+    );
   }
 }
 
 for (const excludedPath of ["/404", ...redirects.keys(), ...rewrites.keys()]) {
-  pass(!sitemap.includes(`<loc>${new URL(excludedPath, origin).href}</loc>`), `non-indexable status or redirect path leaked into sitemap: ${excludedPath}`);
+  pass(
+    !sitemap.includes(`<loc>${new URL(excludedPath, origin).href}</loc>`),
+    `non-indexable status or redirect path leaked into sitemap: ${excludedPath}`,
+  );
 }
 
 const notFound = await readFile(new URL("404.html", dist), "utf8");
-pass(notFound.includes('content="noindex, follow"'), "404 page must declare noindex, follow");
-pass(!notFound.includes('rel="canonical"'), "404 page must not emit a misleading canonical");
-pass(!notFound.includes('property="og:url"'), "404 page must not emit an Open Graph URL");
-pass(!notFound.includes('type="application/ld+json"'), "404 page must not emit indexable structured data");
-pass((notFound.match(/<h1(?:\s|>)/g) ?? []).length === 1, "404 page must contain exactly one h1");
+pass(
+  notFound.includes('content="noindex, follow"'),
+  "404 page must declare noindex, follow",
+);
+pass(
+  !notFound.includes('rel="canonical"'),
+  "404 page must not emit a misleading canonical",
+);
+pass(
+  !notFound.includes('property="og:url"'),
+  "404 page must not emit an Open Graph URL",
+);
+pass(
+  !notFound.includes('type="application/ld+json"'),
+  "404 page must not emit indexable structured data",
+);
+pass(
+  (notFound.match(/<h1(?:\s|>)/g) ?? []).length === 1,
+  "404 page must contain exactly one h1",
+);
 
-pass(!config.headers.some((rule) => rule.headers?.some((header) => header.key.toLowerCase() === "x-robots-tag" && header.value.toLowerCase().includes("noindex"))), "global X-Robots-Tag noindex must be absent at launch");
-pass(!config.redirects.some((rule) => rule.source === "/(.*)" || rule.source.includes(":path*")), "catch-all redirects are forbidden");
-const csp = config.headers.flatMap((rule) => rule.headers ?? []).find((header) => header.key.toLowerCase() === "content-security-policy")?.value ?? "";
-for (const directive of ["default-src 'self'", "frame-ancestors 'none'", "object-src 'none'", "base-uri 'self'"]) {
+pass(
+  !config.headers.some((rule) =>
+    rule.headers?.some(
+      (header) =>
+        header.key.toLowerCase() === "x-robots-tag" &&
+        header.value.toLowerCase().includes("noindex"),
+    ),
+  ),
+  "global X-Robots-Tag noindex must be absent at launch",
+);
+pass(
+  !config.redirects.some(
+    (rule) => rule.source === "/(.*)" || rule.source.includes(":path*"),
+  ),
+  "catch-all redirects are forbidden",
+);
+const csp =
+  config.headers
+    .flatMap((rule) => rule.headers ?? [])
+    .find((header) => header.key.toLowerCase() === "content-security-policy")
+    ?.value ?? "";
+for (const directive of [
+  "default-src 'self'",
+  "frame-ancestors 'none'",
+  "object-src 'none'",
+  "base-uri 'self'",
+]) {
   pass(csp.includes(directive), "CSP missing required directive: " + directive);
 }
+pass(
+  csp.includes("connect-src 'self' https://tools.contextter.com"),
+  "CSP must allow only the protected crawler gateway as an external connection",
+);
+pass(
+  csp.includes("worker-src 'self' blob:"),
+  "CSP must allow the local Cap proof worker",
+);
 
-const benchmark = await readFile(await findOutput("/lab/crawler-benchmarks"), "utf8");
+const benchmark = await readFile(
+  await findOutput("/lab/crawler-benchmarks"),
+  "utf8",
+);
 for (const fixture of robotsFixtureResults) {
   pass(fixture.passed, "robots fixture failed: " + fixture.id);
-  pass(benchmark.includes(fixture.id), "benchmark page missing fixture: " + fixture.id);
+  pass(
+    benchmark.includes(fixture.id),
+    "benchmark page missing fixture: " + fixture.id,
+  );
 }
 for (const fixture of redirectChainFixtureResults) {
   pass(fixture.passed, "redirect-chain fixture failed: " + fixture.id);
 }
 
-const actionMatrix = await readFile(new URL("../docs/seo/page-action-matrix.md", import.meta.url), "utf8");
-for (const route of routes) pass(actionMatrix.includes(String.fromCharCode(96) + route + String.fromCharCode(96)), "page-action matrix missing " + route);
-for (const state of ["Verified", "Supported", "Hypothesis", "Experiment", "Rejected"]) {
-  const evidenceRegister = await readFile(new URL("../docs/seo/evidence-register.md", import.meta.url), "utf8");
-  pass(evidenceRegister.includes(state), "evidence register missing state: " + state);
+const actionMatrix = await readFile(
+  new URL("../docs/seo/page-action-matrix.md", import.meta.url),
+  "utf8",
+);
+for (const route of routes)
+  pass(
+    actionMatrix.includes(
+      String.fromCharCode(96) + route + String.fromCharCode(96),
+    ),
+    "page-action matrix missing " + route,
+  );
+for (const state of [
+  "Verified",
+  "Supported",
+  "Hypothesis",
+  "Experiment",
+  "Rejected",
+]) {
+  const evidenceRegister = await readFile(
+    new URL("../docs/seo/evidence-register.md", import.meta.url),
+    "utf8",
+  );
+  pass(
+    evidenceRegister.includes(state),
+    "evidence register missing state: " + state,
+  );
 }
 
 await walk(distDir);
@@ -239,12 +482,29 @@ for (const file of htmlFiles) {
     if (/^(https?:|mailto:|tel:|#)/.test(href)) continue;
     if (href.startsWith("/_astro/")) continue;
     const pathname = new URL(href, origin).pathname.replace(/\/$/, "") || "/";
-    pass(existingRoutes.has(pathname) || redirects.has(pathname), `broken internal link ${href} in ${relative(distDir, file)}`);
+    pass(
+      existingRoutes.has(pathname) || redirects.has(pathname),
+      `broken internal link ${href} in ${relative(distDir, file)}`,
+    );
   }
-  pass(!/official continuation of the former AnalyseSpider operator/i.test(html), `forbidden continuity claim in ${file}`);
-  pass(!/former users (?:and|or) customers transferred/i.test(html), `forbidden transfer claim in ${file}`);
-  pass(!/independently (?:endorses|validates|recommends) Contextter/i.test(html), `forbidden independence claim in ${file}`);
-  pass(!/Contextter (?:endorsed|validated|recommended) by AnalyseSpider/i.test(html), `forbidden common-owner corroboration claim in ${file}`);
+  pass(
+    !/official continuation of the former AnalyseSpider operator/i.test(html),
+    `forbidden continuity claim in ${file}`,
+  );
+  pass(
+    !/former users (?:and|or) customers transferred/i.test(html),
+    `forbidden transfer claim in ${file}`,
+  );
+  pass(
+    !/independently (?:endorses|validates|recommends) Contextter/i.test(html),
+    `forbidden independence claim in ${file}`,
+  );
+  pass(
+    !/Contextter (?:endorsed|validated|recommended) by AnalyseSpider/i.test(
+      html,
+    ),
+    `forbidden common-owner corroboration claim in ${file}`,
+  );
 }
 
 if (failures.length) {
@@ -252,4 +512,6 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`QA passed: ${routes.length} canonical indexable 200 routes, unique metadata, legal/privacy facts, typed structured data, tool-guide links, launch robots, automatic sitemap, legacy actions, redirects, broken links, and forbidden claims.`);
+console.log(
+  `QA passed: ${routes.length} canonical indexable 200 routes, unique metadata, legal/privacy facts, typed structured data, tool-guide links, launch robots, automatic sitemap, legacy actions, redirects, broken links, and forbidden claims.`,
+);

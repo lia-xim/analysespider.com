@@ -20,9 +20,13 @@ export const localePaths = {
 const alternatePathPairs = new Map<string, string>([
   ["/", "/de"],
   ["/tools", "/de/tools"],
+  ["/tools/crawler-view", "/de/tools/crawler-sicht"],
   ["/crawlers", "/de/crawler"],
   ["/guides", "/de/wissen"],
-  ["/guides/http-response-debugging", "/de/wissen/warum-wird-meine-seite-nicht-indexiert"],
+  [
+    "/guides/http-response-debugging",
+    "/de/wissen/warum-wird-meine-seite-nicht-indexiert",
+  ],
   ["/reference/crawler-verification-methods", "/de/wissen/crawler-erkennen"],
   ["/about", "/de/ueber"],
 ]);
@@ -31,7 +35,8 @@ export const getLocale = (pathname: string): Locale =>
   pathname === "/de" || pathname.startsWith("/de/") ? "de" : "en";
 
 export const getAlternatePath = (pathname: string): string | null => {
-  if (alternatePathPairs.has(pathname)) return alternatePathPairs.get(pathname) ?? null;
+  if (alternatePathPairs.has(pathname))
+    return alternatePathPairs.get(pathname) ?? null;
   for (const [english, german] of alternatePathPairs) {
     if (german === pathname) return english;
   }

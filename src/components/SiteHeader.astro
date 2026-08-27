@@ -6,7 +6,7 @@ const locale = getLocale(path);
 const paths = localePaths[locale];
 const items = locale === "de"
   ? [
-      { label: "Tools", href: paths.tools, active: path === paths.tools },
+      { label: "Tools", href: paths.tools, active: path === paths.tools || path.startsWith("/de/tools/") },
       { label: "Crawler", href: paths.crawlers, active: path === paths.crawlers },
       { label: "Wissen", href: paths.learn, active: path === paths.learn },
       { label: "Über", href: paths.about, active: path === paths.about },
@@ -38,8 +38,8 @@ const alternatePath = getAlternatePath(path);
     ))}
   </nav>
   <div class="language-switch" aria-label={locale === "de" ? "Sprache" : "Language"}>
-    <a href={alternatePath && locale === "de" ? alternatePath : path} aria-current={locale === "en" ? "page" : undefined}>EN</a>
+    <a href={locale === "de" ? alternatePath ?? "/" : path} aria-current={locale === "en" ? "page" : undefined}>EN</a>
     <span aria-hidden="true">|</span>
-    <a href={alternatePath && locale === "en" ? alternatePath : "/de"} aria-current={locale === "de" ? "page" : undefined}>DE</a>
+    <a href={locale === "en" ? alternatePath ?? "/de" : path} aria-current={locale === "de" ? "page" : undefined}>DE</a>
   </div>
 </header>

@@ -2,6 +2,7 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ArrowIcon from "../../components/ArrowIcon.astro";
 const tools = [
+  { title: "See what a crawler finds", text: "Enter one public URL. Check fetch access, robots rules, indexability, main content and crawler-specific policies.", href: "/tools/crawler-view", note: "Live fetch · protected and rate-limited" },
   { title: "Check server logs", text: "Paste a small Apache or Nginx sample. Find paths, status codes and claimed bots.", href: "/tools/log-file-inspector", note: "Runs in your browser · no upload" },
   { title: "Understand an HTTP response", text: "Paste headers and HTML. Check status, canonical, robots directives and missing fields.", href: "/tools/url-inspector", note: "Paste-only · no fetch" },
   { title: "Check a redirect chain", text: "Build redirect hops and find loops, gaps or an unexpected final URL.", href: "/tools/redirect-chain", note: "Up to 12 hops" },
@@ -11,14 +12,14 @@ const tools = [
 ---
 <BaseLayout
   title="Free crawling and technical SEO tools — AnalyseSpider"
-  description="Five free browser-local tools for server logs, HTTP responses, redirect chains, robots.txt and IP addresses."
+  description="One protected live URL check and five free browser-local tools for server logs, HTTP responses, redirects, robots.txt and IP addresses."
   canonicalPath="/tools"
   alternatePath="/de/tools"
   bodyClass="simple-content"
 >
   <header class="simple-page-lead">
     <h1>Free tools for specific technical questions.</h1>
-    <p>Choose the smallest tool that fits the data you already have. The current tools run in your browser and do not send your input to AnalyseSpider.</p>
+    <p>Use the live URL check when you want to inspect a public server response. The other tools process pasted input locally in your browser.</p>
   </header>
   <section class="plain-resource-list" aria-label="Tools">
     {tools.map((tool) => (

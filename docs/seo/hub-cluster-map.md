@@ -20,6 +20,15 @@ Each cluster must remain useful without Contextter and must link tools, workflow
 - Reference: `/reference/http-status-codes`, `/reference/robots-directives`
 - Legacy evidence: `/legacy`
 
+## 2a. Live crawler diagnostics
+
+- English tool: `/tools/crawler-view`
+- German tool: `/de/tools/crawler-sicht`
+- Local follow-up: `/tools/url-inspector`, `/tools/robots-rule-tester`
+- Method and privacy boundary: `/methodology-and-privacy`, `/privacy`
+- Crawler identity and role context: `/crawlers`, `/de/crawler`, `/reference/crawler-verification-methods`
+- The live check remains one-URL, no-JavaScript, and useful without an outbound product handoff.
+
 ## 3. Robots and crawler access
 
 - Tool: `/tools/robots-rule-tester`
