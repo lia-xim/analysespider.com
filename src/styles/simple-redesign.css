@@ -795,6 +795,12 @@ a {
   display: none;
 }
 
+.article-meta > .evidence-state {
+  display: inline;
+  color: var(--ok);
+  font-weight: 700;
+}
+
 .article-shell {
   grid-template-columns: minmax(0, 1fr) minmax(240px, 0.3fr);
 }
@@ -1467,6 +1473,173 @@ a {
   color: var(--muted);
 }
 
+.crawler-policy-summary,
+.crawler-report-tools,
+.crawler-simulation {
+  margin-top: 1.5rem;
+  padding: 1.35rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+}
+
+.crawler-policy-summary > header,
+.crawler-report-tools > div:first-child,
+.crawler-simulation > div:first-child {
+  display: grid;
+  grid-template-columns: minmax(190px, 0.72fr) minmax(260px, 1.28fr);
+  gap: 1.5rem;
+  align-items: start;
+  margin-bottom: 1rem;
+}
+
+.crawler-policy-summary h2,
+.crawler-report-tools h2,
+.crawler-simulation h2 {
+  margin: 0;
+  font-size: clamp(1.25rem, 2vw, 1.6rem);
+  font-weight: 600;
+}
+
+.crawler-policy-summary header p,
+.crawler-report-tools > div:first-child p,
+.crawler-simulation > div:first-child p {
+  margin: 0;
+  color: var(--paper-soft);
+  font-size: 0.92rem;
+}
+
+.crawler-policy-summary .crawler-rules-wrap {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.crawler-policy-summary .crawler-rules-wrap th,
+.crawler-policy-summary .crawler-rules-wrap td {
+  padding: 0.72rem 0.8rem;
+}
+
+.crawler-policy-note {
+  margin: 0.9rem 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.crawler-policy-note a {
+  color: var(--signal);
+  font-weight: 600;
+}
+
+.crawler-report-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.crawler-report-buttons button,
+.crawler-simulation button {
+  min-height: 42px;
+  padding: 0.65rem 0.9rem;
+  border: 1px solid var(--signal);
+  border-radius: 5px;
+  background: transparent;
+  color: var(--signal);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.crawler-report-buttons button:hover,
+.crawler-report-buttons button:focus-visible,
+.crawler-simulation button:hover,
+.crawler-simulation button:focus-visible {
+  background: var(--signal);
+  color: #fff;
+}
+
+.crawler-report-buttons button:disabled,
+.crawler-simulation button:disabled {
+  border-color: var(--line);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.crawler-tool-status {
+  min-height: 1.4em;
+  margin: 0.8rem 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.crawler-previous-comparison,
+.crawler-simulation-result {
+  margin-top: 1rem;
+}
+
+.crawler-previous-comparison h3,
+.crawler-simulation-result h3 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+}
+
+.crawler-compare-table {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.crawler-compare-row {
+  display: grid;
+  grid-template-columns: minmax(130px, 0.75fr) repeat(2, minmax(180px, 1fr)) minmax(95px, 0.45fr);
+  min-width: 720px;
+  border-top: 1px solid var(--line);
+}
+
+.crawler-compare-row:first-child {
+  border-top: 0;
+}
+
+.crawler-compare-row > span,
+.crawler-compare-row > strong {
+  min-width: 0;
+  padding: 0.65rem 0.75rem;
+  overflow-wrap: anywhere;
+  font-size: 0.8rem;
+}
+
+.crawler-compare-head {
+  background: color-mix(in srgb, var(--signal) 9%, transparent);
+}
+
+.crawler-compare-row[data-changed="true"] > span:last-child {
+  color: var(--warn);
+  font-weight: 700;
+}
+
+.crawler-simulation form {
+  display: grid;
+  grid-template-columns: minmax(130px, auto) minmax(220px, 1fr) auto;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.crawler-simulation label {
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.crawler-simulation select {
+  width: 100%;
+  min-height: 42px;
+  padding: 0.55rem 2rem 0.55rem 0.75rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 5px;
+  background: var(--surface);
+  color: var(--paper);
+  font: inherit;
+}
+
 .crawler-actions {
   padding: 2.25rem 0 1.25rem;
 }
@@ -1781,6 +1954,25 @@ a {
   .crawler-handoffs > p {
     grid-column: 1;
     text-align: left;
+  }
+
+  .crawler-policy-summary,
+  .crawler-report-tools,
+  .crawler-simulation {
+    padding: 1rem;
+  }
+
+  .crawler-policy-summary > header,
+  .crawler-report-tools > div:first-child,
+  .crawler-simulation > div:first-child,
+  .crawler-simulation form {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
+
+  .crawler-report-buttons button,
+  .crawler-simulation button {
+    width: 100%;
   }
 }
 

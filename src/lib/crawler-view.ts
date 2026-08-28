@@ -2,12 +2,22 @@ import {
   GatewayError,
   normalizePublicUrl,
   runCrawlerCheck,
+  type CrawlerRequestIdentity,
   type CrawlerReport,
   type EligibilityState,
 } from "./crawler-gateway";
 import { formatLiveRedirectEvidence } from "./redirect-chain";
 
 type Locale = "de" | "en";
+
+interface StoredCrawlerReport {
+  readonly savedAt: string;
+  readonly report: CrawlerReport;
+}
+
+const HISTORY_KEY = "analysespider.crawler-history.v1";
+const HISTORY_TTL_MS = 24 * 60 * 60 * 1_000;
+const HISTORY_LIMIT = 5;
 
 const messages = {
   de: {
@@ -423,13 +433,22 @@ function renderDetails(
   matrix.replaceChildren();
   for (const crawler of report.crawlerMatrix) {
     const row = document.createElement("tr");
-    for (const value of [
+    const values = [
       crawler.crawlerName,
       copy.purposes[crawler.purpose],
       copy.crawlerStates[crawler.state],
-    ]) {
+    ];
+    for (const [index, value] of values.entries()) {
       const cell = document.createElement("td");
-      cell.textContent = value;
+      if (index === 0 && crawler.sourceUrl !== undefined) {
+        const source = document.createElement("a");
+        source.href = crawler.sourceUrl;
+        source.rel = "noreferrer";
+        source.textContent = value;
+        cell.append(source);
+      } else {
+        cell.textContent = value;
+      }
       row.append(cell);
     }
     matrix.append(row);
@@ -465,6 +484,148 @@ function errorMessage(error: unknown, locale: Locale): string {
   return copy[code as keyof typeof copy] ?? copy.default;
 }
 
+function readHistory(): StoredCrawlerReport[] {
+  try {
+    const parsed: unknown = JSON.parse(localStorage.getItem(HISTORY_KEY) ?? "[]");
+    if (!Array.isArray(parsed)) return [];
+    const cutoff = Date.now() - HISTORY_TTL_MS;
+    return parsed.filter((entry): entry is StoredCrawlerReport => {
+      if (typeof entry !== "object" || entry === null) return false;
+      const candidate = entry as Partial<StoredCrawlerReport>;
+      return (
+        typeof candidate.savedAt === "string" &&
+        Date.parse(candidate.savedAt) >= cutoff &&
+        typeof candidate.report === "object" &&
+        candidate.report !== null &&
+        typeof candidate.report.fetchFacts?.requestedUrl === "string"
+      );
+    });
+  } catch {
+    return [];
+  }
+}
+
+function saveHistory(report: CrawlerReport): StoredCrawlerReport | null {
+  const history = readHistory();
+  const previous = history.find(
+    (entry) =>
+      entry.report.fetchFacts.requestedUrl === report.fetchFacts.requestedUrl,
+  ) ?? null;
+  const next = [
+    { savedAt: new Date().toISOString(), report },
+    ...history,
+  ].slice(0, HISTORY_LIMIT);
+  try {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
+  } catch {
+    // The report remains usable when local browser storage is unavailable.
+  }
+  return previous;
+}
+
+function reportMarkdown(report: CrawlerReport, locale: Locale): string {
+  const de = locale === "de";
+  const state = (value: EligibilityState): string =>
+    messages[locale][value];
+  const rows = [
+    [de ? "Seite abrufbar" : "Page fetchable", report.eligibility.pageFetch],
+    [de ? "Crawler-Zugriff" : "Crawler access", report.eligibility.searchCrawlerFetch],
+    [de ? "Indexierung erlaubt" : "Indexing allowed", report.eligibility.indexingAllowed],
+    [de ? "Hauptinhalt erkennbar" : "Main content detectable", report.eligibility.meaningfulContentExtractable],
+  ] as const;
+  const policies = report.crawlerMatrix
+    .map(
+      (crawler) =>
+        `- ${crawler.crawlerName}: ${messages[locale].purposes[crawler.purpose]} — ${messages[locale].crawlerStates[crawler.state]}`,
+    )
+    .join("\n");
+  return [
+    `# AnalyseSpider — ${report.fetchFacts.requestedUrl}`,
+    "",
+    ...rows.map(([label, value]) => `- **${label}:** ${state(value)}`),
+    "",
+    `- **HTTP:** ${report.fetchFacts.status ?? messages[locale].unknown}`,
+    `- **${de ? "Finale URL" : "Final URL"}:** ${report.fetchFacts.finalUrl}`,
+    `- **Canonical:** ${report.indexability.canonical.url ?? report.indexability.canonical.state}`,
+    `- **${de ? "Abgerufen" : "Fetched"}:** ${report.fetchFacts.fetchedAt}`,
+    "",
+    `## ${de ? "Crawler-Regeln" : "Crawler policies"}`,
+    policies,
+    "",
+    de
+      ? "Grenze: Eine einzelne Serverantwort beweist weder Indexierung noch Zitation."
+      : "Boundary: One server response proves neither indexing nor citation.",
+  ].join("\n");
+}
+
+function downloadReport(report: CrawlerReport): void {
+  const blob = new Blob([JSON.stringify(report, null, 2)], {
+    type: "application/json;charset=utf-8",
+  });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `analysespider-crawler-report-${new Date().toISOString().slice(0, 10)}.json`;
+  link.click();
+  URL.revokeObjectURL(link.href);
+}
+
+function comparisonFields(
+  report: CrawlerReport,
+  locale: Locale,
+): readonly [string, string][] {
+  const copy = messages[locale];
+  return [
+    [copy.details.status, report.fetchFacts.status == null ? copy.unknown : String(report.fetchFacts.status)],
+    [copy.details.finalUrl, report.fetchFacts.finalUrl],
+    [copy.details.canonical, report.indexability.canonical.url ?? report.indexability.canonical.state],
+    [copy.details.robots, report.indexability.noindex ? "noindex" : "index allowed"],
+    [copy.details.title, report.indexability.titlePresent ? copy.found : copy.missing],
+    [copy.details.h1, String(report.extraction.h1Count)],
+    [copy.details.text, `${report.extraction.visibleMainTextLength.toLocaleString(locale)} ${copy.chars}`],
+    [locale === "de" ? "HTML-Body-Hash" : "HTML body hash", report.fetchFacts.responseBodySha256 ?? copy.unknown],
+  ];
+}
+
+function renderComparison(
+  container: Element | null,
+  left: CrawlerReport,
+  right: CrawlerReport,
+  locale: Locale,
+  leftLabel: string,
+  rightLabel: string,
+): void {
+  if (!(container instanceof HTMLElement)) return;
+  const leftFields = comparisonFields(left, locale);
+  const rightFields = new Map(comparisonFields(right, locale));
+  container.replaceChildren();
+  const header = document.createElement("div");
+  header.className = "crawler-compare-row crawler-compare-head";
+  for (const value of [locale === "de" ? "Signal" : "Signal", leftLabel, rightLabel, locale === "de" ? "Ergebnis" : "Result"]) {
+    const cell = document.createElement("strong");
+    cell.textContent = value;
+    header.append(cell);
+  }
+  container.append(header);
+  for (const [label, leftValue] of leftFields) {
+    const rightValue = rightFields.get(label) ?? messages[locale].unknown;
+    const same = leftValue === rightValue;
+    const row = document.createElement("div");
+    row.className = "crawler-compare-row";
+    for (const value of [
+      label,
+      leftValue,
+      rightValue,
+      same ? (locale === "de" ? "Gleich" : "Same") : (locale === "de" ? "Unterschiedlich" : "Different"),
+    ]) {
+      const cell = document.createElement("span");
+      cell.textContent = value;
+      row.append(cell);
+    }
+    row.dataset.changed = same ? "false" : "true";
+    container.append(row);
+  }
+}
+
 function mount(root: Element): void {
   if (root.getAttribute("data-mounted") === "true") return;
   root.setAttribute("data-mounted", "true");
@@ -476,12 +637,102 @@ function mount(root: Element): void {
   const progress = root.querySelector("[data-crawler-progress]");
   const results = root.querySelector("[data-crawler-results]");
   const error = root.querySelector("[data-crawler-error]");
+  const copyButton = root.querySelector("[data-copy-report]");
+  const downloadButton = root.querySelector("[data-download-report]");
+  const comparePreviousButton = root.querySelector("[data-compare-previous]");
+  const reportStatus = root.querySelector("[data-report-status]");
+  const previousComparison = root.querySelector("[data-previous-comparison]");
+  const simulationForm = root.querySelector("[data-crawler-simulation-form]");
+  const simulationSelect = root.querySelector("[data-crawler-simulation-select]");
+  const simulationStatus = root.querySelector("[data-simulation-status]");
+  const simulationResult = root.querySelector("[data-simulation-result]");
+  let currentReport: CrawlerReport | null = null;
+  let previousReport: CrawlerReport | null = null;
   if (
     !(form instanceof HTMLFormElement) ||
     !(input instanceof HTMLInputElement) ||
     !(button instanceof HTMLButtonElement)
   )
     return;
+
+  if (comparePreviousButton instanceof HTMLButtonElement)
+    comparePreviousButton.disabled = true;
+
+  if (copyButton instanceof HTMLButtonElement) {
+    copyButton.addEventListener("click", async () => {
+      if (currentReport === null) return;
+      try {
+        await navigator.clipboard.writeText(reportMarkdown(currentReport, locale));
+        text(reportStatus, locale === "de" ? "Markdown-Bericht kopiert." : "Markdown report copied.");
+      } catch {
+        text(reportStatus, locale === "de" ? "Der Bericht konnte nicht kopiert werden." : "The report could not be copied.");
+      }
+    });
+  }
+  if (downloadButton instanceof HTMLButtonElement) {
+    downloadButton.addEventListener("click", () => {
+      if (currentReport === null) return;
+      downloadReport(currentReport);
+      text(reportStatus, locale === "de" ? "JSON-Bericht heruntergeladen." : "JSON report downloaded.");
+    });
+  }
+  if (comparePreviousButton instanceof HTMLButtonElement) {
+    comparePreviousButton.addEventListener("click", () => {
+      if (currentReport === null || previousReport === null) {
+        text(reportStatus, locale === "de" ? "Für diese URL gibt es noch keine ältere lokale Prüfung." : "There is no older local check for this URL yet.");
+        return;
+      }
+      renderComparison(
+        root.querySelector("[data-previous-comparison-table]"),
+        previousReport,
+        currentReport,
+        locale,
+        locale === "de" ? "Vorher" : "Previous",
+        locale === "de" ? "Jetzt" : "Current",
+      );
+      previousComparison?.removeAttribute("hidden");
+      previousComparison?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+  }
+  if (
+    simulationForm instanceof HTMLFormElement &&
+    simulationSelect instanceof HTMLSelectElement
+  ) {
+    simulationForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (currentReport === null) return;
+      const simulationButton = simulationForm.querySelector("button[type='submit']");
+      if (simulationButton instanceof HTMLButtonElement) simulationButton.disabled = true;
+      simulationResult?.setAttribute("hidden", "");
+      text(simulationStatus, locale === "de" ? "Die zweite Serverantwort wird geprüft …" : "Checking the second server response …");
+      try {
+        const identity = simulationSelect.value as CrawlerRequestIdentity;
+        const simulated = await runCrawlerCheck(
+          currentReport.fetchFacts.requestedUrl,
+          identity,
+        );
+        renderComparison(
+          root.querySelector("[data-simulation-table]"),
+          currentReport,
+          simulated,
+          locale,
+          "AnalyseSpider",
+          simulationSelect.selectedOptions[0]?.textContent?.split(" · ")[0] ?? identity,
+        );
+        simulationResult?.removeAttribute("hidden");
+        text(
+          simulationStatus,
+          locale === "de"
+            ? "Zweiter Request abgeschlossen. Unterschiede bedeuten eine abweichende Serverantwort auf den simulierten Header."
+            : "Second request complete. Differences mean the server responded differently to the simulated header.",
+        );
+      } catch (caught) {
+        text(simulationStatus, errorMessage(caught, locale));
+      } finally {
+        if (simulationButton instanceof HTMLButtonElement) simulationButton.disabled = false;
+      }
+    });
+  }
 
   input.addEventListener("blur", () => {
     try {
@@ -502,6 +753,15 @@ function mount(root: Element): void {
       const normalizedUrl = normalizePublicUrl(input.value);
       input.value = normalizedUrl;
       const report = await runCrawlerCheck(normalizedUrl);
+      currentReport = report;
+      previousReport = saveHistory(report)?.report ?? null;
+      if (comparePreviousButton instanceof HTMLButtonElement)
+        comparePreviousButton.disabled = previousReport === null;
+      previousComparison?.setAttribute("hidden", "");
+      simulationResult?.setAttribute("hidden", "");
+      text(reportStatus, previousReport === null
+        ? (locale === "de" ? "Ergebnis lokal gespeichert. Beim nächsten Check derselben URL kannst du vergleichen." : "Result saved locally. Recheck the same URL to compare it.")
+        : (locale === "de" ? "Ergebnis lokal gespeichert. Eine ältere Prüfung ist zum Vergleich verfügbar." : "Result saved locally. A previous check is available for comparison."));
       renderStatuses(root, report, locale);
       renderActions(root, report, locale);
       renderDetails(root, report, locale);

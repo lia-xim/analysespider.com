@@ -34,6 +34,8 @@ export const localePairs = [
   ["/guides/crawler-log-analysis", "/de/wissen/crawler-in-server-logs-erkennen"],
   ["/guides/ip-geolocation-data", "/de/wissen/ip-geolokalisierung-verstehen"],
   ["/reference/crawler-verification-methods", "/de/wissen/crawler-erkennen"],
+  ["/blog/robots-txt-allows-bot-cdn-blocks-it", "/de/wissen/robots-erlaubt-cdn-blockiert"],
+  ["/blog/initial-html-vs-rendered-dom", "/de/wissen/initiales-html-vs-gerenderter-dom"],
   ["/about", "/de/ueber"],
 ] as const;
 const alternatePathPairs = new Map<string, string>(localePairs);

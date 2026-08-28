@@ -39,6 +39,11 @@ const sources = {
     href: "https://www.rfc-editor.org/rfc/rfc9110.html",
     note: "The normative definitions for HTTP methods, status codes, fields, and response semantics.",
   },
+  rfc9309: {
+    label: "RFC 9309 — Robots Exclusion Protocol",
+    href: "https://www.rfc-editor.org/rfc/rfc9309.html",
+    note: "The current standard for robots.txt matching and its explicit boundary: robots rules are not access authorisation.",
+  },
   googleRedirects: {
     label: "Google Search Central — Redirects and Google Search",
     href: "https://developers.google.com/search/docs/crawling-indexing/301-redirects",
@@ -58,6 +63,26 @@ const sources = {
     label: "Google — Verify crawler requests",
     href: "https://developers.google.com/crawling/docs/crawlers-fetchers/verify-google-requests",
     note: "Official IP-range and forward-confirmed reverse-DNS verification methods.",
+  },
+  googleJavaScript: {
+    label: "Google Search Central — JavaScript SEO basics",
+    href: "https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics",
+    note: "Google's documented crawl, render, and index stages plus guidance for content and links created by JavaScript.",
+  },
+  googleDynamicRendering: {
+    label: "Google Search Central — Dynamic rendering as a workaround",
+    href: "https://developers.google.com/search/docs/crawling-indexing/javascript/dynamic-rendering",
+    note: "Google recommends server-side rendering, static rendering, or hydration over crawler-specific dynamic rendering.",
+  },
+  googleRateLimiting: {
+    label: "Google Search Central — Do not use 403 or 404 for rate limiting",
+    href: "https://developers.google.com/search/blog/2023/02/dont-404-my-yum",
+    note: "Google's guidance on the status signals to use when a server needs Googlebot to slow down.",
+  },
+  cloudflareBotChallenges: {
+    label: "Cloudflare — Challenge bad bots",
+    href: "https://developers.cloudflare.com/waf/custom-rules/use-cases/challenge-bad-bots/",
+    note: "A current vendor example showing that WAF and bot-management rules can block, challenge, or exempt automated requests independently of robots.txt.",
   },
   bingCrawlers: {
     label: "Bing Webmaster Tools — Bing crawlers",
@@ -517,6 +542,155 @@ export const blogPosts: ContentPage[] = [
       { label: "Log File Inspector", href: "/tools/log-file-inspector", note: "No current log sample is uploaded by the tool." },
     ],
   },
+  {
+    slug: "robots-txt-allows-bot-cdn-blocks-it",
+    kind: "lab-note",
+    eyebrow: "Technical SEO Article 04",
+    title: "robots.txt allows the bot. Why can the CDN still block it?",
+    description: "A practical diagnosis for pages that allow a crawler in robots.txt but return a firewall block, rate limit, login gate, or bot challenge.",
+    intro: "robots.txt can say that a crawler may request a path while the edge still refuses the request. Those results are not contradictory: the file describes crawler preference, whereas the CDN, firewall, rate limiter, and origin decide whether this particular HTTP request receives the page.",
+    takeaway: "An Allow result establishes only the applicable robots rule. Prove delivery separately with the observed status, headers, response body, request identity evidence, and the security event that handled the request.",
+    publishedAt: "2026-08-28",
+    updatedAt: "2026-08-28",
+    sourceCheckedAt: "2026-08-28",
+    readingMinutes: 9,
+    sections: [
+      {
+        heading: "Start with the apparent contradiction",
+        paragraphs: [
+          "Suppose robots.txt has no matching Disallow rule for Googlebot, OAI-SearchBot, or another product token. A local robots tester therefore returns Allow. The live request can still receive 403, 429, a login page, or an HTML challenge instead of the intended document.",
+          "RFC 9309 explains why: robots rules are not access authorisation. They tell participating crawlers which URI paths the site owner asks them to avoid. They do not bypass authentication, a web application firewall, bot scoring, geo rules, rate limits, or an unavailable origin.",
+        ],
+      },
+      {
+        heading: "Four decisions happen before useful HTML reaches a crawler",
+        bullets: [
+          "robots.txt matching: which rule applies to the declared product token and target path;",
+          "request classification: how the CDN or firewall classifies the address, headers, TLS fingerprint, rate, and other request properties;",
+          "security action: allow, log, challenge, rate limit, or block;",
+          "origin response: what the application returns if the request reaches it.",
+        ],
+        paragraphs: [
+          "A green result at the first layer says nothing certain about the next three. Cloudflare's current documentation, for example, describes separate rules for verified bots, likely automated traffic, managed challenges, and skip actions. Other providers use different products and fields, but the diagnostic principle is the same: inspect the layer that made the decision.",
+        ],
+      },
+      {
+        heading: "A browser success is useful, but it is not the crawler result",
+        paragraphs: [
+          "Your browser and a crawler rarely send the same request. Their addresses, cookies, JavaScript support, user agents, connection fingerprints, and request rates differ. A browser may solve a challenge or carry a clearance cookie that a simple HTTP client never receives.",
+          "Keep both observations. Write “browser returned the page” and “this crawler-shaped request returned a challenge” instead of allowing one result to erase the other.",
+        ],
+        callout: "Do not solve the discrepancy by allowlisting a user-agent string. The requester supplies that string, so it is easy to copy. Use the operator's documented IP or DNS verification when identity changes an access decision.",
+      },
+      {
+        heading: "Capture the response before changing a rule",
+        steps: [
+          "Record the exact URL, time, status, redirect chain, content type, relevant headers, and a hash or safe excerpt of the returned body.",
+          "Fetch robots.txt separately and reproduce the decision for the intended product token and path.",
+          "Classify the response: intended page, login gate, managed challenge, explicit block, rate limit, or upstream failure.",
+          "Find the matching CDN, WAF, reverse-proxy, or origin event at the same time and path.",
+          "Verify the crawler identity before adding a consequential exception.",
+          "Change the narrowest responsible rule, then repeat the same request and retain both captures.",
+        ],
+      },
+      {
+        heading: "Read status codes as evidence, not as a motive",
+        paragraphs: [
+          "A 403 establishes that the responding server understood the request and refused it; it does not identify which rule or product caused the refusal. A 429 establishes rate limiting, not permanent exclusion. A 200 can still be a challenge page, so status must be read together with content and headers.",
+          "When Googlebot is genuinely requesting too quickly, Google recommends 429 or a temporary 5xx response rather than using 403 or 404 as an improvised throttle. That advice is specific to signalling Googlebot and does not replace capacity planning or abuse controls for other clients.",
+        ],
+      },
+      {
+        heading: "What the current AnalyseSpider comparison can prove",
+        paragraphs: [
+          "The crawler view can compare one neutral AnalyseSpider request with one second request carrying an allowlisted crawler product token. A different status, final URL, canonical, noindex value, or body hash is direct evidence that the two observed responses differed.",
+          "It is still a header simulation. It does not originate from the operator's crawler network, reproduce its full request fingerprint, or authenticate the product identity. The first published control baseline found no response difference across six local static fixtures; that negative result is a baseline, not a universal claim about CDNs.",
+        ],
+        callout: "A useful report ends with the unresolved layer: “robots allows the token; the simulated request received a challenge; the responsible security event and genuine crawler identity remain to be verified.”",
+      },
+    ],
+    sources: [sources.rfc9309, sources.cloudflareBotChallenges, sources.googleRateLimiting, sources.googleVerify],
+    related: [
+      { label: "Crawler Analysis Tool", href: "/tools/crawler-view", note: "Compare one bounded neutral response with one simulated crawler-token response." },
+      { label: "Crawler benchmark", href: "/lab/crawler-benchmarks", note: "Inspect the controlled fixture, baseline result, raw data, and limits." },
+      { label: "Crawler verification methods", href: "/reference/crawler-verification-methods", note: "Choose identity evidence proportionate to the access decision." },
+    ],
+  },
+  {
+    slug: "initial-html-vs-rendered-dom",
+    kind: "lab-note",
+    eyebrow: "Technical SEO Article 05",
+    title: "Initial HTML and rendered DOM are different evidence",
+    description: "Learn what an HTTP crawler can prove from the initial response, what appears only after JavaScript runs, and how to compare the two without guessing.",
+    intro: "Open a page in a browser and the finished screen can look complete. Fetch the same URL as a simple HTTP client and the response may contain only a shell. Neither capture is the whole indexing story, but comparing them shows exactly which content depends on rendering.",
+    takeaway: "Keep the initial response and rendered DOM as separate captures. Put the page's main answer, title, canonical, directives, and important links in dependable HTML whenever the product allows it.",
+    publishedAt: "2026-08-28",
+    updatedAt: "2026-08-28",
+    sourceCheckedAt: "2026-08-28",
+    readingMinutes: 10,
+    sections: [
+      {
+        heading: "Two captures answer two different questions",
+        paragraphs: [
+          "Initial HTML is the representation returned by the server before page scripts run. It can be recorded with status, headers, bytes, title, meta directives, canonical, headings, text, and links found in that response.",
+          "The rendered DOM is the document after a browser has parsed the response, loaded allowed resources, executed JavaScript, and applied client-side changes. It may add text and links, replace metadata, open a consent gate, or fail before the main content appears.",
+        ],
+      },
+      {
+        heading: "Why the difference matters",
+        paragraphs: [
+          "Google documents crawling, rendering, and indexing as separate stages. It parses the fetched response, can queue eligible 200 pages for rendering, and then processes the rendered HTML again. Rendering can take longer, and blocked or failed resources can change the result.",
+          "That does not mean every crawler behaves like Google. Google explicitly notes that not all bots run JavaScript. A clean server response therefore remains the most portable evidence available across search crawlers, link previewers, accessibility tools, monitors, and simple diagnostic clients.",
+        ],
+      },
+      {
+        heading: "Run a comparison that another person can reproduce",
+        steps: [
+          "Record the exact public URL, timestamp, status, redirect chain, response headers, and raw initial HTML.",
+          "Open the same final URL in a fresh browser context without an authenticated session.",
+          "Wait for a stated event, such as network idle or a fixed application-ready marker, rather than an arbitrary screenshot delay.",
+          "Export or inspect the rendered DOM and record console or resource errors that affected it.",
+          "Compare stable fields: title, meta robots, canonical, language, H1, main text, crawlable href links, and structured data.",
+          "Repeat after the suspected fix with the same browser, viewport, consent state, and timing rule.",
+        ],
+      },
+      {
+        heading: "Differences that deserve attention first",
+        bullets: [
+          "the initial HTML has no useful main text, but the DOM adds the entire answer;",
+          "important links exist only after an interaction or failed API call;",
+          "the canonical or robots directive changes after JavaScript;",
+          "the server returns a generic shell or challenge while the browser later shows the page;",
+          "the rendered DOM removes content that was present in the response;",
+          "structured data describes content that never becomes visible to the user.",
+        ],
+        paragraphs: [
+          "A difference is not automatically an SEO defect. An interactive calculator can reasonably produce a result after input. The risk rises when the page's identity, core answer, navigation, or index controls depend on a script path that can fail or remain unavailable to the intended crawler.",
+        ],
+      },
+      {
+        heading: "Do not turn user-agent switching into a content strategy",
+        paragraphs: [
+          "Google no longer recommends crawler-specific dynamic rendering as a long-term solution. Server-side rendering, static rendering, or hydration usually creates a simpler shared baseline for people and crawlers.",
+          "Serving materially different subject matter to a detected crawler also creates a cloaking risk. The useful target is equivalent content and meaning, even when an interactive browser adds controls or state around it.",
+        ],
+      },
+      {
+        heading: "What AnalyseSpider sees today",
+        paragraphs: [
+          "The crawler view records one bounded HTTP response and does not execute page JavaScript. Its “main content detectable” result therefore describes the delivered HTML, not the final browser DOM. This makes the result narrow but reproducible.",
+          "The crawler fixture contains a JavaScript-only link case so later tests can compare discovery from source HTML with discovery after rendering. No public result currently claims that a particular external crawler executed that script or indexed its target.",
+        ],
+        callout: "Report the difference plainly: “The initial HTML contains the title and canonical but no main answer. The rendered DOM adds 1,240 visible characters and six links after the application request succeeds.” Then verify the indexing state separately.",
+      },
+    ],
+    sources: [sources.googleJavaScript, sources.googleDynamicRendering, sources.googleRobots],
+    related: [
+      { label: "Crawler Analysis Tool", href: "/tools/crawler-view", note: "Inspect the initial HTTP response without claiming JavaScript rendering." },
+      { label: "Crawler lab fixture", href: "/fixtures/crawler-lab", note: "Use the versioned static, noindex, canonical, and JavaScript-only cases." },
+      { label: "HTTP response debugging", href: "/guides/http-response-debugging", note: "Capture the response before interpreting the rendered result." },
+    ],
+  },
 ];
 
 export const referencePages: ContentPage[] = [
@@ -758,11 +932,11 @@ export const audiencePages: ContentPage[] = [
     intro: "Use AnalyseSpider for the small evidence step before a larger crawl or platform investigation: isolate the requests, responses, directives, and unknowns that justify the next check.",
     takeaway: "The output is a diagnostic handoff, not an automated verdict about indexing or ranking.",
     publishedAt: "2026-08-22",
-    updatedAt: "2026-08-22",
+    updatedAt: "2026-08-28",
     readingMinutes: 4,
     sections: [
       { heading: "Useful starting jobs", paragraphs: ["Parse a bounded log sample, classify redirect and error patterns, inspect pasted response headers and HTML, or check whether an IP value is public, private, or reserved."], bullets: ["Crawler candidate inventory", "Status and path distribution", "Redirect and directive capture", "Observed, inferred, and unknown handoff"] },
-      { heading: "Where this stops", paragraphs: ["AnalyseSpider does not currently fetch arbitrary URLs, crawl sites, query Search Console, verify bot IPs, or decide canonical selection. Those need separate evidence and controls."], callout: "Client logs can contain personal or confidential data. Minimise the sample before pasting it into any tool, including a local one." },
+      { heading: "Where this stops", paragraphs: ["AnalyseSpider can fetch one public HTTP or HTTPS URL through a tightly bounded, SSRF-protected gateway. It does not crawl a site, enter authenticated areas, render JavaScript, query Search Console, verify bot IPs, or decide canonical selection. Those jobs need separate evidence and controls."], callout: "Client logs can contain personal or confidential data. Minimise the sample before pasting it into any tool, including a local one, and never submit a private or signed URL to the live checker." },
       { heading: "A practical sequence", steps: ["Reduce the sample to the affected time and route set.", "Inspect local observations and rejected rows.", "Write the strongest supported hypothesis.", "Verify it in the relevant server, crawler, search-platform, or application surface."] },
     ],
     sources: [],

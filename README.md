@@ -4,7 +4,7 @@ Public source repository for the new `analysespider.com` crawling and technical 
 
 ## Purpose
 
-AnalyseSpider provides plain-language guidance, crawler comparisons, and bounded browser tools for technical SEOs, developers, site owners, and web-operations teams. The current tools parse access logs, raw HTTP responses, HTML directives, redirect steps, robots rules, and IP-address properties locally in the browser.
+AnalyseSpider provides plain-language guidance, crawler comparisons, and bounded browser tools for technical SEOs, developers, site owners, and web-operations teams. The current tools parse access logs, raw HTTP responses, HTML directives, redirect steps, robots rules, and IP-address properties locally in the browser. A protected single-URL check can also show crawler policy by purpose, export evidence, keep a short browser-local history, and compare the normal response with one simulated crawler product token.
 
 The project continues the former domain's broad technical-utility theme, but not its software, code, content, operator identity, users, customers, downloads, or claims.
 
@@ -17,7 +17,9 @@ The substantive site is publicly launched and indexable. Its primary navigation 
 - No unrestricted server-side fetching.
 - No active security scanning, port scanning, open redirects, or unrestricted crawling.
 - Logs, pasted HTTP responses, and IP values are processed in the browser by default.
-- No submitted data is uploaded by the current tools.
+- Pasted logs, IPs, response evidence and local exports are not uploaded by the browser-local tools.
+- Public URL checks use the documented protected gateway; the optional simulated-token view adds one bounded request and never claims to be the real crawler.
+- Up to five successful crawler reports may remain in local browser storage for 24 hours for before/after comparison.
 - A result must distinguish observation, inference, and unknowns.
 - Contextter is an optional related workflow, not independent corroboration.
 

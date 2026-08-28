@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "studyId": "CLP-2026-08-28.2",
+  "observedAt": "2026-08-28T22:28:00+02:00",
+  "environment": {
+    "site": "AnalyseSpider production build served by Astro preview",
+    "network": "127.0.0.1",
+    "javascriptRendering": false,
+    "robotsEnforcement": false,
+    "note": "This is a controlled response baseline, not a vendor crawler run. Direct requests do not prove discovery, robots compliance, indexing or citation."
+  },
+  "requestIdentities": [
+    {
+      "id": "analysespider",
+      "userAgent": "AnalyseSpider/1.0 (+https://analysespider.com/methodology-and-privacy)"
+    },
+    {
+      "id": "oai_searchbot_simulation",
+      "userAgent": "OAI-SearchBot/1.0 (+https://developers.openai.com/api/docs/bots)",
+      "boundary": "Product-token simulation only; not an authenticated OpenAI crawler."
+    }
+  ],
+  "summary": {
+    "fixtureCases": 6,
+    "fixtureCasesNotRun": 1,
+    "requests": 12,
+    "statusDifferences": 0,
+    "canonicalDifferences": 0,
+    "metaRobotsDifferences": 0,
+    "bodyHashDifferences": 0
+  },
+  "cases": [
+    {
+      "id": "CL-01",
+      "path": "/fixtures/crawler-lab/static-200",
+      "status": 200,
+      "canonical": "https://analysespider.com/fixtures/crawler-lab/static-200",
+      "metaRobots": "noindex, follow",
+      "bodySha256": "a585bf2ffc645efc10fcc54851ed4630d5e5d96074c9e986c2474b01453ced49",
+      "identicalAcrossIdentities": true
+    },
+    {
+      "id": "CL-02",
+      "path": "/fixtures/crawler-lab/redirect-one-hop",
+      "status": null,
+      "canonical": null,
+      "metaRobots": null,
+      "bodySha256": null,
+      "identicalAcrossIdentities": null,
+      "note": "Not run in this static-preview baseline because the redirect is owned by the Vercel route layer. Redirect behaviour remains a separate route-contract test."
+    },
+    {
+      "id": "CL-03",
+      "path": "/fixtures/crawler-lab/canonical-source",
+      "status": 200,
+      "canonical": "https://analysespider.com/fixtures/crawler-lab/canonical-target",
+      "metaRobots": "noindex, follow",
+      "bodySha256": "db456d43b731480a25b29eb0527761853cb17653932fa20e5b1a73956ed97fe0",
+      "identicalAcrossIdentities": true
+    },
+    {
+      "id": "CL-04",
+      "path": "/fixtures/crawler-lab/noindex",
+      "status": 200,
+      "canonical": "https://analysespider.com/fixtures/crawler-lab/noindex",
+      "metaRobots": "noindex, follow",
+      "bodySha256": "9627d1decdd6d9ae0ff0225e3b375fc5e7e437e077ba5722580e1a0df4d287b7",
+      "identicalAcrossIdentities": true
+    },
+    {
+      "id": "CL-05",
+      "path": "/fixtures/crawler-lab/disallowed",
+      "status": 200,
+      "canonical": "https://analysespider.com/fixtures/crawler-lab/disallowed",
+      "metaRobots": "noindex, follow",
+      "bodySha256": "7db33d45175fb60f2d6f70211a4858358e591d057566e56f2167cef1b6b63505",
+      "identicalAcrossIdentities": true,
+      "note": "The public robots.txt disallows this path. The direct baseline deliberately records the response without claiming crawler compliance."
+    },
+    {
+      "id": "CL-06",
+      "path": "/fixtures/crawler-lab/js-only",
+      "status": 200,
+      "canonical": "https://analysespider.com/fixtures/crawler-lab/js-only",
+      "metaRobots": "noindex, follow",
+      "bodySha256": "96343ab5c80c0821236f5878116cb03b2212b86d418eafea86602db62d673801",
+      "identicalAcrossIdentities": true,
+      "note": "No JavaScript was rendered in this baseline."
+    },
+    {
+      "id": "CL-07",
+      "path": "/fixtures/crawler-lab/orphan",
+      "status": 200,
+      "canonical": "https://analysespider.com/fixtures/crawler-lab/orphan",
+      "metaRobots": "noindex, follow",
+      "bodySha256": "59aff338c312b22273a8a9771cdd1a22fa02613f49a5aca6c857c736ca169726",
+      "identicalAcrossIdentities": true,
+      "note": "A direct request proves reachability, not discovery from the fixture start URL."
+    }
+  ]
+}

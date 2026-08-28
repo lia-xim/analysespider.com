@@ -4,19 +4,48 @@ import PageLead from "../components/PageLead.astro";
 import ArrowIcon from "../components/ArrowIcon.astro";
 ---
 <BaseLayout
-  title="AnalyseSpider log analysis successor"
-  description="A new, browser-local successor to the historical AnalyseSpider log-analysis intent."
+  title="AnalyseSpider log analysis successor — new ownership, new tool"
+  description="What the historical AnalyseSpider URL represented, what the new browser-local log analyzer does, and which evidence and rights did not transfer."
   canonicalPath="/analysespider.html"
 >
-  <PageLead title="Log analysis, rebuilt from first principles." intro="This historical path now leads to a new browser-local log inspector. It does not host or recreate the former AnalyseSpider software." />
+  <PageLead title="Log analysis, rebuilt from first principles." intro="This historical path now answers the same practical question with a new browser-local tool: which crawlers, errors and busy URLs appear in a small server-log sample? It does not host or recreate the former AnalyseSpider software." />
   <section class="content-grid">
-    <article class="prose">
-      <h2>A truthful successor</h2>
-      <p>Historical snapshots and live referring pages show that this URL was associated with web-log analysis, crawler visits, response patterns, downloads, and geographic reporting. That evidence supports the user job—not rights to the former implementation.</p>
-      <p>The current Log File Inspector independently parses bounded Apache and Nginx samples inside your browser. It reports request counts, crawler signatures, status groups, and top paths. Nothing is uploaded by the current tool.</p>
-      <a class="button primary" href="/tools/log-file-inspector">Open the new log inspector <ArrowIcon /></a>
-      <h2>Not the former product</h2>
-      <p>No former executable, source code, database, account, customer relationship, screenshot, documentation, warranty, or operator identity transferred with this domain.</p>
+    <article class="prose prose-wide">
+      <h2>Why this URL still exists</h2>
+      <p>Archived pages and currently reachable referring pages associate <code>/analysespider.html</code> with server-log analysis, crawler visits and response patterns. A paid target report found 25 referring domains pointing to this path. That is enough evidence to preserve the old user job, but it is not permission to republish the former product or imply that its business continued.</p>
+      <p>AnalyseSpider has been under new ownership since 2026. Every current tool, explanation, fixture and result format was independently created. The former authors, operator, users and customers are not presented as part of the new site.</p>
+
+      <h2>What the new log analyzer actually does</h2>
+      <p>The current <a href="/tools/log-file-inspector">Crawler Log Analyzer</a> reads a bounded Apache or Nginx access-log sample locally in the browser. It counts requests, groups HTTP status codes, extracts common paths and marks user-agent strings that claim to be known crawlers. The pasted lines are not uploaded to AnalyseSpider.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Input</th><th>Observable result</th><th>What remains unproven</th></tr></thead>
+          <tbody>
+            <tr><td>Request line and status</td><td>Requested path, timestamp and returned status group</td><td>Why the server chose that response</td></tr>
+            <tr><td>User-Agent string</td><td>A claimed Googlebot, GPTBot, ClaudeBot or other client name</td><td>That the request really came from that operator</td></tr>
+            <tr><td>IP address</td><td>A public, private or reserved address classification</td><td>A person, exact location or verified crawler identity</td></tr>
+            <tr><td>Repeated paths</td><td>Which URLs appear often in the supplied sample</td><td>Site-wide traffic or search demand outside that sample</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>A useful investigation starts with the claim in the log, then preserves the IP and timestamp, verifies important crawler identities using the operator's documented method, and finally checks the exact URL response. AnalyseSpider keeps those steps separate so one weak signal is not turned into a confident verdict.</p>
+      <div class="inline-actions">
+        <a class="button primary" href="/tools/log-file-inspector">Analyze a log sample <ArrowIcon /></a>
+        <a href="/reference/crawler-verification-methods">Compare bot-verification methods</a>
+      </div>
+
+      <h2>From a log line to a reproducible diagnosis</h2>
+      <ol>
+        <li>Export only the small time window and fields needed for the question.</li>
+        <li>Remove cookies, query values or other personal data that are not required.</li>
+        <li>Use the local parser to identify status patterns and crawler candidates.</li>
+        <li>Open the <a href="/tools/crawler-view">Crawler Analysis Tool</a> for the affected public URL.</li>
+        <li>Record the result, limits and observation time before changing a firewall or robots rule.</li>
+      </ol>
+      <p>The public <a href="/lab/crawler-benchmarks">crawler benchmark protocol</a> documents how controlled URLs, redirects, canonicals, noindex and robots cases are tested. It is the evidence layer behind future product comparisons; it is not a marketing score.</p>
+
+      <h2>What did not transfer</h2>
+      <p>No former executable, source code, database, account, customer relationship, screenshot, documentation, warranty, logo or operator identity transferred with this domain. Former download paths are deliberately retired instead of being redirected to unrelated new content. Corrections and rights questions can be sent through the current <a href="/contact">contact and corrections route</a>.</p>
     </article>
     <aside class="side-note">
       <h3>Path decision</h3>

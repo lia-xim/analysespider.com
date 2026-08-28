@@ -11,6 +11,7 @@ Each cluster must remain useful without Contextter and must link tools, workflow
 - Lab note: `/blog/how-to-find-search-bots-in-server-logs`, `/blog/private-data-in-access-logs`
 - Reference: `/reference/crawler-user-agents`, `/reference/crawler-verification-methods`
 - Legacy successor: `/analysespider.html`
+- Proof path: log analyzer -> crawler verification methods -> live URL check -> crawler benchmark
 
 ## 2. HTTP response and redirect evidence
 
@@ -30,6 +31,9 @@ Each cluster must remain useful without Contextter and must link tools, workflow
 - Method and privacy boundary: `/methodology-and-privacy`, `/privacy`
 - Crawler identity and role context: `/crawlers`, `/de/crawler`, `/reference/crawler-verification-methods`
 - The live check remains one-URL, no-JavaScript, and useful without an outbound product handoff.
+- Result path: four eligibility answers -> visible purpose-based crawler matrix -> local Markdown/JSON export -> 24-hour browser-local comparison -> optional simulated-token response comparison.
+- The simulation is one additional bounded request with an allowlisted product token; it is never presented as the real vendor crawler.
+- Rendering guide pair: `/blog/initial-html-vs-rendered-dom`, `/de/wissen/initiales-html-vs-gerenderter-dom`.
 
 ## 3. Robots and crawler access
 
@@ -37,8 +41,9 @@ Each cluster must remain useful without Contextter and must link tools, workflow
 - Guide: `/guides/test-robots-txt-rules`
 - Reference: `/reference/robots-directives`, `/reference/crawler-user-agents`
 - Parser proof: `/lab/robots-rule-fixtures`
-- External crawler protocol and controlled fixture: `/lab/crawler-benchmarks`, `/fixtures/crawler-lab/`
+- External crawler protocol, first controlled header baseline and raw evidence: `/lab/crawler-benchmarks`, `/fixtures/crawler-lab/`, `/evidence/crawler-header-baseline-2026-08-28.json`
 - Method boundary: `/methodology-and-privacy`
+- CDN/WAF diagnosis guide pair: `/blog/robots-txt-allows-bot-cdn-blocks-it`, `/de/wissen/robots-erlaubt-cdn-blockiert`.
 
 ## 4. IP and geography limits
 
@@ -70,11 +75,12 @@ Each cluster must remain useful without Contextter and must link tools, workflow
 - Related AI-answer evidence and page-decision tools may be linked only in the comparison context with common ownership visible.
 - AI-search eligibility guide: `/guides/appear-in-ai-search` and `/de/wissen/in-ai-suche-erscheinen`
 - The guide separates search crawling, training crawling, user-triggered retrieval, index eligibility and later answer selection.
+- The hub links to the robots-versus-CDN and initial-HTML-versus-rendered-DOM articles as two distinct evidence problems.
 
 ## 8. German entry layer
 
 - Entry pages: `/de`, `/de/tools`, `/de/wissen`, `/de/ueber`
-- Five core jobs now have one shared-function German tool and one maintained German guide: HTTP, redirects, robots.txt, server logs and IP geography.
+- Five core jobs have one shared-function German tool and one maintained German guide: HTTP, redirects, robots.txt, server logs and IP geography. Two source-led German articles extend the crawler cluster for CDN blocking and JavaScript rendering.
 - Reciprocal `hreflang` is emitted only for maintained counterparts. Related but non-equivalent pages remain unpaired.
 
 Link rule: use descriptive HTML anchors in the relevant workflow. Do not add sitewide portfolio links, reciprocal exact-match links, or unrelated homepage redirects.

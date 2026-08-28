@@ -29,10 +29,12 @@ import { site } from "../data/site";
       <h2>Protected live URL check</h2>
       <p>The main crawler check and the public-URL modes in the Response Inspector, Redirect Chain tool and Robots Rule Tester send the public URL you enter to <strong>tools.contextter.com</strong>, a Hetzner-hosted gateway operated by Matthias Ramahi. The gateway fetches only public HTTP or HTTPS pages through an SSRF-protected transport. It blocks private and local addresses, pins DNS, checks every redirect, allows only ports 80 and 443, follows at most three redirects, stops after eight seconds, and limits the decoded response to 1.5 MB.</p>
       <p>The gateway uses a browser-computed proof-of-work challenge, an exact origin allowlist, a pseudonymous HMAC client key derived from the request IP address and a coarse device family, rate limits, one concurrent AnalyseSpider slot, a circuit breaker, and an immediate scope kill switch. The raw IP address is needed at the network and proxy layer but is not used as the application-level rate-limit key.</p>
-      <p>Successful AnalyseSpider URL reports can be cached in encrypted Redis storage for up to one hour; error reports for up to five minutes. Usage statistics keep the hostname, not the full submitted URL, for up to 90 days. Pseudonymous unique-client counters and aggregate run counters can remain for up to 400 days. AnalyseSpider does not create a cross-session browser history of the URLs you checked. This supports abuse prevention, capacity planning, cache efficiency, and service reliability. The check does not use DataForSEO, an LLM-mentions provider, an advertising service, or a customer account.</p>
+      <p>Successful AnalyseSpider URL reports can be cached in encrypted Redis storage for up to one hour; error reports for up to five minutes. Usage statistics keep the hostname, not the full submitted URL, for up to 90 days. Pseudonymous unique-client counters and aggregate run counters can remain for up to 400 days. This supports abuse prevention, capacity planning, cache efficiency, and service reliability. The check does not use DataForSEO, an LLM-mentions provider, an advertising service, or a customer account.</p>
+      <p>After a successful crawler check, up to five complete reports can be stored in this browser's local storage for no more than 24 hours. This local history includes the checked URL and exists only so you can compare a later check with an earlier result. It is not uploaded as a history record. You can remove it by clearing this site's browser storage. Choosing the crawler-token comparison sends one additional bounded request for the same public URL to the gateway; the selected token is included in the cache key and request user agent.</p>
+      <p><strong>Do not submit private, signed, password-reset, preview, or secret-bearing URLs.</strong> A submitted path and query can be included in the generated report, the short-lived gateway cache, browser-local history, clipboard content, or an exported JSON file. Remove unnecessary query parameters before starting a live check.</p>
 
       <h2>Cookies, analytics, and accounts</h2>
-      <p><strong>No analytics</strong>, advertising pixels, behavioral tracking, account system, or profiling service is currently integrated. <strong>No application cookies</strong> are set by the current site. There is no newsletter signup, payment flow, or user account.</p>
+      <p><strong>No client-side audience analytics</strong>, advertising pixels, behavioral tracking, account system, or profiling service is currently integrated. The gateway does process the limited operational and abuse-prevention metrics described above. <strong>No application cookies</strong> are set by the current site. There is no newsletter signup, payment flow, or user account.</p>
 
       <h2>Contact</h2>
       <p><strong>No contact form</strong> is embedded on this website. Clicking an email link opens your chosen email service. If you contact the operator, the email address, message, headers, attachments, and follow-up correspondence are processed to answer the request, document rights or security concerns, and meet applicable legal obligations. Do not send passwords, raw customer data, private logs, or former software files.</p>
@@ -44,11 +46,16 @@ import { site } from "../data/site";
       <h2>Retention and recipients</h2>
       <p>The browser-local tools do not create an application record. The live URL check creates the bounded cache and usage records described above. Technical request information can also be processed by Vercel, Hetzner, the reverse proxy, and involved network providers; email correspondence by the involved email providers. Information is retained only as needed for delivery, security, rate limiting, cache operation, correspondence, evidence of handled requests, or legal obligations.</p>
 
+      <h2>Legal bases and international processing</h2>
+      <p>Where the GDPR applies, website delivery, the protected gateway, rate limiting, abuse prevention, availability monitoring, and technical fault diagnosis are processed on the basis of the operator's legitimate interests under Article 6(1)(f) GDPR in providing and protecting this free service. Email is processed under Article 6(1)(b) GDPR where it concerns a contract or steps requested before a contract, under Article 6(1)(f) for corrections, security reports, and general correspondence, and under Article 6(1)(c) where retention is required by law.</p>
+      <p>Recipient categories are the hosting and delivery provider, the Hetzner-hosted gateway and its technical operators, reverse-proxy and network providers, email providers, and authorities or advisers where legally required. Vercel is headquartered in the United States and publishes information about the EU-U.S. Data Privacy Framework and Standard Contractual Clauses in its <a href="https://vercel.com/legal/privacy-notice" rel="noreferrer">privacy notice</a>. The mechanism applicable to the operator's actual account and processing should be confirmed during a legal review.</p>
+      <p>This notice documents the current technical data paths. It is not an external legal certification; material provider, retention, analytics, or product changes require another technical and legal review.</p>
+
       <h2>Your data-subject rights</h2>
       <p>Where the GDPR applies, a data subject can request access, rectification, erasure, restriction, portability, or object to processing, subject to the statutory conditions. A complaint can also be made to a competent data-protection supervisory authority. Send privacy requests to <a href={`mailto:${site.operator.email}?subject=AnalyseSpider%20privacy`}>{site.operator.email}</a>.</p>
 
       <h2>Changes</h2>
-      <p>This notice describes the current static site and protected crawler gateway as reviewed on 27 August 2026. A future analytics service, upload, account, billing flow, paid data provider, or additional processor requires an updated technical and privacy review before activation.</p>
+      <p>This notice describes the current static site, local 24-hour report history and protected crawler gateway as reviewed on 28 August 2026. A future analytics service, upload, account, billing flow, paid data provider, or additional processor requires an updated technical and privacy review before activation.</p>
     </article>
     <aside class="side-note">
       <h3>Current declaration</h3>
@@ -57,11 +64,13 @@ import { site } from "../data/site";
         <div><dt>Tool processing</dt><dd>Browser-local plus one protected live URL fetch</dd></div>
         <div><dt>Live gateway</dt><dd>Hetzner / tools.contextter.com</dd></div>
         <div><dt>Report cache</dt><dd>1 hour success / 5 minutes error</dd></div>
-        <div><dt>Analytics</dt><dd>None</dd></div>
+        <div><dt>Local comparison history</dt><dd>Up to 5 reports / 24 hours in this browser</dd></div>
+        <div><dt>Client-side audience analytics</dt><dd>None</dd></div>
+        <div><dt>Gateway metrics</dt><dd>Limited operations and abuse prevention</dd></div>
         <div><dt>App cookies</dt><dd>None</dd></div>
         <div><dt>Contact form</dt><dd>None</dd></div>
         <div><dt>Accounts</dt><dd>None</dd></div>
-        <div><dt>Updated</dt><dd>27 August 2026</dd></div>
+        <div><dt>Updated</dt><dd>28 August 2026</dd></div>
       </dl>
     </aside>
   </section>

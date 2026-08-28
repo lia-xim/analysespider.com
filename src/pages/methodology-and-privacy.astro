@@ -12,6 +12,8 @@ import PageLead from "../components/PageLead.astro";
     <article class="prose">
       <h2>Current processing boundary</h2>
       <p>The Log File Inspector and IP Address Check run in your browser. Pasted response headers, redirect blocks and robots.txt rules also stay local. The main crawler check and the optional public-URL modes in the Response Inspector, Redirect Chain tool and Robots Rule Tester send one public URL to the protected gateway described below.</p>
+      <p>The crawler check keeps at most five successful reports in this browser for 24 hours so a later result can be compared with an earlier one. That local history contains the checked URL but is not uploaded as a history record. Copy and JSON export also happen in the browser.</p>
+      <p>Do not submit private, signed, password-reset, preview, or secret-bearing URLs. The full checked path and query can appear in the generated report, the short-lived gateway cache, browser-local history, clipboard content, or a downloaded JSON file.</p>
       <p>Browser-local processing reduces exposure, but it does not make unsafe input harmless. Do not paste confidential logs into any device or browser you do not control. Results remain an interpretation of the supplied material—not proof of live server behavior.</p>
 
       <h2>Hosting boundary</h2>
@@ -27,7 +29,7 @@ import PageLead from "../components/PageLead.astro";
       <p>A question the current evidence cannot answer: live DNS, the final redirect hop, rendered DOM, current index state, precise location, identity, or future behavior.</p>
 
       <h2>Live crawler check and safety gates</h2>
-      <p>AnalyseSpider exposes one tightly bounded server-side URL-check operation through several interfaces. It uses a dedicated gateway operation and does not enqueue the Contextter Site Audit worker. The live production container is limited to 0.5 CPU and 256 MB RAM; the AnalyseSpider scope allows one concurrent run, six runs per ten minutes, and 30 per 24 hours for one pseudonymous client.</p>
+      <p>AnalyseSpider exposes one tightly bounded server-side URL-check operation through several interfaces. It uses a dedicated gateway operation and does not enqueue the Contextter Site Audit worker. The live production container is limited to 0.5 CPU and 256 MB RAM; the AnalyseSpider scope allows one concurrent run, six runs per ten minutes, and 30 per 24 hours for one pseudonymous client. The optional crawler-token comparison uses one additional run and the same network limits.</p>
       <p>The public fetch path enforces all of the following:</p>
       <ul>
         <li>private, loopback, link-local, metadata, and internal DNS blocking;</li>
@@ -48,8 +50,10 @@ import PageLead from "../components/PageLead.astro";
       <dl class="facts-list">
         <div><dt>Processing</dt><dd>Browser-local plus protected public URL fetch</dd></div>
         <div><dt>URL fetch</dt><dd>One URL, one slot, strict limits</dd></div>
-        <div><dt>Analytics</dt><dd>Disabled</dd></div>
+        <div><dt>Client-side audience analytics</dt><dd>Disabled</dd></div>
+        <div><dt>Gateway metrics</dt><dd>Limited operations and abuse prevention</dd></div>
         <div><dt>Live report cache</dt><dd>1 hour success / 5 minutes error</dd></div>
+        <div><dt>Local report history</dt><dd>5 reports / 24 hours / this browser only</dd></div>
         <div><dt>Hosting</dt><dd>Vercel request layer</dd></div>
         <div><dt>Updated</dt><dd>2026-08-28</dd></div>
       </dl>

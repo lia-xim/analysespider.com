@@ -1,0 +1,87 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+---
+<BaseLayout
+  title="Initiales HTML und gerenderter DOM: Was sieht ein Crawler? — AnalyseSpider"
+  description="Vergleiche die Serverantwort mit dem durch JavaScript gerenderten DOM und erkenne, welche Inhalte, Links und SEO-Signale vom Rendering abhängen."
+  canonicalPath="/de/wissen/initiales-html-vs-gerenderter-dom"
+  alternatePath="/blog/initial-html-vs-rendered-dom"
+  lang="de"
+  pageType="article"
+  publishedTime="2026-08-28"
+  modifiedTime="2026-08-28"
+  bodyClass="simple-content"
+>
+  <header class="simple-page-lead">
+    <p class="eyebrow">Leitartikel · JavaScript und Crawling</p>
+    <h1>Was steht im initialen HTML – und was sieht man erst nach JavaScript?</h1>
+    <p>Der fertige Browserbildschirm kann vollständig aussehen, obwohl die Serverantwort nur ein leeres App-Gerüst enthält. Vergleiche deshalb zwei getrennte Belege: das gelieferte HTML und den DOM nach dem Rendering.</p>
+  </header>
+
+  <article class="simple-prose">
+    <section>
+      <h2>Zwei Aufnahmen, zwei Fragen</h2>
+      <p>Das <strong>initiale HTML</strong> ist die Antwort des Servers, bevor Seitenskripte laufen. Darin lassen sich Status, Header, Title, Canonical, robots-Angaben, Überschriften, Text und vorhandene Links festhalten.</p>
+      <p>Der <strong>gerenderte DOM</strong> entsteht, nachdem ein Browser das Dokument verarbeitet, erlaubte Ressourcen geladen und JavaScript ausgeführt hat. Dabei können Inhalte und Links ergänzt werden. Ebenso können API-Fehler, Consent-Dialoge oder Script-Probleme den eigentlichen Inhalt verdecken.</p>
+    </section>
+
+    <section>
+      <h2>Warum die Differenz für Suchsysteme wichtig ist</h2>
+      <p>Google beschreibt Crawling, Rendering und Indexierung als getrennte Schritte. Zuerst wird die Antwort abgerufen und ausgewertet. Eine geeignete 200-Seite kann danach in die Rendering-Warteschlange gelangen; anschließend wird das gerenderte HTML erneut verarbeitet.</p>
+      <p>Daraus folgt nicht, dass jeder Bot JavaScript wie Google ausführt. Google weist selbst darauf hin, dass andere Bots JavaScript ignorieren können. Ein verständlicher serverseitiger Ausgangszustand ist deshalb robuster als eine Seite, deren Identität und Hauptantwort vollständig von einem fehlerfreien Client-Request abhängen.</p>
+    </section>
+
+    <section>
+      <h2>So baust du einen reproduzierbaren Vergleich</h2>
+      <ol>
+        <li>Notiere URL, Zeitpunkt, Status, Redirect-Kette, Antwort-Header und das rohe initiale HTML.</li>
+        <li>Öffne dieselbe finale URL in einem frischen Browserkontext ohne Login.</li>
+        <li>Warte auf ein definiertes Anwendungssignal oder Netzwerk-Ruhe statt auf eine beliebige Screenshot-Pause.</li>
+        <li>Speichere oder untersuche den DOM und halte Console- oder Ressourcenfehler fest.</li>
+        <li>Vergleiche Title, robots-Angaben, Canonical, Sprache, H1, Haupttext, echte href-Links und strukturierte Daten.</li>
+        <li>Wiederhole den Test nach einer Änderung mit demselben Browser, Viewport, Consent-Zustand und Zeitkriterium.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Diese Unterschiede sind zuerst relevant</h2>
+      <ul>
+        <li>Im initialen HTML fehlt die Hauptantwort vollständig.</li>
+        <li>Wichtige Links entstehen erst nach einer Interaktion oder einem API-Aufruf.</li>
+        <li>Canonical oder robots-Direktive ändern sich nach JavaScript.</li>
+        <li>Der Server liefert eine Challenge oder App-Shell, während der Browser später die Seite zeigt.</li>
+        <li>Der gerenderte DOM entfernt Inhalt, der in der Antwort noch vorhanden war.</li>
+        <li>Strukturierte Daten beschreiben Inhalte, die für den Nutzer nie sichtbar werden.</li>
+      </ul>
+      <p>Nicht jede Abweichung ist ein Fehler. Ein Rechner darf sein individuelles Ergebnis erst nach einer Eingabe erzeugen. Kritisch wird es, wenn Seitenthema, Kernantwort, Navigation oder Indexierungssteuerung nur über einen anfälligen Script-Pfad erreichbar sind.</p>
+    </section>
+
+    <section>
+      <h2>Baue keine zweite Seite nur für Crawler</h2>
+      <p>Google empfiehlt crawler-spezifisches Dynamic Rendering nicht mehr als dauerhafte Lösung. Serverseitiges Rendering, statische Ausgabe oder Hydration schaffen meist einen einfacheren gemeinsamen Ausgangspunkt.</p>
+      <p>Die Inhalte müssen nicht Byte für Byte identisch sein. Ein Browser darf interaktive Bedienelemente ergänzen. Thema, zentrale Aussage und wichtige Signale sollten jedoch gleichwertig bleiben. Materiell andere Inhalte nur für einen erkannten Bot können als Cloaking problematisch werden.</p>
+    </section>
+
+    <section>
+      <h2>Was AnalyseSpider heute tatsächlich prüft</h2>
+      <p>Der Crawler-Check liest eine begrenzte HTTP-Antwort und führt das JavaScript der Zielseite nicht aus. „Hauptinhalt erkennbar“ bezieht sich daher auf das gelieferte HTML, nicht auf den späteren Browser-DOM. Diese Grenze macht den Befund schmal, aber nachvollziehbar.</p>
+      <p>Das öffentliche Crawler-Fixture enthält zusätzlich einen JavaScript-only-Link. Damit kann später getrennt getestet werden, welche Links aus dem Quelltext und welche erst nach Rendering gefunden werden. Aktuell behauptet AnalyseSpider nicht, dass ein externer Crawler dieses Script ausgeführt oder sein Ziel indexiert hat.</p>
+      <p><a class="button secondary" href="/de/tools/crawler-sicht">Initiale Serverantwort prüfen</a></p>
+    </section>
+
+    <section>
+      <h2>So sollte der Befund formuliert sein</h2>
+      <p>„Das initiale HTML enthält Title und Canonical, aber keine Hauptantwort. Der gerenderte DOM ergänzt nach erfolgreichem API-Aufruf 1.240 sichtbare Zeichen und sechs Links.“ Erst danach folgt die separate Frage, was Google oder ein anderes System wirklich verarbeitet und indexiert hat.</p>
+    </section>
+
+    <section class="source-section">
+      <h2>Primärquellen</h2>
+      <p>Geprüft am 28. August 2026. Rendering-Systeme und Dokumentation können sich ändern.</p>
+      <ul>
+        <li><a href="https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics">Google Search Central: JavaScript SEO Grundlagen</a></li>
+        <li><a href="https://developers.google.com/search/docs/crawling-indexing/javascript/dynamic-rendering">Google Search Central: Dynamic Rendering als Übergangslösung</a></li>
+        <li><a href="https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag">Google Search Central: Robots-Meta-Tag und X-Robots-Tag</a></li>
+      </ul>
+    </section>
+  </article>
+</BaseLayout>

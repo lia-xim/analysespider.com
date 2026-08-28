@@ -6,6 +6,15 @@ const TOOL_SCOPE = "tool_analysespider_crawler";
 const CAP_ORIGIN = "https://cap.local";
 
 export type EligibilityState = "yes" | "no" | "mixed" | "unknown";
+export type CrawlerRequestIdentity =
+  | "googlebot"
+  | "oai_searchbot"
+  | "gptbot"
+  | "chatgpt_user"
+  | "claude_searchbot"
+  | "claudebot"
+  | "claude_user"
+  | "perplexitybot";
 
 export interface CrawlerReport {
   readonly fetchFacts: {
@@ -24,6 +33,9 @@ export interface CrawlerReport {
     readonly blockedReason: string | null;
     readonly failureReason: string | null;
     readonly fetchedAt: string;
+    readonly responseBodySha256?: string | null;
+    readonly requestIdentity?: string;
+    readonly requestUserAgent?: string;
   };
   readonly eligibility: {
     readonly pageFetch: EligibilityState;
@@ -59,6 +71,9 @@ export interface CrawlerReport {
     readonly crawlerName: string;
     readonly purpose: "search" | "training" | "user_fetch";
     readonly state: "allowed" | "blocked" | "no_rule" | "unknown";
+    readonly sourceUrl?: string;
+    readonly userAgent?: string;
+    readonly robotsNormallyApplies?: boolean;
   }[];
   readonly findings: readonly {
     readonly code: string;
@@ -274,7 +289,10 @@ function isCrawlerReport(value: unknown): value is CrawlerReport {
   );
 }
 
-export async function runCrawlerCheck(rawUrl: string): Promise<CrawlerReport> {
+export async function runCrawlerCheck(
+  rawUrl: string,
+  requestIdentity?: CrawlerRequestIdentity,
+): Promise<CrawlerReport> {
   let normalizedUrl: string;
   try {
     normalizedUrl = normalizePublicUrl(rawUrl);
@@ -283,11 +301,21 @@ export async function runCrawlerCheck(rawUrl: string): Promise<CrawlerReport> {
     throw new GatewayError("VALIDATION_INVALID_INPUT");
   }
 
-  const proof = await solveProof(await digest(normalizedUrl));
+  const normalizedInput =
+    requestIdentity === undefined
+      ? normalizedUrl
+      : `${normalizedUrl}|request-identity=${requestIdentity}`;
+  const proof = await solveProof(await digest(normalizedInput));
   const response = await window.fetch(`${GATEWAY_BASE_URL}/${TOOL_PATH}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ input: { url: normalizedUrl }, cap: proof }),
+    body: JSON.stringify({
+      input: {
+        url: normalizedUrl,
+        ...(requestIdentity === undefined ? {} : { requestIdentity }),
+      },
+      cap: proof,
+    }),
   });
   if (!response.ok) throw await publicError(response);
   const payload: unknown = await response.json().catch(() => undefined);

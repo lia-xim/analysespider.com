@@ -70,8 +70,14 @@ const copy = de ? {
   eligibleNote: "Das schafft technische Eignung. Indexierung, Ranking oder Zitation bleiben Entscheidungen des jeweiligen Systems.",
   guide: "Leitfaden zur AI-Suche lesen",
   auditHeading: "Und was ist mit Screaming Frog, Sitebulb oder Site-Audit-Tools?",
-  auditText: "Diese Crawler lösen eine andere Aufgabe: Sie prüfen eine Website im Auftrag des Betreibers. Ein fairer Vergleich braucht dieselbe unveränderte Testwebsite, dieselben Einstellungen und mehrere Läufe. Wichtige Messwerte sind gefundene URLs, JavaScript-Verarbeitung, Redirect- und Canonical-Logik, Exporte, Laufzeit, Limits und Kosten. AnalyseSpider veröffentlicht deshalb noch keinen künstlichen Sieger.",
-  fixtureLink: "Testprotokoll und Fixture ansehen",
+  auditText: "Diese Crawler lösen eine andere Aufgabe: Sie prüfen eine Website im Auftrag des Betreibers. Ein fairer Vergleich braucht dieselbe unveränderte Testwebsite, dieselben Einstellungen und mehrere Läufe. Die erste kontrollierte Header-Baseline mit Rohdaten ist veröffentlicht. Ergebnisse realer Anbieter bleiben offen, bis wiederholbare Testläufe vorliegen — deshalb gibt es noch keinen künstlichen Sieger.",
+  fixtureLink: "Benchmark und Rohdaten ansehen",
+  editorialHeading: "Zwei typische Widersprüche sauber auflösen",
+  editorialText: "robots.txt, CDN-Antwort und JavaScript-Rendering sind verschiedene Belege. Die beiden Leitartikel zeigen, wie du sie getrennt festhältst, statt aus einem Browserbild eine Crawler-Aussage abzuleiten.",
+  editorialLinks: [
+    ["Robots erlaubt – CDN blockiert", "/de/wissen/robots-erlaubt-cdn-blockiert"],
+    ["Initiales HTML und gerenderter DOM", "/de/wissen/initiales-html-vs-gerenderter-dom"],
+  ],
   sourcesHeading: "Primärquellen und Pflege",
   sourcesIntro: "Crawler-Namen, IP-Bereiche und Produktrollen ändern sich. Diese Seite stützt sich deshalb auf die Dokumentation der Betreiber und nennt das Prüfdatum.",
   relatedHeading: "Welche Themen und Quellen tauchen in AI-Antworten auf?",
@@ -132,8 +138,14 @@ const copy = de ? {
   eligibleNote: "This creates technical eligibility. Indexing, ranking and citation remain decisions made by each system.",
   guide: "Read the AI search guide",
   auditHeading: "What about Screaming Frog, Sitebulb and site-audit crawlers?",
-  auditText: "They solve a different job: auditing a website for its operator. A fair comparison needs the same unchanged fixture, the same settings and several runs. Useful measures include discovered URLs, JavaScript handling, redirect and canonical logic, exports, runtime, limits and cost. AnalyseSpider therefore publishes no artificial winner yet.",
-  fixtureLink: "View the test protocol and fixture",
+  auditText: "They solve a different job: auditing a website for its operator. A fair comparison needs the same unchanged fixture, the same settings and several runs. The first controlled header baseline and its raw evidence are published. Vendor results remain open until repeatable runs exist, so there is no artificial winner yet.",
+  fixtureLink: "View the benchmark and raw evidence",
+  editorialHeading: "Resolve two common contradictions",
+  editorialText: "Robots policy, CDN response and JavaScript rendering are separate evidence. These two guides show how to capture each layer without turning a browser screenshot into a crawler claim.",
+  editorialLinks: [
+    ["Robots allows the bot, but the CDN blocks it", "/blog/robots-txt-allows-bot-cdn-blocks-it"],
+    ["Initial HTML and rendered DOM", "/blog/initial-html-vs-rendered-dom"],
+  ],
   sourcesHeading: "Primary sources and maintenance",
   sourcesIntro: "Crawler names, IP ranges and product roles change. This page therefore links to operator documentation and records its review date.",
   relatedHeading: "Which topics and sources appear in AI answers?",
@@ -208,6 +220,7 @@ const sourceLinks = de ? [
 
   <section class="crawler-eligibility"><div><h2>{copy.eligibleHeading}</h2><p><strong>{copy.eligibleNote}</strong></p><a class="text-link" href={de ? "/de/wissen/in-ai-suche-erscheinen" : "/guides/appear-in-ai-search"}>{copy.guide} <ArrowIcon /></a></div><ul>{copy.eligibleSteps.map((step) => <li>{step}</li>)}</ul></section>
   <section class="audit-comparison-note"><h2>{copy.auditHeading}</h2><div><p>{copy.auditText}</p><a href="/lab/crawler-benchmarks">{copy.fixtureLink} <ArrowIcon /></a></div></section>
+  <section class="audit-comparison-note crawler-editorial-note"><h2>{copy.editorialHeading}</h2><div><p>{copy.editorialText}</p><div class="inline-actions">{copy.editorialLinks.map(([label, href]) => <a href={href}>{label} <ArrowIcon /></a>)}</div></div></section>
 
   <section class="crawler-source-section"><header><h2>{copy.sourcesHeading}</h2><p>{copy.sourcesIntro}</p><small>{copy.checked}</small></header><div>{sourceLinks.map(([label, href]) => <a href={href} rel="noreferrer">{label} <ArrowIcon /></a>)}</div></section>
   <section class="related-work related-fanout"><div><h2>{copy.relatedHeading}</h2><p>{copy.relatedText}</p></div><div class="related-actions"><a class="button secondary" href={de ? "https://ai-fanout.com/de" : "https://ai-fanout.com/"}>{copy.aiLabel}</a></div><p class="disclosure">{copy.disclosure}</p></section>

@@ -3,6 +3,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import ArrowIcon from "../../components/ArrowIcon.astro";
 const groups = [
   { title: "Crawling und Indexierung", links: [
+    ["Robots.txt erlaubt den Bot – warum blockiert der CDN ihn trotzdem?", "robots.txt, Firewall und Serverantwort als getrennte Entscheidungen prüfen.", "/de/wissen/robots-erlaubt-cdn-blockiert"],
+    ["Was steht im initialen HTML – und was sieht man erst nach JavaScript?", "Serverantwort und gerenderten DOM reproduzierbar vergleichen.", "/de/wissen/initiales-html-vs-gerenderter-dom"],
     ["Wie kann eine Seite in AI-Suchen erscheinen?", "Crawler-Zugriff, technische Eignung und spätere Quellenauswahl sauber trennen.", "/de/wissen/in-ai-suche-erscheinen"],
     ["Warum wird meine Seite nicht indexiert?", "Statuscode, robots-Angaben und Canonical der Reihe nach prüfen.", "/de/wissen/warum-wird-meine-seite-nicht-indexiert"],
     ["Wie funktioniert robots.txt?", "Verstehen, welcher Bot welche URL abrufen darf.", "/de/wissen/robots-txt-testen"],
@@ -23,7 +25,7 @@ const groups = [
 ---
 <BaseLayout
   title="Technische SEO einfach erklärt — AnalyseSpider"
-  description="Verständliche Antworten zu Crawling, Indexierung, robots.txt, Redirects, HTTP-Antworten und Server-Logs."
+  description="Verständliche, belegte Antworten zu Crawling, Indexierung, JavaScript, CDN-Sperren, robots.txt, Redirects, HTTP-Antworten und Server-Logs."
   canonicalPath="/de/wissen"
   alternatePath="/guides"
   lang="de"
@@ -34,7 +36,7 @@ const groups = [
     <p>Jede Erklärung beantwortet eine praktische Frage. Beginne bei dem Problem, das du gerade auf deiner Website siehst.</p>
   </header>
   <section class="article-entry-strip" aria-label="Neuer ausführlicher Artikel">
-    <span>Neuer Leitfaden</span><a href="/de/wissen/in-ai-suche-erscheinen"><strong>Wie kann eine Seite in AI-Suchen erscheinen?</strong><small>Die Regeln von OpenAI, Google und Anthropic anhand ihrer Primärquellen erklärt.</small><ArrowIcon /></a>
+    <span>Neuer Leitfaden</span><a href="/de/wissen/in-ai-suche-erscheinen"><span><strong>Wie kann eine Seite in AI-Suchen erscheinen?</strong><small>Die Regeln von OpenAI, Google und Anthropic anhand ihrer Primärquellen erklärt.</small></span><ArrowIcon /></a>
   </section>
   <section class="knowledge-groups" aria-label="Wissensbereiche">
     {groups.map((group) => (

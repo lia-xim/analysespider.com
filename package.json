@@ -13,7 +13,7 @@
     "preview": "astro preview",
     "check": "astro check",
     "qa": "node scripts/qa.mjs",
-    "qa:a11y": "axe http://127.0.0.1:4321/ http://127.0.0.1:4321/tools http://127.0.0.1:4321/de http://127.0.0.1:4321/de/tools/http-antwort --exit",
+    "qa:a11y": "axe http://127.0.0.1:4321/ http://127.0.0.1:4321/tools http://127.0.0.1:4321/de http://127.0.0.1:4321/de/tools/http-antwort http://127.0.0.1:4321/de/wissen/robots-erlaubt-cdn-blockiert http://127.0.0.1:4321/de/wissen/initiales-html-vs-gerenderter-dom --exit",
     "qa:browser": "node scripts/browser-smoke.mjs",
     "verify": "pnpm build && pnpm qa"
   },

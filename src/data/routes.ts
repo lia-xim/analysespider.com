@@ -40,6 +40,8 @@ const staticRoutes = [
   "/de/wissen/robots-txt-testen",
   "/de/wissen/crawler-in-server-logs-erkennen",
   "/de/wissen/ip-geolokalisierung-verstehen",
+  "/de/wissen/robots-erlaubt-cdn-blockiert",
+  "/de/wissen/initiales-html-vs-gerenderter-dom",
   "/de/ueber",
   "/guides/test-robots-txt-rules",
   "/blog",

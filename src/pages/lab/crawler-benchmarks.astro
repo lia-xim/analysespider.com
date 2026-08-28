@@ -3,16 +3,27 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import PageLead from "../../components/PageLead.astro";
 import { crawlerLabCases } from "../../data/crawler-lab";
 ---
-<BaseLayout title="Crawler tool benchmark protocol — AnalyseSpider" description="A public, unchanged crawler fixture and the evidence contract for future Contextter, Screaming Frog and Sitebulb comparison runs." canonicalPath="/lab/crawler-benchmarks" breadcrumbs={[{name:"Home",path:"/"},{name:"Crawler lab",path:"/lab/crawler-benchmarks"}]}>
+<BaseLayout title="Crawler comparison benchmark and raw evidence — AnalyseSpider" description="A public crawler fixture, first controlled header-response baseline, raw JSON evidence and the protocol for future crawler product comparisons." canonicalPath="/lab/crawler-benchmarks" breadcrumbs={[{name:"Home",path:"/"},{name:"Crawler lab",path:"/lab/crawler-benchmarks"}]}>
   <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><span aria-current="page">Crawler lab</span></nav>
-  <PageLead title="A crawler comparison needs the same test site, settings and repeated runs." intro="This page publishes the method and the unchanged fixture first. No product is called a winner until comparable exports from several repeated runs exist." />
-  <div class="article-meta" aria-label="Study details"><span>Protocol CLP-2026-08-28.1</span><span>{crawlerLabCases.length} expected behaviours</span><span>Vendor runs: not started</span><span>Fixture: public</span><strong>RESULTS NOT PROVEN</strong></div>
+  <PageLead title="A crawler comparison needs the same test site, settings and repeated runs." intro="This page publishes the fixture, the first controlled request baseline and the raw evidence before any product ranking. No crawler is called a winner from a single run." />
+  <div class="article-meta" aria-label="Study details"><span>Protocol CLP-2026-08-28.2</span><span>{crawlerLabCases.length} fixture cases</span><span>Controlled requests: 12</span><span>Vendor runs: not started</span><strong class="evidence-state">BASELINE VERIFIED</strong></div>
   <section class="content-grid">
     <div class="prose prose-wide">
       <h2>The fixture is available before the claims</h2>
       <p>The controlled site contains ordinary HTML links, a one-hop redirect, a canonical pointing elsewhere, a noindex page, one robots-disallowed path, a link added by JavaScript and an orphan URL. Every page is excluded from the public sitemap and carries noindex, so the laboratory does not create search-result clutter.</p>
       <p><a href="/fixtures/crawler-lab/">Open the fixture start URL</a>. The expected behaviour is also listed here so another person can challenge the protocol before any vendor result is published.</p>
       <div class="table-wrap"><table><thead><tr><th>Case</th><th>Test URL</th><th>Expected observation</th></tr></thead><tbody>{crawlerLabCases.map((fixture) => (<tr><th scope="row">{fixture.label}</th><td><code>{fixture.path}</code></td><td>{fixture.expected}</td></tr>))}</tbody></table></div>
+
+      <h2>First baseline: does the server vary the HTML by crawler token?</h2>
+      <p>On 28 August 2026, six directly served fixture cases were requested once with the normal AnalyseSpider user agent and once with a header containing the <code>OAI-SearchBot</code> product token. The Vercel-owned redirect case was kept outside this static-preview baseline. The run did not render JavaScript or enforce robots.txt.</p>
+      <p>The two request identities received the same status, canonical, meta-robots value and HTML body hash for all six tested fixture pages. That is a useful control result: these fixtures did not vary their response for that simulated token. It does <strong>not</strong> prove how OpenAI crawls, renders, indexes or selects sources.</p>
+      <div class="table-wrap"><table><thead><tr><th>Measure</th><th>Observed difference</th><th>Meaning</th></tr></thead><tbody>
+        <tr><th scope="row">HTTP status</th><td>0 of 12 requests</td><td>No token-dependent status response in this baseline.</td></tr>
+        <tr><th scope="row">Canonical and noindex</th><td>0 of 12 requests</td><td>The delivered indexability signals were identical.</td></tr>
+        <tr><th scope="row">HTML SHA-256</th><td>0 of 12 responses</td><td>The directly served HTML bodies were byte-equivalent after decoding.</td></tr>
+        <tr><th scope="row">Crawler identity</th><td>Not verified</td><td>The second header was a simulation, not an authenticated OpenAI request.</td></tr>
+      </tbody></table></div>
+      <p><a href="/evidence/crawler-header-baseline-2026-08-28.json">Download the raw baseline JSON</a>. The file includes the identities, hashes, environment, cases and explicit limits.</p>
 
       <h2>Run contract</h2>
       <ol><li>Record product name, exact version, licence tier, user agent and configuration export.</li><li>Use only the published start URL and the same host scope. Clear each product's project cache before a run.</li><li>Run each configuration at least three times without changing the fixture deployment.</li><li>Export discovered URLs, status, redirect target, canonical, robots status, indexability and discovery source.</li><li>Publish the raw export or a lossless redacted equivalent, run time, machine or service limits, and every manual correction.</li></ol>
@@ -22,8 +33,8 @@ import { crawlerLabCases } from "../../data/crawler-lab";
       <p>Contextter is operated by Matthias Ramahi, who also operates AnalyseSpider. That conflict will be repeated beside any Contextter result. Screaming Frog and Sitebulb are not affiliated with this site.</p>
 
       <h2>Current result status</h2>
-      <p><strong>No vendor result has been run or verified yet.</strong> The protocol and fixture are published now so the study cannot be quietly changed after seeing a preferred result. The former parser tests remain available as a separate <a href="/lab/robots-rule-fixtures">robots-rule fixture report</a>.</p>
+      <p><strong>The controlled header-response baseline is verified; vendor crawler comparisons remain not proven.</strong> The protocol and fixture are published so later Contextter, Screaming Frog, Sitebulb or other runs cannot silently change the test after a preferred result appears. The parser tests remain available as a separate <a href="/lab/robots-rule-fixtures">robots-rule fixture report</a>.</p>
     </div>
-    <aside class="side-note"><h3>Evidence state</h3><p><strong>PROTOCOL VERIFIED</strong><br />Vendor results: NOT PROVEN</p><p>Published 28 August 2026. Change the protocol version if the fixture, settings or measures change.</p><p><a href="/crawlers">Compare crawler roles</a>.</p></aside>
+    <aside class="side-note"><h3>Evidence state</h3><p><strong>BASELINE VERIFIED</strong><br />Vendor results: NOT PROVEN</p><p>Published 28 August 2026. Change the protocol version if the fixture, settings or measures change.</p><p><a href="/tools/crawler-view">Compare one live URL</a>.</p><p><a href="/crawlers">Compare crawler roles</a>.</p></aside>
   </section>
 </BaseLayout>

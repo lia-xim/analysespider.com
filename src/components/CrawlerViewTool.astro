@@ -16,11 +16,36 @@ const copy = de
       placeholder: "example.com oder https://example.com/seite",
       submit: "URL prüfen",
       note: "https:// ist optional · Ergebnis-Cache höchstens 1 Stunde · 30 Prüfungen je 24 Stunden",
+      sensitiveUrlWarning:
+        "Keine privaten, signierten oder geheimen URLs eingeben. Pfad und Query können im Bericht und im zeitlich begrenzten Cache stehen.",
       checking: "Die Seite wird sicher abgerufen und geprüft …",
       errorHeading: "Die Prüfung konnte nicht abgeschlossen werden.",
       actions: "Das solltest du als Nächstes tun",
       details: "Technische Details",
       crawlerRules: "Gefundene Crawler-Regeln",
+      crawlerRulesIntro:
+        "Suche, Training und ein vom Nutzer ausgelöster Abruf sind getrennte Aufgaben. Die Tabelle zeigt nur, was die beobachtete robots.txt für den jeweiligen Produkt-Token sagt.",
+      crawlerRulesNote:
+        "Eine Freigabe beweist keinen Besuch. Eine Sperre von GPTBot sperrt nicht automatisch OAI-SearchBot für die ChatGPT-Suche.",
+      reportTools: "Ergebnis mitnehmen oder später vergleichen",
+      copyReport: "Bericht kopieren",
+      downloadJson: "JSON herunterladen",
+      comparePrevious: "Mit letzter Prüfung vergleichen",
+      compareHeading: "Was hat sich seit der letzten Prüfung geändert?",
+      compareEmpty: "Für diese URL gibt es noch keine ältere lokale Prüfung.",
+      localHistory:
+        "Bis zu fünf Ergebnisse bleiben ausschließlich in diesem Browser und werden nach 24 Stunden verworfen.",
+      simulationHeading: "Antwort für einen anderen Crawler-Token vergleichen",
+      simulationIntro:
+        "AnalyseSpider sendet einen zweiten begrenzten Request mit dem gewählten Produkt-Token im User-Agent. Das simuliert einen Header, nicht die Identität oder das vollständige Verhalten des echten Crawlers.",
+      simulationLabel: "Crawler-Token",
+      simulationButton: "Zweite Ansicht prüfen",
+      simulationRunning: "Die zweite Serverantwort wird geprüft …",
+      simulationResult: "Beobachtete Unterschiede",
+      neutral: "AnalyseSpider",
+      simulated: "Simulierter Token",
+      same: "Gleich",
+      different: "Unterschiedlich",
       limitations:
         "Diese Prüfung untersucht nur die Serverantwort dieser einen URL. Keine Inhalte hinter Logins, kein JavaScript-Rendering und keine Garantie für Google-Indexierung oder AI-Zitationen.",
       contextterHeading: "Ganze Website prüfen",
@@ -53,11 +78,36 @@ const copy = de
       placeholder: "example.com or https://example.com/page",
       submit: "Check URL",
       note: "https:// is optional · results cached for no more than 1 hour · 30 checks per 24 hours",
+      sensitiveUrlWarning:
+        "Do not enter private, signed or secret-bearing URLs. The path and query can appear in the report and time-limited cache.",
       checking: "Fetching and checking the page safely …",
       errorHeading: "The check could not be completed.",
       actions: "What to do next",
       details: "Technical details",
       crawlerRules: "Observed crawler rules",
+      crawlerRulesIntro:
+        "Search, training and a user-triggered fetch are separate jobs. This table shows only what the observed robots.txt says for each product token.",
+      crawlerRulesNote:
+        "An allowance does not prove a visit. Blocking GPTBot does not automatically block OAI-SearchBot for ChatGPT Search.",
+      reportTools: "Take the result with you or compare it later",
+      copyReport: "Copy report",
+      downloadJson: "Download JSON",
+      comparePrevious: "Compare with previous check",
+      compareHeading: "What changed since the previous check?",
+      compareEmpty: "There is no older local check for this URL yet.",
+      localHistory:
+        "Up to five results stay only in this browser and are discarded after 24 hours.",
+      simulationHeading: "Compare the response for another crawler token",
+      simulationIntro:
+        "AnalyseSpider sends one second bounded request with the selected product token in the User-Agent. This simulates a header, not the identity or full behaviour of the real crawler.",
+      simulationLabel: "Crawler token",
+      simulationButton: "Check second view",
+      simulationRunning: "Checking the second server response …",
+      simulationResult: "Observed differences",
+      neutral: "AnalyseSpider",
+      simulated: "Simulated token",
+      same: "Same",
+      different: "Different",
       limitations:
         "This check examines only the server response for this one URL. No logged-in content, no JavaScript rendering, and no guarantee of Google indexing or AI citations.",
       contextterHeading: "Check the whole website",
@@ -101,11 +151,12 @@ const copy = de
         required
         maxlength="2048"
         placeholder={copy.placeholder}
-        aria-describedby={`crawler-note-${locale}`}
+        aria-describedby={`crawler-note-${locale} crawler-sensitive-url-${locale}`}
       />
       <button type="submit">{copy.submit}</button>
     </div>
     <p id={`crawler-note-${locale}`} class="crawler-form-note">{copy.note}</p>
+    <p id={`crawler-sensitive-url-${locale}`} class="crawler-form-note crawler-sensitive-url-note">{copy.sensitiveUrlWarning}</p>
   </form>
 
   <p class="crawler-progress" data-crawler-progress role="status" aria-live="polite" hidden>
@@ -146,6 +197,26 @@ const copy = de
       </article>
     </div>
 
+    <section class="crawler-policy-summary" aria-labelledby={`crawler-policy-${locale}`}>
+      <header>
+        <h2 id={`crawler-policy-${locale}`}>{copy.crawlerRules}</h2>
+        <p>{copy.crawlerRulesIntro}</p>
+      </header>
+      <div class="crawler-rules-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Crawler</th>
+              <th scope="col">{de ? "Aufgabe" : "Purpose"}</th>
+              <th scope="col">{de ? "Zugriff" : "Access"}</th>
+            </tr>
+          </thead>
+          <tbody data-crawler-matrix></tbody>
+        </table>
+      </div>
+      <p class="crawler-policy-note">{copy.crawlerRulesNote} <a href={de ? "/de/crawler#vergleich" : "/crawlers#vergleich"}>{de ? "Rollen und Quellen ansehen" : "Review roles and sources"} →</a></p>
+    </section>
+
     <section class="crawler-actions" aria-labelledby={`crawler-actions-${locale}`}>
       <h2 id={`crawler-actions-${locale}`}>{copy.actions}</h2>
       <ol data-crawler-actions></ol>
@@ -154,20 +225,50 @@ const copy = de
     <details class="crawler-technical">
       <summary>{copy.details}</summary>
       <dl data-crawler-details></dl>
-      <h3>{copy.crawlerRules}</h3>
-      <div class="crawler-rules-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th scope="col">Crawler</th>
-              <th scope="col">{de ? "Aufgabe" : "Purpose"}</th>
-              <th scope="col">robots.txt</th>
-            </tr>
-          </thead>
-          <tbody data-crawler-matrix></tbody>
-        </table>
-      </div>
     </details>
+
+    <section class="crawler-report-tools" aria-labelledby={`crawler-report-tools-${locale}`}>
+      <div>
+        <h2 id={`crawler-report-tools-${locale}`}>{copy.reportTools}</h2>
+        <p>{copy.localHistory}</p>
+      </div>
+      <div class="crawler-report-buttons">
+        <button type="button" data-copy-report>{copy.copyReport}</button>
+        <button type="button" data-download-report>{copy.downloadJson}</button>
+        <button type="button" data-compare-previous>{copy.comparePrevious}</button>
+      </div>
+      <p class="crawler-tool-status" data-report-status role="status" aria-live="polite"></p>
+      <div class="crawler-previous-comparison" data-previous-comparison hidden>
+        <h3>{copy.compareHeading}</h3>
+        <div class="crawler-compare-table" data-previous-comparison-table></div>
+      </div>
+    </section>
+
+    <section class="crawler-simulation" aria-labelledby={`crawler-simulation-${locale}`}>
+      <div>
+        <h2 id={`crawler-simulation-${locale}`}>{copy.simulationHeading}</h2>
+        <p>{copy.simulationIntro}</p>
+      </div>
+      <form data-crawler-simulation-form>
+        <label for={`crawler-simulation-select-${locale}`}>{copy.simulationLabel}</label>
+        <select id={`crawler-simulation-select-${locale}`} data-crawler-simulation-select>
+          <option value="googlebot">Googlebot · Google Search</option>
+          <option value="oai_searchbot">OAI-SearchBot · ChatGPT Search</option>
+          <option value="gptbot">GPTBot · OpenAI model development</option>
+          <option value="chatgpt_user">ChatGPT-User · user-triggered fetch</option>
+          <option value="claude_searchbot">Claude-SearchBot · Claude Search</option>
+          <option value="claudebot">ClaudeBot · model development</option>
+          <option value="claude_user">Claude-User · user-triggered fetch</option>
+          <option value="perplexitybot">PerplexityBot · Perplexity Search</option>
+        </select>
+        <button type="submit">{copy.simulationButton}</button>
+      </form>
+      <p class="crawler-tool-status" data-simulation-status role="status" aria-live="polite"></p>
+      <div class="crawler-simulation-result" data-simulation-result hidden>
+        <h3>{copy.simulationResult}</h3>
+        <div class="crawler-compare-table" data-simulation-table></div>
+      </div>
+    </section>
 
     <div class="crawler-evidence-handoffs">
       <button class="crawler-redirect-handoff" type="button" data-redirect-handoff hidden>

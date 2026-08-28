@@ -1,6 +1,6 @@
 # AnalyseSpider project brief
 
-Version: 1.2
+Version: 1.3
 Decision date: 2026-08-23
 Launch state: public, indexable
 
@@ -8,12 +8,15 @@ Launch state: public, indexable
 
 Build a standalone, plain-language crawling and technical SEO resource for technical SEOs, developers, site owners, and web-operations teams. The site must let a visitor use a tool, answer one practical question, or compare crawler roles before asking them to use another product.
 
-The first release is browser-local:
+The maintained product combines browser-local evidence tools with one protected, bounded public-URL operation:
 
 1. Parse bounded Apache and Nginx access-log samples.
 2. Inspect pasted HTTP response headers and HTML directives.
 3. Classify an IP address without pretending that an IP proves a person or precise location.
 4. Publish explicit legacy URL decisions and current methodology.
+5. Show search, training, and user-fetch crawler policies separately after a URL check.
+6. Export a report, keep up to five results locally for 24 hours, and compare a later check with an earlier one.
+7. Compare the normal response with one additional request carrying a selected crawler product token, explicitly labelled as a header simulation rather than a real crawler identity.
 
 ## Experience and information architecture
 

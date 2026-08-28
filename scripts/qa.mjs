@@ -56,6 +56,8 @@ const editorialRoutes = new Set([
   "/blog/how-to-find-search-bots-in-server-logs",
   "/blog/what-a-301-response-does-not-prove",
   "/blog/private-data-in-access-logs",
+  "/blog/robots-txt-allows-bot-cdn-blocks-it",
+  "/blog/initial-html-vs-rendered-dom",
   "/reference/http-status-codes",
   "/reference/crawler-user-agents",
   "/reference/robots-directives",
@@ -311,7 +313,9 @@ const privacy = await readFile(await findOutput("/privacy"), "utf8");
 for (const required of [
   "Vercel",
   "browser-local",
-  "No analytics",
+  "No client-side audience analytics",
+  "Gateway metrics",
+  "Do not submit private, signed",
   "No application cookies",
   "No contact form",
   "data-subject",
@@ -325,6 +329,38 @@ pass(
   !/Google Analytics|Umami/i.test(privacy),
   "privacy notice must not claim an inactive analytics provider",
 );
+pass(
+  !privacy.includes("<strong>No analytics</strong>"),
+  "privacy notice must not contradict documented gateway metrics with a broad no-analytics claim",
+);
+
+const germanHome = await readFile(await findOutput("/de"), "utf8");
+for (const href of [
+  "/de/tools/weiterleitungskette",
+  "/de/tools/robots-regel-test",
+  "/de/tools/server-log-analyse",
+]) {
+  pass(germanHome.includes(`href="${href}"`), `German homepage missing localized tool link ${href}`);
+}
+const technicalSeoPage = await readFile(await findOutput("/for/technical-seos"), "utf8");
+pass(
+  technicalSeoPage.includes("one public HTTP or HTTPS URL") &&
+    technicalSeoPage.includes("SSRF-protected gateway"),
+  "technical SEO audience page must describe the bounded live fetch accurately",
+);
+pass(
+  !technicalSeoPage.includes("does not currently fetch arbitrary URLs"),
+  "technical SEO audience page still contains the obsolete no-fetch statement",
+);
+for (const route of [
+  "/de/wissen/robots-erlaubt-cdn-blockiert",
+  "/de/wissen/initiales-html-vs-gerenderter-dom",
+]) {
+  const html = await readFile(await findOutput(route), "utf8");
+  pass(html.includes('property="og:type" content="article"'), `article Open Graph type missing for ${route}`);
+  pass(html.includes('"@type":"TechArticle"'), `TechArticle structured data missing for ${route}`);
+  pass(html.includes("Primärquellen"), `German source section missing for ${route}`);
+}
 
 const robots = await readFile(new URL("robots.txt", dist), "utf8");
 const sitemap = await readFile(new URL("sitemap.xml", dist), "utf8");
@@ -514,6 +550,14 @@ const crawlerViewSource = await readFile(
   new URL("../src/lib/crawler-view.ts", import.meta.url),
   "utf8",
 );
+const crawlerGatewaySource = await readFile(
+  new URL("../src/lib/crawler-gateway.ts", import.meta.url),
+  "utf8",
+);
+const crawlerViewHtml = await readFile(
+  await findOutput("/tools/crawler-view"),
+  "utf8",
+);
 const responseInspectorSource = await readFile(
   new URL("../src/pages/tools/url-inspector.astro", import.meta.url),
   "utf8",
@@ -525,6 +569,40 @@ pass(
 pass(
   responseInspectorSource.includes("headerInput.value = normalizePublicUrl(response.url)"),
   "HTTP inspector must prefill the transferred crawler URL",
+);
+for (const marker of [
+  "data-crawler-matrix",
+  "data-copy-report",
+  "data-download-report",
+  "data-compare-previous",
+  "data-crawler-simulation-select",
+]) {
+  pass(
+    crawlerViewHtml.includes(marker),
+    `crawler result surface missing ${marker}`,
+  );
+}
+pass(
+  crawlerViewSource.includes("analysespider.crawler-history.v1") &&
+    crawlerViewSource.includes("24 * 60 * 60 * 1_000") &&
+    crawlerViewSource.includes("HISTORY_LIMIT = 5"),
+  "crawler history must remain bounded to five local reports for 24 hours",
+);
+pass(
+  crawlerGatewaySource.includes("request-identity=") &&
+    crawlerGatewaySource.includes("requestIdentity"),
+  "crawler simulation must bind the selected identity into the Cap input digest",
+);
+const benchmarkEvidence = JSON.parse(
+  await readFile(
+    new URL("../public/evidence/crawler-header-baseline-2026-08-28.json", import.meta.url),
+    "utf8",
+  ),
+);
+pass(
+  benchmarkEvidence.summary.requests === 12 &&
+    benchmarkEvidence.summary.bodyHashDifferences === 0,
+  "crawler benchmark raw evidence summary is inconsistent",
 );
 
 const robotsFixturePage = await readFile(
@@ -588,6 +666,7 @@ existingRoutes.add("/sitemap.xml");
 existingRoutes.add("/favicon.svg");
 existingRoutes.add("/feed.xml");
 existingRoutes.add("/fixtures/synthetic-crawler-access.log");
+existingRoutes.add("/evidence/crawler-header-baseline-2026-08-28.json");
 for (const path of crawlerLabBuiltPaths) existingRoutes.add(path.replace(/\/$/, "") || "/");
 existingRoutes.add("/fixtures/crawler-lab/redirect-one-hop");
 for (const path of [...crawlerLabBuiltPaths, "/fixtures/crawler-lab/redirect-one-hop"]) {

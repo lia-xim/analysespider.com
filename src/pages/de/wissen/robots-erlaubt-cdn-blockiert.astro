@@ -1,0 +1,89 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+---
+<BaseLayout
+  title="Robots.txt erlaubt den Bot – warum blockiert der CDN ihn trotzdem? — AnalyseSpider"
+  description="So prüfst du, warum ein Crawler trotz erlaubender robots.txt nur einen 403, 429, Login oder eine Bot-Challenge erhält."
+  canonicalPath="/de/wissen/robots-erlaubt-cdn-blockiert"
+  alternatePath="/blog/robots-txt-allows-bot-cdn-blocks-it"
+  lang="de"
+  pageType="article"
+  publishedTime="2026-08-28"
+  modifiedTime="2026-08-28"
+  bodyClass="simple-content"
+>
+  <header class="simple-page-lead">
+    <p class="eyebrow">Leitartikel · Crawler-Zugriff</p>
+    <h1>Robots.txt erlaubt den Bot – warum blockiert der CDN ihn trotzdem?</h1>
+    <p>Eine erlaubende robots.txt öffnet keine Firewall. Sie sagt nur, welche Pfade ein kooperierender Crawler abrufen darf. Ob dieser konkrete HTTP-Request die Seite erhält, entscheiden zusätzlich CDN, WAF, Rate Limit, Reverse Proxy und Anwendung.</p>
+  </header>
+
+  <article class="simple-prose">
+    <section>
+      <h2>Die kurze Antwort</h2>
+      <p>Ein Robots-Test kann für Googlebot, OAI-SearchBot oder einen anderen Produkt-Token „erlaubt“ melden, während der Live-Request einen 403, 429, Login oder eine Challenge bekommt. Das ist kein Widerspruch. RFC 9309 stellt ausdrücklich klar, dass robots.txt keine Zugriffskontrolle ist.</p>
+      <p>Halte deshalb zwei Befunde getrennt fest: <strong>Welche robots-Regel gilt für den Pfad?</strong> Und: <strong>Welche Antwort hat dieser Request tatsächlich erhalten?</strong></p>
+    </section>
+
+    <section>
+      <h2>Vor dem eigentlichen HTML fallen mehrere Entscheidungen</h2>
+      <p>Die robots.txt ist nur eine Schicht. Danach können weitere Systeme eingreifen:</p>
+      <ul>
+        <li>Der CDN oder die Firewall bewertet Adresse, Header, Request-Rate und weitere Verbindungssignale.</li>
+        <li>Eine Bot-Regel erlaubt, protokolliert, drosselt, blockiert oder fordert eine Challenge.</li>
+        <li>Ein Reverse Proxy kann eine eigene Zugriffs- oder Cache-Regel anwenden.</li>
+        <li>Erst wenn der Request weitergereicht wird, liefert die Anwendung ihre Antwort.</li>
+      </ul>
+      <p>Cloudflare dokumentiert diese Trennung sichtbar: Verifizierte Bots, wahrscheinlich automatisierter Traffic, Managed Challenges und Skip-Regeln sind eigene Sicherheitsentscheidungen. Bei anderen Anbietern heißen die Produkte anders. Der Diagnoseweg bleibt gleich: Finde die Schicht, die den beobachteten Status erzeugt hat.</p>
+    </section>
+
+    <section>
+      <h2>„Bei mir im Browser geht es“ reicht als Gegenbeweis nicht</h2>
+      <p>Ein Browser und ein Crawler senden selten denselben Request. Sie unterscheiden sich bei IP-Adresse, Cookies, JavaScript, User-Agent, Verbindungsmerkmalen und Abrufrate. Dein Browser kann außerdem eine Challenge lösen oder bereits ein Freigabe-Cookie besitzen.</p>
+      <p>Beide Beobachtungen sind nützlich. Schreibe also nicht „Die Seite ist erreichbar“, sondern genauer: „Der Browser erhielt die Seite. Der crawlerähnliche Request erhielt eine Challenge.“ Damit verschwindet der Unterschied nicht in einer pauschalen Bewertung.</p>
+      <p><strong>Wichtig:</strong> Eine Ausnahme nur für einen User-Agent-Text ist keine sichere Bot-Verifikation. Dieser Header wird vom Requester gesetzt und kann kopiert werden. Wenn die Identität für eine Firewall-Regel relevant ist, nutze die vom Betreiber veröffentlichte IP- oder DNS-Prüfung.</p>
+    </section>
+
+    <section>
+      <h2>So findest du die blockierende Schicht</h2>
+      <ol>
+        <li>Notiere URL, Uhrzeit, Status, Redirects, Content-Type, wichtige Header und einen sicheren Ausschnitt oder Hash des Bodys.</li>
+        <li>Rufe die robots.txt getrennt ab und teste die Regel für den tatsächlichen Produkt-Token und Pfad.</li>
+        <li>Ordne die Antwort ein: echte Seite, Login, Managed Challenge, Blockseite, Rate Limit oder Upstream-Fehler.</li>
+        <li>Suche im selben Zeitfenster nach dem passenden CDN-, WAF-, Proxy- oder Origin-Ereignis.</li>
+        <li>Verifiziere die Bot-Identität, bevor du eine folgenreiche Ausnahme einrichtest.</li>
+        <li>Ändere nur die verantwortliche Regel und wiederhole anschließend genau denselben Test.</li>
+      </ol>
+      <p><a class="button secondary" href="/de/tools/crawler-sicht">Eine öffentliche URL mit AnalyseSpider prüfen</a></p>
+    </section>
+
+    <section>
+      <h2>Statuscodes zeigen das Ergebnis, nicht automatisch die Ursache</h2>
+      <p>Ein 403 zeigt eine Verweigerung. Er verrät noch nicht, ob eine Länderregel, Bot-Regel, Authentifizierung oder die Anwendung selbst verantwortlich war. Ein 429 zeigt eine Drosselung. Auch ein 200 ist nicht automatisch die gewünschte Seite; manche Challenge-Seiten antworten erfolgreich und müssen am Inhalt erkannt werden.</p>
+      <p>Wenn ein echter Googlebot zu schnell crawlt, empfiehlt Google für die vorübergehende Drosselung 429 oder einen temporären 5xx-Status statt 403 oder 404. Diese Empfehlung ersetzt weder Kapazitätsplanung noch die Regeln für andere Clients.</p>
+    </section>
+
+    <section>
+      <h2>Was der Crawler-Vergleich von AnalyseSpider belegen kann</h2>
+      <p>Der Check kann eine neutrale Anfrage mit einer zweiten, begrenzten Anfrage vergleichen, die einen ausgewählten Crawler-Produkt-Token im User-Agent trägt. Unterscheiden sich Status, Ziel-URL, Canonical, noindex oder Body-Hash, ist genau dieser Antwortunterschied beobachtet.</p>
+      <p>Das bleibt eine Header-Simulation. Der Request kommt nicht aus dem echten Netzwerk des Betreibers und bildet dessen vollständiges Verhalten nicht nach. Die erste veröffentlichte Kontrollmessung zeigte bei sechs lokalen statischen Fixtures keinen Unterschied. Dieser negative Befund ist eine Baseline, keine allgemeine Aussage über CDNs.</p>
+      <p><a href="/lab/crawler-benchmarks">Benchmark, Rohdaten und Grenzen ansehen</a></p>
+    </section>
+
+    <section>
+      <h2>Ein belastbarer Befund klingt unspektakulär</h2>
+      <p>„Robots erlaubt den Token. Der simulierte Request erhielt eine Challenge. Das verantwortliche Security-Ereignis und die echte Bot-Identität sind noch nicht verifiziert.“ Dieser Satz ist nützlicher als ein pauschales „AI-Crawler blockiert“, weil er zeigt, was als Nächstes geprüft werden muss.</p>
+    </section>
+
+    <section class="source-section">
+      <h2>Primärquellen</h2>
+      <p>Geprüft am 28. August 2026. Anbieterfunktionen und Bezeichnungen können sich ändern.</p>
+      <ul>
+        <li><a href="https://www.rfc-editor.org/rfc/rfc9309.html">RFC 9309: Robots Exclusion Protocol</a></li>
+        <li><a href="https://developers.cloudflare.com/waf/custom-rules/use-cases/challenge-bad-bots/">Cloudflare: Challenge bad bots</a></li>
+        <li><a href="https://developers.google.com/search/blog/2023/02/dont-404-my-yum">Google Search Central: 403 und 404 nicht zur Drosselung verwenden</a></li>
+        <li><a href="https://developers.google.com/crawling/docs/crawlers-fetchers/verify-google-requests">Google: Crawler-Anfragen verifizieren</a></li>
+      </ul>
+    </section>
+  </article>
+</BaseLayout>
