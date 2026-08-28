@@ -312,14 +312,14 @@ export const blogPosts: ContentPage[] = [
   {
     slug: "how-to-find-search-bots-in-server-logs",
     kind: "lab-note",
-    eyebrow: "Lab Note 01",
+    eyebrow: "Technical SEO Article 01",
     title: "How to find search bots in server logs",
     description: "Use user-agent strings to find candidate crawler requests, then keep claimed and verified bot traffic separate.",
     intro: "Search the user-agent field first. That gives you candidates quickly. Do not rename those rows “Googlebot traffic” or “Bingbot traffic” until the IP evidence passes the operator's published verification method.",
     takeaway: "A useful report can contain both counts: claimed crawler requests and the verified subset.",
     publishedAt: "2026-08-22",
-    updatedAt: "2026-08-22",
-    readingMinutes: 5,
+    updatedAt: "2026-08-28",
+    readingMinutes: 9,
     sections: [
       {
         heading: "Start with the field your server logged",
@@ -346,6 +346,31 @@ export const blogPosts: ContentPage[] = [
           "If a crawler never appears on an important page, the log does not tell you why. Check links, sitemaps, robots controls, response behavior, and the engine's own reporting before choosing a cause.",
         ],
       },
+      {
+        heading: "Verify only where the consequence justifies it",
+        paragraphs: [
+          "Verification takes more work than a text filter. Use it where the result changes an access rule, an incident decision, a capacity assumption, or a report presented as operator-specific traffic. A broad exploratory chart can keep the candidate label as long as that boundary stays visible.",
+          "Google documents published address ranges and a reverse-then-forward DNS method. Other operators publish different evidence. Store the method and check time beside the result because address lists and operator guidance can change.",
+        ],
+      },
+      {
+        heading: "Turn the rows into a diagnostic sequence",
+        steps: [
+          "Parse the configured log format and keep the raw time, path, status, address and user-agent fields needed for the question.",
+          "Filter crawler candidates by current operator tokens without discarding the original string.",
+          "Group by status family, URL class and time window before looking at individual requests.",
+          "Verify the identities that affect an operational decision and leave the rest labelled as claims.",
+          "Compare the result with robots.txt, sitemap and internal-link evidence before assigning a cause.",
+        ],
+        callout: "No requests in one log sample means only that the sample contains no observed requests. It does not prove that a crawler cannot discover or index the page.",
+      },
+      {
+        heading: "Report the evidence without hiding uncertainty",
+        paragraphs: [
+          "A useful handoff states the log source, timezone, time window, included hosts, parsing failures and identity method. Show claimed and verified counts separately. Keep raw rows available to the authorised operator, but share a minimised aggregate when individual addresses and query values are not needed.",
+          "End with the smallest next test: inspect a specific blocked response, verify one address, add an internal link, or wait for a defined observation window. That is more useful than turning an incomplete log sample into a generic crawl-health score.",
+        ],
+      },
     ],
     sources: [sources.apacheLogs, sources.nginxLogs, sources.googleCrawlers, sources.googleVerify, sources.bingCrawlers],
     related: [
@@ -357,14 +382,14 @@ export const blogPosts: ContentPage[] = [
   {
     slug: "what-a-301-response-does-not-prove",
     kind: "lab-note",
-    eyebrow: "Lab Note 02",
+    eyebrow: "Technical SEO Article 02",
     title: "What a 301 response does not prove",
     description: "A 301 states that a resource has moved permanently. It does not prove destination quality, intent equivalence, or search-engine selection.",
     intro: "A 301 is strong protocol evidence about the server's stated redirect. It is not a complete migration report.",
     takeaway: "After observing 301, inspect Location, the rest of the chain, the final response, and whether the destination actually replaces the source.",
     publishedAt: "2026-08-22",
-    updatedAt: "2026-08-22",
-    readingMinutes: 5,
+    updatedAt: "2026-08-28",
+    readingMinutes: 8,
     sections: [
       {
         heading: "The status has a defined meaning",
@@ -390,6 +415,31 @@ export const blogPosts: ContentPage[] = [
           "For retired software downloads or historical pages without a rights-safe successor, an explicit 404 or 410 may describe the state more accurately.",
         ],
       },
+      {
+        heading: "Test the chain as a sequence of separate responses",
+        paragraphs: [
+          "Record the requested URL, status and Location value at every hop. Resolve relative Location values against the current response URL, not the original URL. Stop on a loop, a missing Location header, an unsafe scheme, or a defined hop limit instead of guessing the final destination.",
+          "Then request the final URL independently and capture its status, content type, robots directives and canonical. Browser address bars often hide intermediate hops, so a final-looking page is not evidence of a clean one-hop migration.",
+        ],
+      },
+      {
+        heading: "Judge equivalence from the user's task",
+        paragraphs: [
+          "The destination should help the person who requested the old URL complete substantially the same task. A moved product page can usually redirect to its direct successor. A retired download with no rights-safe replacement may be better represented by 410 and a clear explanation than by a generic homepage.",
+          "This decision is editorial as well as technical. Matching words in a title are weaker evidence than matching purpose, scope and expected next action.",
+        ],
+      },
+      {
+        heading: "Migration evidence worth keeping",
+        bullets: [
+          "A versioned source-to-destination map with an owner for each decision.",
+          "Pre-launch and post-launch captures for representative URLs.",
+          "A check for redirect loops, long chains and mixed host or protocol hops.",
+          "Final-page status, canonical, indexability and internal-link updates.",
+          "A follow-up window in logs and search-platform reporting without a ranking promise.",
+        ],
+        callout: "A lower 404 count is not a success metric when unrelated URLs have merely been hidden behind homepage redirects.",
+      },
     ],
     sources: [sources.rfc9110, sources.googleRedirects],
     related: [
@@ -401,14 +451,14 @@ export const blogPosts: ContentPage[] = [
   {
     slug: "private-data-in-access-logs",
     kind: "lab-note",
-    eyebrow: "Lab Note 03",
+    eyebrow: "Technical SEO Article 03",
     title: "Private data can hide inside ordinary access logs",
     description: "Access logs may contain addresses, identifiers, query values, referrers, and user agents. Minimise the sample before sharing or analysis.",
     intro: "A log file can look mechanical and still contain personal, confidential, or secret-bearing data. The safe default is to remove fields you do not need before the sample leaves its operational boundary.",
     takeaway: "Minimise first, analyse second. Redaction should preserve the pattern needed for the question without preserving the original identifier.",
     publishedAt: "2026-08-22",
-    updatedAt: "2026-08-22",
-    readingMinutes: 5,
+    updatedAt: "2026-08-28",
+    readingMinutes: 9,
     sections: [
       {
         heading: "Know which fields can carry data",
@@ -433,6 +483,32 @@ export const blogPosts: ContentPage[] = [
           "A browser-local tool avoids uploading the pasted sample to the tool operator, but it does not make the original file harmless. The device, clipboard, browser extensions, screenshots, and later exports remain part of the handling boundary.",
           "Document who can access the raw logs, how long they are retained, and which derived result is safe to share. Tool choice is one control, not the whole policy.",
         ],
+      },
+      {
+        heading: "Build a question-specific minimisation plan",
+        paragraphs: [
+          "Start with the decision, not the available columns. Redirect diagnosis normally needs time, method, host, path, status and perhaps referrer. Crawler verification may additionally need address and user agent. Neither task normally needs cookies, authorisation headers or full query values.",
+          "Write the required fields down before exporting. This makes overcollection visible and gives reviewers a concrete reason for every retained field.",
+        ],
+      },
+      {
+        heading: "Pseudonymisation is useful but not erasure",
+        paragraphs: [
+          "A stable replacement label can preserve request sequences without exposing the original address in the working file. If the mapping or a repeatable secret still exists, the data may remain linkable and should not automatically be described as anonymous.",
+          "Use a fresh sample-specific mapping when cross-period tracking is unnecessary. Keep the key and the raw source out of the shared analysis package, and set a deletion date for both the working copy and derived exports.",
+        ],
+      },
+      {
+        heading: "A safe handoff checklist",
+        steps: [
+          "Confirm the configured log format and the exact analysis question.",
+          "Choose the smallest time window and host scope that can answer it.",
+          "Remove secret-bearing fields and minimise or pseudonymise identifiers.",
+          "Inspect a sample for unexpected data in paths, queries and referrers.",
+          "Share aggregate results by default and restrict access to the raw evidence.",
+          "Document retention, deletion and the person responsible for the source file.",
+        ],
+        callout: "If a value is not needed to answer the question, do not preserve it merely because the log format collected it.",
       },
     ],
     sources: [sources.apacheLogs, sources.nginxLogs],

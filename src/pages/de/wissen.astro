@@ -3,6 +3,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import ArrowIcon from "../../components/ArrowIcon.astro";
 const groups = [
   { title: "Crawling und Indexierung", links: [
+    ["Wie kann eine Seite in AI-Suchen erscheinen?", "Crawler-Zugriff, technische Eignung und spätere Quellenauswahl sauber trennen.", "/de/wissen/in-ai-suche-erscheinen"],
     ["Warum wird meine Seite nicht indexiert?", "Statuscode, robots-Angaben und Canonical der Reihe nach prüfen.", "/de/wissen/warum-wird-meine-seite-nicht-indexiert"],
     ["Wie funktioniert robots.txt?", "Verstehen, welcher Bot welche URL abrufen darf.", "/guides/test-robots-txt-rules"],
     ["Wie erkenne ich einen echten Crawler?", "User-Agent, IP-Bereich und DNS-Prüfung richtig einordnen.", "/de/wissen/crawler-erkennen"],
@@ -31,6 +32,9 @@ const groups = [
     <h1>Technische SEO ohne unnötige Fachsprache.</h1>
     <p>Jede Erklärung beantwortet eine praktische Frage. Beginne bei dem Problem, das du gerade auf deiner Website siehst.</p>
   </header>
+  <section class="article-entry-strip" aria-label="Neuer ausführlicher Artikel">
+    <span>Neuer Leitfaden</span><a href="/de/wissen/in-ai-suche-erscheinen"><strong>Wie kann eine Seite in AI-Suchen erscheinen?</strong><small>Die Regeln von OpenAI, Google und Anthropic anhand ihrer Primärquellen erklärt.</small><ArrowIcon /></a>
+  </section>
   <section class="knowledge-groups" aria-label="Wissensbereiche">
     {groups.map((group) => (
       <div class="knowledge-group">

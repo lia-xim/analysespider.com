@@ -1,4 +1,4 @@
-# Hub and cluster map — 2026-08-23
+# Hub and cluster map — 2026-08-28
 
 Each cluster must remain useful without Contextter and must link tools, workflow, reference, and proof where those assets actually exist.
 
@@ -62,6 +62,8 @@ Each cluster must remain useful without Contextter and must link tools, workflow
 - Identity detail: `/reference/crawler-user-agents`, `/reference/crawler-verification-methods`
 - Evidence boundary: `/lab/crawler-benchmarks`
 - Related AI-answer evidence and page-decision tools may be linked only in the comparison context with common ownership visible.
+- AI-search eligibility guide: `/guides/appear-in-ai-search` and `/de/wissen/in-ai-suche-erscheinen`
+- The guide separates search crawling, training crawling, user-triggered retrieval, index eligibility and later answer selection.
 
 ## 8. German entry layer
 

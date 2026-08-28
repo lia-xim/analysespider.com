@@ -3,6 +3,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import ArrowIcon from "../../components/ArrowIcon.astro";
 const groups = [
   { title: "Crawling and indexing", links: [
+    ["How can a page appear in AI search?", "Separate crawler access, search eligibility and later source selection.", "/guides/appear-in-ai-search"],
     ["Why is my page not indexed?", "Check the status, robots directives and canonical in a useful order.", "/guides/http-response-debugging"],
     ["How does robots.txt work?", "Understand which bot can request which URL.", "/guides/test-robots-txt-rules"],
     ["How do I check a real crawler?", "Use the user agent, IP ranges and DNS evidence correctly.", "/reference/crawler-verification-methods"],
@@ -30,6 +31,9 @@ const groups = [
     <h1>Learn technical SEO without the jargon.</h1>
     <p>Each guide answers one practical question. Start with the problem you can see on your website today.</p>
   </header>
+  <section class="article-entry-strip" aria-label="Latest in-depth article">
+    <span>New guide</span><a href="/guides/appear-in-ai-search"><strong>How can a page appear in AI search?</strong><small>OpenAI, Google and Anthropic controls explained from primary sources.</small><ArrowIcon /></a>
+  </section>
   <section class="knowledge-groups" aria-label="Knowledge topics">
     {groups.map((group) => (
       <div class="knowledge-group">

@@ -1,4 +1,4 @@
-# Page action matrix — 2026-08-23
+# Page action matrix — 2026-08-28
 
 Every indexable canonical URL has one primary user job. “Keep” does not mean “finished forever”; it means no merge, redirect, or expansion is justified by current evidence.
 
@@ -19,7 +19,7 @@ Every indexable canonical URL has one primary user job. “Keep” does not mean
 | `/guides/redirect-chain-analysis`                   | Capture and interpret redirect hops individually.                                           | HTTP response            | Supported      | Keep.                                                                             |
 | `/guides/ip-geolocation-data`                       | Understand IP-geolocation limits before acting.                                             | IP and geo               | Supported      | Keep.                                                                             |
 | `/guides/test-robots-txt-rules`                     | Test robots delivery, group, path, and decision boundaries.                                 | Robots access            | Supported      | Build and monitor.                                                                |
-| `/blog`                                             | Choose a dated diagnostic field note.                                                       | Lab notes                | Verified       | Keep.                                                                             |
+| `/blog`                                             | Choose an in-depth, dated technical SEO article.                                             | Articles                 | Verified       | Remove the internal “Lab notes” label from the visible interface.                  |
 | `/blog/how-to-find-search-bots-in-server-logs`      | Build a candidate crawler set from logs.                                                    | Crawl logs               | Supported      | Keep.                                                                             |
 | `/blog/what-a-301-response-does-not-prove`          | Avoid over-interpreting one redirect status.                                                | HTTP response            | Supported      | Keep.                                                                             |
 | `/blog/private-data-in-access-logs`                 | Minimise sensitive log data before analysis.                                                | Crawl logs               | Supported      | Keep.                                                                             |
@@ -52,6 +52,8 @@ Every indexable canonical URL has one primary user job. “Keep” does not mean
 | `/de/wissen`                                        | Start with a plain German question and reach the best maintained answer.                    | German knowledge         | Experiment     | Translate detail pages only where demand and maintenance justify it.              |
 | `/de/wissen/warum-wird-meine-seite-nicht-indexiert` | Diagnose a missing-indexing report in a fixed technical order.                              | German knowledge         | Supported      | Keep as the first full German workflow; measure impressions and next-step clicks. |
 | `/de/wissen/crawler-erkennen`                       | Verify a claimed crawler with evidence proportionate to the decision.                       | German knowledge         | Supported      | Keep aligned with current operator documentation.                                 |
+| `/guides/appear-in-ai-search`                       | Prepare one page for AI-search discovery without confusing access with citation.            | AI search eligibility    | Supported      | Maintain from official operator documentation; measure search and referral use.   |
+| `/de/wissen/in-ai-suche-erscheinen`                 | Explain AI-search technical eligibility in simple German.                                   | German knowledge         | Supported      | Maintain as the German counterpart to the evidence-led English guide.             |
 | `/de/ueber`                                         | Understand purpose, processing limits and new ownership in German.                          | Governance               | Verified       | Keep synchronized with `/about`.                                                  |
 
 ## Non-canonical status paths

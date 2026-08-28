@@ -11,7 +11,7 @@ interface Props {
 const { page } = Astro.props;
 const roots = {
   guide: { path: "/guides", label: "Guides", index: "31" },
-  "lab-note": { path: "/blog", label: "Lab Notes", index: "41" },
+  "lab-note": { path: "/blog", label: "Articles", index: "41" },
   reference: { path: "/reference", label: "Reference", index: "51" },
   audience: { path: "/for", label: "For teams", index: "61" },
 } as const;
@@ -86,7 +86,7 @@ const article = page.kind !== "audience";
       <header>
         <span class="section-index">90</span>
         <h2 id="sources-heading">Primary sources</h2>
-        <p>Checked for this page on 22 August 2026. External documentation can change.</p>
+        <p>Checked for this page on 28 August 2026. External documentation can change.</p>
       </header>
       <ol class="source-list">
         {page.sources.map((source, index) => (

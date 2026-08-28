@@ -4,132 +4,119 @@ import CrawlerViewTool from "./CrawlerViewTool.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import type { Locale } from "../data/i18n";
 
-interface Props {
-  locale: Locale;
-}
+interface Props { locale: Locale; }
 
 const { locale } = Astro.props;
 const de = locale === "de";
-const copy = de
-  ? {
-      title: "Technische SEO verstehen und prüfen — AnalyseSpider",
-      description: "Prüfe Redirects, robots.txt, HTTP-Antworten und Server-Logs mit kostenlosen browserlokalen Werkzeugen und verständlichen Erklärungen.",
-      canonicalPath: "/de",
-      alternatePath: "/",
-      headline: "Sieh, was Crawler auf deiner Website sehen.",
-      intro: "Prüfe eine öffentliche URL und verstehe die Serverantwort in einfacher Sprache.",
-      primary: "Kostenloses Tool wählen",
-      secondary: "Crawling einfach erklärt",
-      problemHeading: "Was möchtest du prüfen?",
-      areaHeading: "Zwei Bereiche. Ein klares Ziel.",
-      areaIntro: "Nutze ein Tool, wenn du schon Daten hast. Lies eine Erklärung, wenn du erst verstehen möchtest, was ein Ergebnis bedeutet.",
-      crawlerHeading: "Crawler sind nicht alle gleich.",
-      crawlerText: "Googlebot, Bingbot und AI-Crawler haben unterschiedliche Aufgaben. Wir zeigen, was der Betreiber veröffentlicht, wie du einen Bot prüfen kannst und wann die Angabe zuletzt kontrolliert wurde.",
-      crawlerAction: "Crawler vergleichen",
-      historyHeading: "Warum heißt die Seite AnalyseSpider?",
-      historyText: "Die Domain wurde früher für Log-Analyse und IP-Werkzeuge genutzt. Die heutige Website ist eine neue Entwicklung unter neuer Eigentümerschaft. Alte Software, Texte, Daten und Kunden wurden nicht übernommen.",
-      historyAction: "Mehr über die neue Eigentümerschaft",
-    }
-  : {
-      title: "Understand crawling and technical SEO — AnalyseSpider",
-      description: "Check redirects, robots.txt, HTTP responses and server logs with free browser-local tools and plain-language guides.",
-      canonicalPath: "/",
-      alternatePath: "/de",
-      headline: "See what crawlers see on your website.",
-      intro: "Check one public URL and understand its server response in plain language.",
-      primary: "Choose a free tool",
-      secondary: "Learn how crawling works",
-      problemHeading: "What do you want to check?",
-      areaHeading: "Two sections. One clear purpose.",
-      areaIntro: "Use a tool when you already have data. Read a guide when you first need to understand what a result means.",
-      crawlerHeading: "Crawlers do different jobs.",
-      crawlerText: "Googlebot, Bingbot and AI crawlers are built for different purposes. We show what each operator publishes, how a bot can be checked and when the information was reviewed.",
-      crawlerAction: "Compare crawlers",
-      historyHeading: "Why is the site called AnalyseSpider?",
-      historyText: "The domain was formerly used for log analysis and IP tools. Today's website is a new implementation under new ownership. Former software, copy, data and customers did not transfer.",
-      historyAction: "Read about the new ownership",
-    };
+const copy = de ? {
+  title: "Sieh, was Crawler auf deiner Website sehen — AnalyseSpider",
+  description: "Prüfe eine öffentliche URL kostenlos. Verstehe Crawling, Indexierung, robots.txt und AI-Crawler in einfacher Sprache.",
+  canonicalPath: "/de", alternatePath: "/",
+  problemHeading: "Was möchtest du prüfen?",
+  crawlerKicker: "Crawler verstehen",
+  crawlerHeading: "Googlebot, ChatGPT und Claude machen nicht dasselbe.",
+  crawlerText: "Einige Bots bauen Suchindizes auf. Andere holen eine Seite für einen Nutzer ab oder sammeln Trainingsdaten. Unser Vergleich zeigt die Aufgabe, die passende robots.txt-Regel und wie du echte Anfragen prüfst.",
+  crawlerAction: "Alle Crawler vergleichen",
+  crawlerGuide: "So kann deine Seite in AI-Suchen erscheinen",
+  learnKicker: "Ausführlich erklärt",
+  learnHeading: "Wissen, das bei einer echten Entscheidung hilft.",
+  learnText: "Jeder Artikel beantwortet eine konkrete Frage Schritt für Schritt. Keine kurzen Stichwortseiten und keine erfundenen SEO-Versprechen.",
+  contextHeading: "Du brauchst den Blick auf die ganze Website?",
+  contextText: "Der kostenlose Check hier prüft genau eine URL. Contextter Site Audit crawlt viele Seiten, verbindet die Befunde und hilft bei der Priorisierung.",
+  contextAction: "Website-Audit in Contextter öffnen",
+  disclosure: "AnalyseSpider und Contextter werden von Matthias Ramahi betrieben. Das ist ein verwandter nächster Schritt, keine unabhängige Empfehlung.",
+  historyHeading: "Eine alte Domain, eine neue Website.",
+  historyText: "AnalyseSpider wurde früher für Log-Analyse und IP-Werkzeuge genutzt. Die heutige Website ist eine neue Entwicklung unter neuer Eigentümerschaft. Alte Software, Texte, Daten und Kunden wurden nicht übernommen.",
+  historyAction: "Hintergrund zur neuen Eigentümerschaft",
+} : {
+  title: "See what crawlers see on your website — AnalyseSpider",
+  description: "Check one public URL for free. Understand crawling, indexing, robots.txt and AI crawlers in plain language.",
+  canonicalPath: "/", alternatePath: "/de",
+  problemHeading: "What do you want to check?",
+  crawlerKicker: "Understand crawlers",
+  crawlerHeading: "Googlebot, ChatGPT and Claude do different jobs.",
+  crawlerText: "Some bots build search indexes. Others fetch a page for a user or collect training data. Our comparison shows the job, the relevant robots.txt control and how to verify real requests.",
+  crawlerAction: "Compare all crawlers",
+  crawlerGuide: "How a page can become eligible for AI search",
+  learnKicker: "In-depth explanations",
+  learnHeading: "Knowledge for a real decision.",
+  learnText: "Each article answers one practical question step by step. No thin glossary pages and no invented SEO promises.",
+  contextHeading: "Need to inspect the whole website?",
+  contextText: "The free check here examines exactly one URL. Contextter Site Audit crawls many pages, connects the findings and helps you prioritise them.",
+  contextAction: "Open Site Audit in Contextter",
+  disclosure: "AnalyseSpider and Contextter are operated by Matthias Ramahi. This is a related next step, not an independent recommendation.",
+  historyHeading: "An old domain, a new website.",
+  historyText: "AnalyseSpider was formerly used for log analysis and IP tools. Today's website is a new implementation under new ownership. Former software, copy, data and customers did not transfer.",
+  historyAction: "Read about the new ownership",
+};
 
-const problems = de
-  ? [
-      { title: "Was findet ein Crawler auf meiner URL?", text: "Rufe eine öffentliche URL ab und prüfe Zugriff, Indexierung und Hauptinhalt.", href: "/de/tools/crawler-sicht", icon: "search" },
-      { title: "Wohin führt diese Weiterleitung?", text: "Baue die einzelnen Redirect-Schritte nach.", href: "/tools/redirect-chain", icon: "redirect" },
-      { title: "Darf dieser Crawler meine Seite aufrufen?", text: "Teste eine robots.txt-Regel für einen Bot.", href: "/tools/robots-rule-tester", icon: "lock" },
-      { title: "Was zeigen meine Server-Logs?", text: "Finde Statuscodes, Pfade und angegebene Bots.", href: "/tools/log-file-inspector", icon: "file" },
-    ]
-  : [
-      { title: "What does a crawler find on my URL?", text: "Fetch a public URL and check access, indexing and main content.", href: "/tools/crawler-view", icon: "search" },
-      { title: "Where does this redirect lead?", text: "Build the redirect steps one by one.", href: "/tools/redirect-chain", icon: "redirect" },
-      { title: "Can this crawler access my page?", text: "Test one robots.txt rule for a bot.", href: "/tools/robots-rule-tester", icon: "lock" },
-      { title: "What do my server logs show?", text: "Find status codes, paths and claimed bots.", href: "/tools/log-file-inspector", icon: "file" },
-    ];
+const problems = de ? [
+  ["Was findet ein Crawler auf meiner URL?", "Prüfe Abruf, Zugriff, Indexierung und sichtbaren Hauptinhalt.", "/de/tools/crawler-sicht", "search"],
+  ["Wohin führt diese Weiterleitung?", "Setze die einzelnen Redirect-Schritte nachvollziehbar zusammen.", "/tools/redirect-chain", "redirect"],
+  ["Darf dieser Bot meine Seite aufrufen?", "Teste eine robots.txt-Regel für einen konkreten Crawler.", "/tools/robots-rule-tester", "lock"],
+  ["Was zeigen meine Server-Logs?", "Finde Statuscodes, Pfade und angegebene Bot-Namen lokal im Browser.", "/tools/log-file-inspector", "file"],
+] : [
+  ["What does a crawler find on my URL?", "Check fetching, access, indexing and detectable main content.", "/tools/crawler-view", "search"],
+  ["Where does this redirect lead?", "Assemble each observed redirect step into one clear chain.", "/tools/redirect-chain", "redirect"],
+  ["Can this bot access my page?", "Test one robots.txt rule for a specific crawler.", "/tools/robots-rule-tester", "lock"],
+  ["What do my server logs show?", "Find status codes, paths and claimed bot names locally in your browser.", "/tools/log-file-inspector", "file"],
+];
 
-const areas = de
-  ? [
-      { title: "Tools", text: "Ein Live-URL-Check und fünf browserlokale Werkzeuge für konkrete technische Fragen.", href: "/de/tools", action: "Tools öffnen" },
-      { title: "Wissen", text: "Kurze Antworten auf echte Fragen zu Crawling, Indexierung, Redirects und Server-Logs.", href: "/de/wissen", action: "Wissen öffnen" },
-    ]
-  : [
-      { title: "Tools", text: "One live URL check and five browser-local tools for specific technical questions.", href: "/tools", action: "Open tools" },
-      { title: "Learn", text: "Plain answers to practical questions about crawling, indexing, redirects and server logs.", href: "/guides", action: "Open guides" },
-    ];
+const articles = de ? [
+  ["Wie kann eine Seite in AI-Suchen erscheinen?", "Was OAI-SearchBot, Google und Claude wirklich voraussetzen — und was keine Aufnahme garantiert.", "/de/wissen/in-ai-suche-erscheinen"],
+  ["Warum wird meine Seite nicht indexiert?", "Prüfe Erreichbarkeit, Statuscode, robots.txt, noindex, Canonical und interne Links in einer sinnvollen Reihenfolge.", "/de/wissen/warum-wird-meine-seite-nicht-indexiert"],
+  ["Wie erkenne ich einen echten Crawler?", "Warum der User-Agent nur eine Behauptung ist und wann IP- oder DNS-Prüfungen nötig sind.", "/de/wissen/crawler-erkennen"],
+] : [
+  ["How can a page appear in AI search?", "What OpenAI, Google and Anthropic actually require — and why eligibility is never a guarantee.", "/guides/appear-in-ai-search"],
+  ["How do I find search bots in server logs?", "Build a candidate set, verify important identities and keep the evidence boundary visible.", "/blog/how-to-find-search-bots-in-server-logs"],
+  ["What does a 301 response not prove?", "Separate one observed redirect from the final destination, indexing and canonical decisions.", "/blog/what-a-301-response-does-not-prove"],
+];
 ---
-<BaseLayout
-  title={copy.title}
-  description={copy.description}
-  canonicalPath={copy.canonicalPath}
-  lang={locale}
-  alternatePath={copy.alternatePath}
-  bodyClass="simple-home"
->
+<BaseLayout title={copy.title} description={copy.description} canonicalPath={copy.canonicalPath} lang={locale} alternatePath={copy.alternatePath} bodyClass="simple-home">
   <CrawlerViewTool locale={locale} />
 
   <section class="problem-section" aria-labelledby="problem-heading">
     <h2 id="problem-heading">{copy.problemHeading}</h2>
     <div class="problem-list">
-      {problems.map((problem) => (
-        <a href={problem.href}>
-          <span class={"problem-icon problem-icon-" + problem.icon} aria-hidden="true"></span>
-          <span><strong>{problem.title}</strong><small>{problem.text}</small></span>
-          <ArrowIcon />
-        </a>
+      {problems.map(([title, text, href, icon]) => (
+        <a href={href}><span class={`problem-icon problem-icon-${icon}`} aria-hidden="true"></span><span><strong>{title}</strong><small>{text}</small></span><ArrowIcon /></a>
       ))}
     </div>
   </section>
 
-  <section class="area-section" aria-labelledby="area-heading">
-    <header>
-      <h2 id="area-heading">{copy.areaHeading}</h2>
-      <p>{copy.areaIntro}</p>
-    </header>
-    <div class="area-list">
-      {areas.map((area) => (
-        <a href={area.href}>
-          <h3>{area.title}</h3>
-          <p>{area.text}</p>
-          <span>{area.action} <ArrowIcon /></span>
-        </a>
-      ))}
-    </div>
-  </section>
-
-  <section class="crawler-intro" aria-labelledby="crawler-heading">
+  <section class="crawler-study" aria-labelledby="crawler-study-heading">
     <div>
-      <h2 id="crawler-heading">{copy.crawlerHeading}</h2>
+      <span class="section-kicker">{copy.crawlerKicker}</span>
+      <h2 id="crawler-study-heading">{copy.crawlerHeading}</h2>
       <p>{copy.crawlerText}</p>
-      <a class="text-link" href={de ? "/de/crawler" : "/crawlers"}>{copy.crawlerAction} <ArrowIcon /></a>
+      <div class="inline-actions">
+        <a class="button primary" href={de ? "/de/crawler" : "/crawlers"}>{copy.crawlerAction}</a>
+        <a class="text-link" href={de ? "/de/wissen/in-ai-suche-erscheinen" : "/guides/appear-in-ai-search"}>{copy.crawlerGuide} <ArrowIcon /></a>
+      </div>
     </div>
-    <div class="crawler-sample" aria-hidden="true">
-      <span>Googlebot</span><span>Bingbot</span><span>OAI-SearchBot</span><span>GPTBot</span><span>ClaudeBot</span>
+    <ul class="crawler-role-list" aria-label={de ? "Beispiele für Crawler-Aufgaben" : "Examples of crawler roles"}>
+      <li><strong>Googlebot</strong><span>{de ? "Google-Suche" : "Google Search"}</span></li>
+      <li><strong>Bingbot</strong><span>{de ? "Bing-Suche" : "Bing Search"}</span></li>
+      <li><strong>OAI-SearchBot</strong><span>{de ? "ChatGPT-Suche" : "ChatGPT search"}</span></li>
+      <li><strong>GPTBot</strong><span>{de ? "Modelltraining" : "Model training"}</span></li>
+      <li><strong>Claude-SearchBot</strong><span>{de ? "Claude-Suche" : "Claude search"}</span></li>
+    </ul>
+  </section>
+
+  <section class="learn-section" aria-labelledby="learn-heading">
+    <header><span class="section-kicker">{copy.learnKicker}</span><h2 id="learn-heading">{copy.learnHeading}</h2><p>{copy.learnText}</p></header>
+    <div class="article-link-list">
+      {articles.map(([title, text, href]) => (<a href={href}><span><strong>{title}</strong><small>{text}</small></span><ArrowIcon /></a>))}
     </div>
   </section>
 
+  <section class="contextter-next" aria-labelledby="contextter-next-heading">
+    <div><h2 id="contextter-next-heading">{copy.contextHeading}</h2><p>{copy.contextText}</p><p class="disclosure">{copy.disclosure}</p></div>
+    <a class="button secondary" href={de ? "https://contextter.com/de/features/site-audit" : "https://contextter.com/features/site-audit"}>{copy.contextAction}</a>
+  </section>
 
   <section class="history-note" aria-labelledby="history-heading">
     <h2 id="history-heading">{copy.historyHeading}</h2>
-    <div>
-      <p>{copy.historyText}</p>
-      <a href="/new-ownership">{copy.historyAction} <ArrowIcon /></a>
-    </div>
+    <div><p>{copy.historyText}</p><a href="/new-ownership">{copy.historyAction} <ArrowIcon /></a></div>
   </section>
 </BaseLayout>
