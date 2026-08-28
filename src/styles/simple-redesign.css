@@ -2283,6 +2283,35 @@ a {
   background: #f1f6ff;
 }
 
+.tool-crawler-picker {
+  display: grid;
+  gap: .45rem;
+  max-width: 720px;
+  margin: 0 0 1.5rem;
+}
+
+.tool-crawler-picker label {
+  color: var(--paper);
+  font-weight: 650;
+}
+
+.tool-crawler-picker select {
+  width: 100%;
+  min-height: 48px;
+  padding: .7rem 2.75rem .7rem .85rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: #fff;
+  color: #0b1830;
+  font: inherit;
+}
+
+.tool-crawler-picker select:focus-visible {
+  border-color: var(--signal);
+  outline: 2px solid color-mix(in srgb, var(--signal) 34%, transparent);
+  outline-offset: 2px;
+}
+
 .tool-live-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;

@@ -207,10 +207,28 @@ function statusDescription(
       return de
         ? `Der Server hat ${report.fetchFacts.status ?? "eine Antwort"} geliefert.`
         : `The server returned ${report.fetchFacts.status ?? "a response"}.`;
-    if (report.fetchFacts.fetchState === "blocked_or_challenged")
+    if (report.fetchFacts.fetchState === "blocked_or_challenged") {
+      const descriptions = {
+        captcha: de
+          ? "Die Serverantwort enthält offenbar eine CAPTCHA-Prüfung."
+          : "The server response appears to contain a CAPTCHA check.",
+        login: de
+          ? "Die Serverantwort sieht nach einer Anmeldesperre aus."
+          : "The server response looks like a login gate.",
+        paywall: de
+          ? "Die Serverantwort sieht nach einer Abo-Sperre oder Paywall aus."
+          : "The server response looks like a subscription gate or paywall.",
+        bot_challenge: de
+          ? "Die Serverantwort sieht nach einer Bot-Challenge oder Zugangssperre aus."
+          : "The server response looks like a bot challenge or access gate.",
+      } as const;
+      const reason = report.fetchFacts.blockedReason;
+      if (reason != null && reason in descriptions)
+        return descriptions[reason as keyof typeof descriptions];
       return de
-        ? "Die Serverantwort sieht nach einer Zugangssperre oder Bot-Challenge aus."
-        : "The server response looks like an access gate or bot challenge.";
+        ? "Die Serverantwort sieht nach einer Zugangssperre aus."
+        : "The server response looks like an access gate.";
+    }
     return de
       ? "Die Seite konnte nicht zuverlässig abgerufen werden."
       : "The page could not be fetched reliably.";
@@ -510,6 +528,7 @@ function mount(root: Element): void {
           sessionStorage.setItem(
             "analysespider.http-response",
             JSON.stringify({
+              url: report.fetchFacts.requestedUrl,
               status: report.fetchFacts.status,
               contentType: report.fetchFacts.contentType,
               xRobotsTag: report.indexability.xRobotsTag,
@@ -517,7 +536,11 @@ function mount(root: Element): void {
               metaRobots: report.indexability.metaRobots,
             }),
           );
-          window.location.assign("/tools/url-inspector?from=crawler-check");
+          window.location.assign(
+            locale === "de"
+              ? "/de/tools/http-antwort?from=crawler-check"
+              : "/tools/url-inspector?from=crawler-check",
+          );
         };
       }
       results?.removeAttribute("hidden");

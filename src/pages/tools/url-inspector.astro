@@ -122,6 +122,7 @@ content-type: text/html; charset=utf-8`;
     } as const;
 
     type TransferredResponse = {
+      url?: string;
       status: number | null;
       contentType: string | null;
       xRobotsTag: readonly string[];
@@ -300,7 +301,15 @@ content-type: text/html; charset=utf-8`;
       sessionStorage.removeItem("analysespider.http-response");
       try {
         const response = JSON.parse(transferred) as TransferredResponse;
-        if (loadResponse(response)) inspectPasted("Response evidence transferred from the main URL check.");
+        if (response.url) {
+          headerInput.value = normalizePublicUrl(response.url);
+          htmlInput.value = "";
+          results.hidden = true;
+          status.textContent = "URL transferred from the crawler check. Select Inspect response to load its HTTP signals.";
+          headerInput.focus();
+        } else if (loadResponse(response)) {
+          inspectPasted("Response evidence transferred from the main URL check.");
+        }
       } catch {
         status.textContent = "The transferred response could not be read. Enter the URL again for a fresh check.";
       }

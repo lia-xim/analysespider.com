@@ -5,6 +5,34 @@ import ToolNavigator from "../../components/ToolNavigator.astro";
 interface Props { locale?: "en" | "de" }
 const { locale = "en" } = Astro.props;
 const de = locale === "de";
+const crawlerGroups = [
+  {
+    label: de ? "Suche" : "Search",
+    options: [
+      ["googlebot", "Googlebot", "Google Search", true],
+      ["oai_searchbot", "OAI-SearchBot", "ChatGPT Search", true],
+      ["claude_searchbot", "Claude-SearchBot", "Claude Search", true],
+      ["perplexitybot", "PerplexityBot", "Perplexity Search", true],
+      ["bingbot", "Bingbot", "Bing Search · local rule test", false],
+    ],
+  },
+  {
+    label: de ? "Training und Produktsteuerung" : "Training and product controls",
+    options: [
+      ["gptbot", "GPTBot", "OpenAI model development", true],
+      ["claudebot", "ClaudeBot", "Claude model development", true],
+      ["google_extended", "Google-Extended", "Gemini and Vertex AI controls", true],
+    ],
+  },
+  {
+    label: de ? "Abruf durch einen Nutzer" : "User-triggered fetch",
+    options: [
+      ["chatgpt_user", "ChatGPT-User", "ChatGPT user request", true],
+      ["claude_user", "Claude-User", "Claude user request", true],
+      ["perplexity_user", "Perplexity-User", "Perplexity user request", true],
+    ],
+  },
+] as const;
 ---
 <BaseLayout
   title={de ? "robots.txt-Regel testen — AnalyseSpider" : "Robots.txt Rule Tester — AnalyseSpider"}
@@ -35,12 +63,19 @@ const de = locale === "de";
         <div class="workspace-toolbar"><span class="active">Choose a crawler and a page</span><span>Advanced rule test below</span></div>
         <div class="workspace-content">
           <h2 id="robots-input-heading" class="visually-hidden">Robots rule input</h2>
-          <div class="tool-question"><strong>{de ? "Welcher Crawler ist für dich wichtig?" : "Which crawler matters to you?"}</strong><p>{de ? "Such- und Trainingscrawler sind getrennt. Wähle genau die Aufgabe, die du erlauben oder blockieren willst." : "Search crawlers and training crawlers are separate. Pick the job you actually want to allow or block."}</p></div>
-          <div class="tool-presets" aria-label="Crawler presets">
-            <button class="is-selected" type="button" data-robots-token="OAI-SearchBot" aria-pressed="true"><strong>{de ? "ChatGPT-Suche" : "ChatGPT search"}</strong><span>{de ? "Kann Seiten für ChatGPT-Suchantworten abrufen" : "May collect pages for ChatGPT search answers"}</span></button>
-            <button type="button" data-robots-token="GPTBot" aria-pressed="false"><strong>OpenAI training</strong><span>Separate from ChatGPT search eligibility</span></button>
-            <button type="button" data-robots-token="Claude-SearchBot" aria-pressed="false"><strong>Claude search</strong><span>Anthropic's search crawler token</span></button>
-            <button type="button" data-robots-token="Googlebot" aria-pressed="false"><strong>Google Search</strong><span>{de ? "Crawler für den Google-Suchindex" : "The crawler used for Google's search index"}</span></button>
+          <div class="tool-question"><strong>{de ? "Welchen Crawler möchtest du prüfen?" : "Which crawler do you want to check?"}</strong><p>{de ? "Wähle zuerst die Aufgabe. Der passende robots.txt-Token wird automatisch übernommen." : "Choose the job first. The matching robots.txt token is filled in automatically."}</p></div>
+          <div class="tool-crawler-picker">
+            <label for="crawler-select">{de ? "Crawler und Aufgabe" : "Crawler and job"}</label>
+            <select id="crawler-select" aria-describedby="crawler-selection-help">
+              {crawlerGroups.map((group) => (
+                <optgroup label={group.label}>
+                  {group.options.map(([id, token, label, liveSupported]) => (
+                    <option value={id} data-token={token} data-live-supported={String(liveSupported)} selected={id === "oai_searchbot"}>{label} — {token}</option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+            <p class="field-help" id="crawler-selection-help">{de ? "OAI-SearchBot betrifft ChatGPT Search. GPTBot betrifft mögliches Modelltraining." : "OAI-SearchBot controls ChatGPT Search access. GPTBot controls possible model-development access."}</p>
           </div>
           <div class="tool-live-row">
             <div><label for="robots-live-url">{de ? "Öffentliche Domain oder URL" : "Public domain or URL"}</label><input id="robots-live-url" type="text" inputmode="url" autocomplete="url" placeholder="contextter.com" /></div>
@@ -119,6 +154,8 @@ const de = locale === "de";
     const results = document.querySelector<HTMLElement>("#robots-results")!;
     const liveUrl = document.querySelector<HTMLInputElement>("#robots-live-url")!;
     const liveButton = document.querySelector<HTMLButtonElement>("#check-live-robots")!;
+    const crawlerSelect = document.querySelector<HTMLSelectElement>("#crawler-select")!;
+    const crawlerHelp = document.querySelector<HTMLElement>("#crawler-selection-help")!;
     const sample = `User-agent: *
 Disallow: /private/
 
@@ -126,15 +163,37 @@ User-agent: OAI-SearchBot
 Disallow: /private/
 Allow: /private/preview/`;
 
+    const selectedCrawlerOption = () => crawlerSelect.selectedOptions[0];
+    const syncCrawlerSelection = (announce = true) => {
+      const option = selectedCrawlerOption();
+      const selectedToken = option?.dataset.token ?? "";
+      const liveSupported = option?.dataset.liveSupported !== "false";
+      token.value = selectedToken;
+      liveButton.disabled = !liveSupported;
+      crawlerHelp.textContent = liveSupported
+        ? `${option?.textContent?.trim() ?? selectedToken}. The same token is used for the live and local rule checks.`
+        : `${option?.textContent?.trim() ?? selectedToken}. This crawler is available for the local pasted-rule test; the protected live matrix does not return it yet.`;
+      if (announce) {
+        status.textContent = liveSupported
+          ? `${selectedToken} selected. Enter a public URL or paste robots.txt below.`
+          : `${selectedToken} selected for a local pasted-rule test.`;
+      }
+    };
+
     const requestedCrawler = new URLSearchParams(window.location.search).get("crawler")?.trim();
-    if (requestedCrawler && /^[A-Za-z_-]+$/.test(requestedCrawler)) {
-      token.value = requestedCrawler;
-      document.querySelectorAll<HTMLButtonElement>("[data-robots-token]").forEach((button) => {
-        const selected = button.dataset.robotsToken?.toLowerCase() === requestedCrawler.toLowerCase();
-        button.classList.toggle("is-selected", selected);
-        button.setAttribute("aria-pressed", String(selected));
-      });
-      status.textContent = `${requestedCrawler} selected from the crawler reference. Enter a public URL or paste robots.txt below.`;
+    if (requestedCrawler && /^[A-Za-z0-9_-]+$/.test(requestedCrawler)) {
+      const requestedOption = Array.from(crawlerSelect.options).find((option) =>
+        option.value.toLowerCase() === requestedCrawler.toLowerCase() ||
+        option.dataset.token?.toLowerCase() === requestedCrawler.toLowerCase(),
+      );
+      if (requestedOption) crawlerSelect.value = requestedOption.value;
+      syncCrawlerSelection(false);
+      const selectedOption = selectedCrawlerOption();
+      status.textContent = selectedOption?.dataset.liveSupported === "false"
+        ? `${selectedOption.dataset.token ?? requestedCrawler} selected from the crawler reference for a local pasted-rule test.`
+        : `${selectedOption?.dataset.token ?? requestedCrawler} selected from the crawler reference. Enter a public URL or paste robots.txt below.`;
+    } else {
+      syncCrawlerSelection(false);
     }
 
     const setList = (selector: string, items: string[]) => {
@@ -154,10 +213,7 @@ Allow: /private/preview/`;
         const normalized = normalizePublicUrl(liveUrl.value);
         liveUrl.value = normalized;
         const report = await runCrawlerCheck(normalized);
-        const selected = report.crawlerMatrix.find((crawler) =>
-          crawler.crawlerName.toLowerCase() === token.value.trim().toLowerCase() ||
-          crawler.crawlerId.toLowerCase() === token.value.trim().toLowerCase(),
-        );
+        const selected = report.crawlerMatrix.find((crawler) => crawler.crawlerId === crawlerSelect.value);
         const state = selected?.state ?? "unknown";
         document.querySelector("#robots-decision")!.textContent = state === "blocked" ? "DISALLOWED" : state === "allowed" || state === "no_rule" ? "ALLOWED" : "UNKNOWN";
         document.querySelector("#robots-reason")!.textContent = selected
@@ -183,7 +239,7 @@ Allow: /private/preview/`;
           ? "Enter a public domain or HTTP(S) URL, for example contextter.com."
           : "The protected live check could not be completed. You can still test pasted robots.txt rules locally.";
       } finally {
-        liveButton.disabled = false;
+        liveButton.disabled = selectedCrawlerOption()?.dataset.liveSupported === "false";
       }
     };
 
@@ -215,14 +271,16 @@ Allow: /private/preview/`;
 
     document.querySelector("#load-robots-sample")!.addEventListener("click", () => {
       source.value = sample;
-      token.value = "OAI-SearchBot";
+      crawlerSelect.value = "oai_searchbot";
+      syncCrawlerSelection(false);
       target.value = "/private/preview/report";
       status.textContent = "Sample rules loaded locally.";
       source.focus();
     });
     document.querySelector("#clear-robots")!.addEventListener("click", () => {
       source.value = "";
-      token.value = "OAI-SearchBot";
+      crawlerSelect.value = "oai_searchbot";
+      syncCrawlerSelection(false);
       target.value = "/";
       results.hidden = true;
       status.textContent = "Local input cleared.";
@@ -230,16 +288,6 @@ Allow: /private/preview/`;
     });
     document.querySelector("#test-robots")!.addEventListener("click", test);
     liveButton.addEventListener("click", renderLiveDecision);
-    document.querySelectorAll<HTMLButtonElement>("[data-robots-token]").forEach((button) => {
-      button.addEventListener("click", () => {
-        token.value = button.dataset.robotsToken ?? "";
-        document.querySelectorAll<HTMLButtonElement>("[data-robots-token]").forEach((item) => {
-          const selected = item === button;
-          item.classList.toggle("is-selected", selected);
-          item.setAttribute("aria-pressed", String(selected));
-        });
-        status.textContent = `${token.value} selected. Enter a public URL for a live check or paste robots.txt below.`;
-      });
-    });
+    crawlerSelect.addEventListener("change", () => syncCrawlerSelection());
   </script>
 </BaseLayout>

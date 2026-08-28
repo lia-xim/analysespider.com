@@ -494,6 +494,39 @@ pass(
   "CSP must not enable unrestricted JavaScript eval",
 );
 
+const robotsTesterHtml = await readFile(
+  await findOutput("/tools/robots-rule-tester"),
+  "utf8",
+);
+for (const crawlerId of [
+  "googlebot",
+  "oai_searchbot",
+  "gptbot",
+  "claude_searchbot",
+  "perplexitybot",
+]) {
+  pass(
+    robotsTesterHtml.includes(`<option value="${crawlerId}"`),
+    `robots tester dropdown missing crawler option: ${crawlerId}`,
+  );
+}
+const crawlerViewSource = await readFile(
+  new URL("../src/lib/crawler-view.ts", import.meta.url),
+  "utf8",
+);
+const responseInspectorSource = await readFile(
+  new URL("../src/pages/tools/url-inspector.astro", import.meta.url),
+  "utf8",
+);
+pass(
+  crawlerViewSource.includes("url: report.fetchFacts.requestedUrl"),
+  "crawler-to-HTTP handoff must preserve the checked URL",
+);
+pass(
+  responseInspectorSource.includes("headerInput.value = normalizePublicUrl(response.url)"),
+  "HTTP inspector must prefill the transferred crawler URL",
+);
+
 const robotsFixturePage = await readFile(
   await findOutput("/lab/robots-rule-fixtures"),
   "utf8",
