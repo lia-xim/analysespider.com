@@ -61,7 +61,7 @@ export const site: SiteConfig = {
   analytics: { enabled: false, provider: null },
   githubUrl: "https://github.com/lia-xim/analysespider.com",
   contactEmail: "info@contextter.com",
-  buildDate: "2026-08-23",
+  buildDate: "2026-08-28",
 };
 
 export const robotsContent = site.indexing === "public"
