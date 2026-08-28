@@ -4,17 +4,17 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
 ---
 <BaseLayout
   title="HTTP Response Inspector — AnalyseSpider"
-  description="Inspect pasted HTTP status lines, headers, canonical markup, and robots directives locally."
+  description="Enter a public URL for a protected live response check, or inspect pasted headers and HTML locally."
   canonicalPath="/tools/url-inspector"
   bodyClass="tool-page"
 >
   <section class="tool-shell">
     <aside class="tool-sidebar">
-      <h1>Response Inspector</h1>
-      <p>Paste the evidence you already have. AnalyseSpider will not request the URL for you.</p>
-      <button class="button sidebar-action" id="load-response-sample" type="button">Load sample</button>
+      <h1>Read an HTTP Response</h1>
+      <p>Enter a public URL and AnalyseSpider collects the useful response signals. If you already copied headers or HTML, you can inspect those locally instead.</p>
+      <button class="button sidebar-action" id="load-response-sample" type="button">Try the example</button>
       <div class="sidebar-meta">
-        <strong>INPUT SOURCES</strong><br />
+        <strong>Where to copy it from</strong><br />
         Browser network panel<br />
         <code>curl -I</code> output<br />
         Raw HTTP response<br />
@@ -23,16 +23,22 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
     </aside>
 
     <div class="tool-main">
-      <ToolBoundary />
+      <ToolBoundary hybrid />
       <section class="workspace" aria-labelledby="response-input-heading">
-        <div class="workspace-toolbar"><span class="active">1. PASTE EVIDENCE</span><span>NO FETCH</span><span>NO STORAGE</span></div>
+        <div class="workspace-toolbar"><span class="active">Enter a URL or paste the response</span><span>The tool chooses the right mode</span></div>
         <div class="workspace-content">
           <h2 id="response-input-heading" class="visually-hidden">Response input</h2>
+          <div class="tool-question"><strong>What do you want to check?</strong><p>Try a typical response first, or put a domain in the first field for a live check.</p></div>
+          <div class="tool-presets" aria-label="HTTP response examples">
+            <button type="button" data-response-preset="healthy"><strong>Healthy page</strong><span>200 response with an indexable canonical</span></button>
+            <button type="button" data-response-preset="redirect"><strong>Redirect</strong><span>301 response pointing to a new URL</span></button>
+            <button type="button" data-response-preset="noindex"><strong>Blocked indexing</strong><span>200 response carrying noindex</span></button>
+          </div>
           <div class="input-grid">
             <div>
-              <label for="header-input">Status line and response headers</label>
-              <textarea id="header-input" spellcheck="false" placeholder="HTTP/2 301&#10;location: https://example.com/new-path&#10;x-robots-tag: noindex"></textarea>
-              <p class="field-help">Paste one observed response block. Redirect hops should be inspected separately.</p>
+              <label for="header-input">Domain, URL or response headers</label>
+              <textarea id="header-input" spellcheck="false" placeholder="contextter.com&#10;&#10;or paste:&#10;HTTP/2 301&#10;location: https://example.com/new-path"></textarea>
+              <p class="field-help">A single URL uses the protected live fetch. A block beginning with HTTP/ stays in this browser.</p>
             </div>
             <div class="or-divider" aria-hidden="true">+</div>
             <div>
@@ -42,14 +48,14 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
           </div>
           <div class="workspace-actions">
             <button class="button" id="clear-response" type="button">Clear</button>
-            <button class="button primary" id="inspect-response" type="button">Inspect locally</button>
+            <button class="button primary" id="inspect-response" type="button">Inspect response</button>
           </div>
           <p class="form-status" id="response-status" role="status" aria-live="polite">Waiting for pasted evidence.</p>
         </div>
       </section>
 
       <section class="result-surface" id="response-results" hidden aria-labelledby="response-result-heading">
-        <div class="workspace-toolbar"><span class="active">2. RESULT</span><span id="observation-time"></span></div>
+        <div class="workspace-toolbar"><span class="active">What it tells you</span><span id="observation-time"></span></div>
         <h2 id="response-result-heading" class="visually-hidden">Response inspection result</h2>
         <div class="diagnostic-output">
           <section class="evidence-group">
@@ -71,9 +77,9 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
 
   <section class="content-grid">
     <div class="prose">
-      <h2>Why the tool does not fetch URLs</h2>
-      <p>An unrestricted server-side URL field can become a proxy into private networks, cloud metadata services, redirect loops, and oversized responses. This browser-local tool accepts evidence directly from you and performs no network request.</p>
-      <p>A future fetch service would need DNS resolution checks before and after redirects, private and link-local address blocking, response-size and redirect-depth caps, rate limits, timeouts, abuse monitoring, and a clear retention contract. That service is not implied by this interface.</p>
+      <h2>Where do these headers come from?</h2>
+      <p>If you only have a domain, enter it above. AnalyseSpider fetches one public page through the protected gateway and turns the observed status, content type, robots directives and canonical into readable evidence.</p>
+      <p>For a response from a private test environment, open the Network panel in your browser developer tools and reload the page, or run <code>curl -I https://example.com/</code>. Paste those headers here; that mode makes no network request.</p>
     </div>
     <aside class="side-note">
       <h3>Useful collection commands</h3>
@@ -83,10 +89,12 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
   </section>
 
   <script>
+    import { GatewayError, normalizePublicUrl, runCrawlerCheck } from "../../lib/crawler-gateway";
     const headerInput = document.querySelector<HTMLTextAreaElement>("#header-input")!;
     const htmlInput = document.querySelector<HTMLTextAreaElement>("#html-input")!;
     const status = document.querySelector<HTMLElement>("#response-status")!;
     const results = document.querySelector<HTMLElement>("#response-results")!;
+    const inspectButton = document.querySelector<HTMLButtonElement>("#inspect-response")!;
     const sampleHeaders = `HTTP/2 301
 date: Fri, 22 Aug 2026 09:00:00 GMT
 location: https://example.com/new-path
@@ -99,6 +107,32 @@ content-type: text/html; charset=utf-8`;
   <meta name="robots" content="index, follow">
   <title>Moved page</title>
 </head><body></body></html>`;
+    const presets = {
+      healthy: { headers: "HTTP/2 200\ncontent-type: text/html; charset=utf-8", html: '<link rel="canonical" href="https://example.com/page">\n<meta name="robots" content="index, follow">' },
+      redirect: { headers: sampleHeaders, html: sampleHtml },
+      noindex: { headers: "HTTP/2 200\ncontent-type: text/html; charset=utf-8\nx-robots-tag: noindex, follow", html: '<link rel="canonical" href="https://example.com/private">\n<meta name="robots" content="noindex, follow">' },
+    } as const;
+
+    type TransferredResponse = {
+      status: number | null;
+      contentType: string | null;
+      xRobotsTag: readonly string[];
+      canonical: string | null;
+      metaRobots: readonly string[];
+    };
+
+    const loadResponse = (response: TransferredResponse) => {
+      if (response.status === null) return false;
+      const headerLines = [`HTTP/2 ${response.status}`];
+      if (response.contentType) headerLines.push(`content-type: ${response.contentType}`);
+      response.xRobotsTag.forEach((value) => headerLines.push(`x-robots-tag: ${value}`));
+      headerInput.value = headerLines.join("\n");
+      const htmlSignals: string[] = [];
+      if (response.canonical) htmlSignals.push(`<link rel="canonical" href="${response.canonical}">`);
+      if (response.metaRobots.length) htmlSignals.push(`<meta name="robots" content="${response.metaRobots.join(", ")}">`);
+      htmlInput.value = htmlSignals.join("\n");
+      return true;
+    };
 
     const setList = (selector: string, items: string[]) => {
       const list = document.querySelector<HTMLUListElement>(selector)!;
@@ -110,7 +144,7 @@ content-type: text/html; charset=utf-8`;
       });
     };
 
-    const inspect = () => {
+    const inspectPasted = (completion = "Pasted evidence inspected locally. No URL was requested.") => {
       const rawHeaders = headerInput.value.trim();
       const rawHtml = htmlInput.value.trim();
       if (!rawHeaders && !rawHtml) {
@@ -187,7 +221,40 @@ content-type: text/html; charset=utf-8`;
       setList("#unknown-list", unknown);
       document.querySelector("#observation-time")!.textContent = `ANALYSED ${new Date().toISOString()}`;
       results.hidden = false;
-      status.textContent = "Pasted evidence inspected locally. No URL was requested.";
+      status.textContent = completion;
+    };
+
+    const inspect = async () => {
+      const raw = headerInput.value.trim();
+      const isSingleUrl = raw && !raw.includes("\n") && !/^HTTP\//i.test(raw);
+      if (!isSingleUrl) {
+        inspectPasted();
+        return;
+      }
+      inspectButton.disabled = true;
+      results.hidden = true;
+      status.textContent = "Fetching the public response safely …";
+      try {
+        const normalized = normalizePublicUrl(raw);
+        const report = await runCrawlerCheck(normalized);
+        if (!loadResponse({
+          status: report.fetchFacts.status,
+          contentType: report.fetchFacts.contentType,
+          xRobotsTag: report.indexability.xRobotsTag,
+          canonical: report.indexability.canonical.url,
+          metaRobots: report.indexability.metaRobots,
+        })) {
+          status.textContent = "The live check returned no HTTP status. No response evidence was invented.";
+          return;
+        }
+        inspectPasted("Live response checked through the protected crawler gateway.");
+      } catch (error) {
+        status.textContent = error instanceof GatewayError && error.code === "VALIDATION_INVALID_INPUT"
+          ? "Enter a public domain or HTTP(S) URL, for example contextter.com."
+          : "The protected live check could not be completed. Pasted headers can still be inspected locally.";
+      } finally {
+        inspectButton.disabled = false;
+      }
     };
 
     document.querySelector("#load-response-sample")!.addEventListener("click", () => {
@@ -196,6 +263,15 @@ content-type: text/html; charset=utf-8`;
       status.textContent = "Sample evidence loaded locally.";
       headerInput.focus();
     });
+    document.querySelectorAll<HTMLButtonElement>("[data-response-preset]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const preset = presets[button.dataset.responsePreset as keyof typeof presets];
+        if (!preset) return;
+        headerInput.value = preset.headers;
+        htmlInput.value = preset.html;
+        inspectPasted("Example response explained locally.");
+      });
+    });
     document.querySelector("#clear-response")!.addEventListener("click", () => {
       headerInput.value = "";
       htmlInput.value = "";
@@ -203,6 +279,25 @@ content-type: text/html; charset=utf-8`;
       status.textContent = "Local input cleared.";
       headerInput.focus();
     });
-    document.querySelector("#inspect-response")!.addEventListener("click", inspect);
+    inspectButton.addEventListener("click", inspect);
+
+    const transferred = sessionStorage.getItem("analysespider.http-response");
+    if (transferred && new URLSearchParams(window.location.search).get("from") === "crawler-check") {
+      sessionStorage.removeItem("analysespider.http-response");
+      try {
+        const response = JSON.parse(transferred) as TransferredResponse;
+        if (loadResponse(response)) inspectPasted("Response evidence transferred from the main URL check.");
+      } catch {
+        status.textContent = "The transferred response could not be read. Enter the URL again for a fresh check.";
+      }
+    }
+
+    const transferredUrl = sessionStorage.getItem("analysespider.response-url");
+    if (transferredUrl && new URLSearchParams(window.location.search).get("from") === "redirect-chain") {
+      sessionStorage.removeItem("analysespider.response-url");
+      headerInput.value = transferredUrl;
+      status.textContent = "Final URL transferred from the redirect check. Select Inspect response to fetch it.";
+      headerInput.focus();
+    }
   </script>
 </BaseLayout>

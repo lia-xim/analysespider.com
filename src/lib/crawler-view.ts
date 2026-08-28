@@ -5,6 +5,7 @@ import {
   type CrawlerReport,
   type EligibilityState,
 } from "./crawler-gateway";
+import { formatLiveRedirectEvidence } from "./redirect-chain";
 
 type Locale = "de" | "en";
 
@@ -463,6 +464,38 @@ function mount(root: Element): void {
       renderStatuses(root, report, locale);
       renderActions(root, report, locale);
       renderDetails(root, report, locale);
+      const redirectHandoff = root.querySelector("[data-redirect-handoff]");
+      if (redirectHandoff instanceof HTMLButtonElement) {
+        if (report.fetchFacts.redirectChain.length > 0) {
+          redirectHandoff.hidden = false;
+          redirectHandoff.onclick = () => {
+            sessionStorage.setItem(
+              "analysespider.redirect-chain",
+              formatLiveRedirectEvidence(report.fetchFacts),
+            );
+            window.location.assign("/tools/redirect-chain?from=crawler-check");
+          };
+        } else {
+          redirectHandoff.hidden = true;
+          redirectHandoff.onclick = null;
+        }
+      }
+      const responseHandoff = root.querySelector("[data-response-handoff]");
+      if (responseHandoff instanceof HTMLButtonElement) {
+        responseHandoff.onclick = () => {
+          sessionStorage.setItem(
+            "analysespider.http-response",
+            JSON.stringify({
+              status: report.fetchFacts.status,
+              contentType: report.fetchFacts.contentType,
+              xRobotsTag: report.indexability.xRobotsTag,
+              canonical: report.indexability.canonical.url,
+              metaRobots: report.indexability.metaRobots,
+            }),
+          );
+          window.location.assign("/tools/url-inspector?from=crawler-check");
+        };
+      }
       results?.removeAttribute("hidden");
       results?.scrollIntoView({ behavior: "smooth", block: "start" });
     } catch (caught) {

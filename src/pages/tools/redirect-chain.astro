@@ -4,43 +4,50 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
 ---
 <BaseLayout
   title="Redirect Chain Builder — AnalyseSpider"
-  description="Build and validate a redirect chain from pasted HTTP response blocks, locally in your browser."
+  description="Enter one public URL for a protected live redirect check, or analyse pasted HTTP response blocks locally."
   canonicalPath="/tools/redirect-chain"
   bodyClass="tool-page"
 >
   <section class="tool-shell">
     <aside class="tool-sidebar">
-      <h1>Redirect Chain Builder</h1>
-      <p>Paste observed hops in request order. The tool resolves relative Location fields and exposes gaps or loops.</p>
-      <button class="button sidebar-action" id="load-chain-sample" type="button">Load sample</button>
+      <h1>Map a Redirect Chain</h1>
+      <p>Enter a domain or URL for a live check. If you already captured the responses, paste those instead and they stay in this browser.</p>
+      <button class="button sidebar-action" id="load-chain-sample" type="button">Load a 3-hop example</button>
       <div class="sidebar-meta">
-        <strong>BOUNDARY</strong><br />
+        <strong>What it accepts</strong><br />
+        One public domain or URL<br />
         12 response blocks maximum<br />
         64 KB input maximum<br />
         HTTP(S) URLs only<br />
-        No request · no storage
+        Protected live fetch or local parsing
       </div>
     </aside>
 
     <div class="tool-main">
-      <ToolBoundary />
+      <ToolBoundary hybrid />
       <section class="workspace" aria-labelledby="chain-input-heading">
-        <div class="workspace-toolbar"><span class="active">1. PASTE HOPS</span><span>BLANK LINE BETWEEN BLOCKS</span></div>
+        <div class="workspace-toolbar"><span class="active">Enter a URL or paste captured responses</span><span>The tool chooses the right mode</span></div>
         <div class="workspace-content">
           <h2 id="chain-input-heading" class="visually-hidden">Redirect chain input</h2>
-          <label for="chain-input">Request URL and response headers for each hop</label>
-          <textarea id="chain-input" spellcheck="false" placeholder="URL: https://example.com/old&#10;HTTP/2 301&#10;Location: /new&#10;&#10;URL: https://example.com/new&#10;HTTP/2 200"></textarea>
-          <p class="field-help">Each block needs one <code>URL:</code> line and one HTTP status line. Add Location, Cache-Control, or X-Robots-Tag when observed.</p>
+          <div class="tool-question"><strong>Start with a URL or an example</strong><p>You do not need to collect HTTP headers yourself. Enter a domain for a live check, or use one of these examples to see how the result works.</p></div>
+          <div class="tool-presets" aria-label="Redirect examples">
+            <button type="button" data-chain-preset="clean"><strong>No redirect</strong><span>A final page responds with 200</span></button>
+            <button type="button" data-chain-preset="single"><strong>One redirect</strong><span>A normal 301 points to the final page</span></button>
+            <button type="button" data-chain-preset="broken"><strong>Broken chain</strong><span>A redirect is missing its destination</span></button>
+          </div>
+          <label for="chain-input">Domain, URL or captured HTTP response blocks</label>
+          <textarea id="chain-input" spellcheck="false" placeholder="contextter.com&#10;&#10;or paste:&#10;&#10;URL: https://example.com/old&#10;HTTP/2 301&#10;Location: /new&#10;&#10;URL: https://example.com/new&#10;HTTP/2 200"></textarea>
+          <p class="field-help">A single URL uses the same protected crawler gateway as the main check. Pasted blocks are analysed locally; each needs a <code>URL:</code> line and an HTTP status line.</p>
           <div class="workspace-actions">
             <button class="button" id="clear-chain" type="button">Clear</button>
-            <button class="button primary" id="analyse-chain" type="button">Build chain locally</button>
+            <button class="button primary" id="analyse-chain" type="button">Check redirect chain</button>
           </div>
-          <p class="form-status" id="chain-status" role="status" aria-live="polite">Waiting for pasted response blocks.</p>
+          <p class="form-status" id="chain-status" role="status" aria-live="polite">Enter a URL or paste captured responses.</p>
         </div>
       </section>
 
       <section class="result-surface" id="chain-results" hidden aria-labelledby="chain-results-heading">
-        <div class="workspace-toolbar"><span class="active">2. CHAIN EVIDENCE</span><span id="chain-outcome"></span></div>
+        <div class="workspace-toolbar"><span class="active">The observed chain</span><span id="chain-outcome"></span></div>
         <h2 id="chain-results-heading" class="visually-hidden">Redirect chain result</h2>
         <div class="result-panel">
           <div class="table-wrap">
@@ -56,6 +63,8 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
         </div>
         <div class="workspace-actions result-panel">
           <button class="button" id="copy-chain-evidence" type="button">Copy evidence JSON</button>
+          <a class="button" href="/tools/crawler-view">Run the main URL check</a>
+          <button class="button primary" id="open-final-response" type="button" hidden>Inspect the final HTTP response</button>
         </div>
       </section>
     </div>
@@ -64,6 +73,8 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
   <section class="content-grid">
     <div class="prose">
       <h2>One chain, several separate decisions</h2>
+      <p><strong>If you only have a URL:</strong> paste it into the field above. AnalyseSpider follows at most three public HTTP redirects through the protected gateway and builds the response blocks for you.</p>
+      <p><strong>If you already have headers:</strong> paste each observed response block. That mode makes no network request and is useful for private test environments or a response captured with browser developer tools or curl.</p>
       <p>A status and Location field establish an observed hop. They do not establish that the destination is indexable, canonical, live in every request context, or equivalent to the source page.</p>
       <p>Capture each response before following it. Then inspect the final representation with the <a href="/tools/url-inspector">Response Inspector</a> and apply the <a href="/guides/redirect-chain-analysis">redirect-chain workflow</a> before changing routing rules.</p>
       <h3>What the JSON contains</h3>
@@ -77,13 +88,17 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
   </section>
 
   <script>
-    import { MAX_REDIRECT_INPUT_BYTES, parseRedirectChain } from "../../lib/redirect-chain";
+    import { GatewayError, normalizePublicUrl, runCrawlerCheck } from "../../lib/crawler-gateway";
+    import { formatLiveRedirectEvidence, MAX_REDIRECT_INPUT_BYTES, parseRedirectChain } from "../../lib/redirect-chain";
 
     const input = document.querySelector<HTMLTextAreaElement>("#chain-input")!;
     const status = document.querySelector<HTMLElement>("#chain-status")!;
     const results = document.querySelector<HTMLElement>("#chain-results")!;
     const copyButton = document.querySelector<HTMLButtonElement>("#copy-chain-evidence")!;
+    const responseButton = document.querySelector<HTMLButtonElement>("#open-final-response")!;
+    const analyseButton = document.querySelector<HTMLButtonElement>("#analyse-chain")!;
     let latestEvidence: Record<string, unknown> | null = null;
+    let latestFinalUrl: string | null = null;
     const sample = `URL: https://example.com/legacy?ref=a
 HTTP/2 301
 Location: /moved?ref=a
@@ -96,6 +111,19 @@ Location: https://www.example.com/final?ref=a
 URL: https://www.example.com/final?ref=a
 HTTP/2 200
 X-Robots-Tag: index, follow`;
+    const presets = {
+      clean: `URL: https://example.com/page
+HTTP/2 200
+X-Robots-Tag: index, follow`,
+      single: `URL: https://example.com/old
+HTTP/2 301
+Location: /new
+
+URL: https://example.com/new
+HTTP/2 200`,
+      broken: `URL: https://example.com/old
+HTTP/2 302`,
+    } as const;
 
     const fillList = (selector: string, values: string[]) => {
       const list = document.querySelector<HTMLUListElement>(selector)!;
@@ -107,23 +135,17 @@ X-Robots-Tag: index, follow`;
       });
     };
 
-    const analyse = () => {
-      const raw = input.value.trim();
-      if (!raw) {
-        results.hidden = true;
-        status.textContent = "Paste at least one response block before building the chain.";
-        return;
-      }
+    const renderChain = (raw: string, boundary: string, completion: string) => {
       if (new Blob([raw]).size > MAX_REDIRECT_INPUT_BYTES) {
         results.hidden = true;
         status.textContent = "Input rejected: the 64 KB local limit was exceeded.";
-        return;
+        return false;
       }
       const result = parseRedirectChain(raw);
       if (!result.hops.length) {
         results.hidden = true;
-        status.textContent = "No complete URL plus HTTP status block was recognised.";
-        return;
+        status.textContent = "These pasted responses are incomplete. Each block needs a URL: line and an HTTP status line such as HTTP/2 301.";
+        return false;
       }
 
       const rows = document.querySelector<HTMLTableSectionElement>("#chain-rows")!;
@@ -141,10 +163,56 @@ X-Robots-Tag: index, follow`;
       fillList("#chain-findings", result.findings.length ? result.findings : ["No chain inconsistency was detected in the pasted blocks."]);
       fillList("#chain-unknowns", result.unknowns);
       const observedAt = new Date().toISOString();
-      latestEvidence = { schemaVersion: 1, tool: "AnalyseSpider Redirect Chain Builder", observedAt, boundary: "pasted evidence; no network request", ...result };
+      latestEvidence = { schemaVersion: 1, tool: "AnalyseSpider Redirect Chain Builder", observedAt, boundary, ...result };
+      latestFinalUrl = result.hops.at(-1)?.requestUrl ?? null;
+      responseButton.hidden = !latestFinalUrl;
       document.querySelector("#chain-outcome")!.textContent = `${result.outcome.toUpperCase()} · ${result.hops.length} HOPS`;
       results.hidden = false;
-      status.textContent = `Built ${result.hops.length} observed hop${result.hops.length === 1 ? "" : "s"} locally${result.rejectedBlocks ? `; ${result.rejectedBlocks} invalid block${result.rejectedBlocks === 1 ? "" : "s"} skipped` : ""}.`;
+      status.textContent = `${completion} ${result.hops.length} observed response${result.hops.length === 1 ? "" : "s"}${result.rejectedBlocks ? `; ${result.rejectedBlocks} invalid block${result.rejectedBlocks === 1 ? "" : "s"} skipped` : ""}.`;
+      return true;
+    };
+
+    const liveError = (error: unknown) => {
+      if (!(error instanceof GatewayError)) return "The live check is temporarily unavailable. Please try again later.";
+      if (error.code === "VALIDATION_INVALID_INPUT") return "Enter a public domain or HTTP(S) URL, for example contextter.com.";
+      if (error.code.includes("RATE") || error.code.includes("LIMIT")) return "The live-check limit has been reached. Try again after the displayed waiting period.";
+      return "The protected live check could not be completed. You can still paste captured response blocks and analyse them locally.";
+    };
+
+    const analyse = async () => {
+      const raw = input.value.trim();
+      if (!raw) {
+        results.hidden = true;
+        status.textContent = "Enter a domain or URL, or paste at least one captured response block.";
+        return;
+      }
+      const hasResponseSyntax = /^URL\s*:/im.test(raw) || /^HTTP\//im.test(raw);
+      if (hasResponseSyntax || raw.includes("\n")) {
+        renderChain(raw, "pasted evidence; no network request", "Analysed locally:");
+        return;
+      }
+
+      analyseButton.disabled = true;
+      results.hidden = true;
+      status.textContent = "Fetching the public URL and following its redirects safely …";
+      try {
+        const normalized = normalizePublicUrl(raw);
+        input.value = normalized;
+        const report = await runCrawlerCheck(normalized);
+        const evidence = formatLiveRedirectEvidence(report.fetchFacts);
+        input.value = evidence;
+        renderChain(
+          evidence,
+          "protected live fetch via tools.contextter.com",
+          report.fetchFacts.redirectChain.length
+            ? "Live check complete:"
+            : "No redirect was observed. Final response:",
+        );
+      } catch (error) {
+        status.textContent = liveError(error);
+      } finally {
+        analyseButton.disabled = false;
+      }
     };
 
     document.querySelector("#load-chain-sample")!.addEventListener("click", () => {
@@ -155,11 +223,26 @@ X-Robots-Tag: index, follow`;
     document.querySelector("#clear-chain")!.addEventListener("click", () => {
       input.value = "";
       latestEvidence = null;
+      latestFinalUrl = null;
+      responseButton.hidden = true;
       results.hidden = true;
       status.textContent = "Local input and result cleared.";
       input.focus();
     });
-    document.querySelector("#analyse-chain")!.addEventListener("click", analyse);
+    analyseButton.addEventListener("click", analyse);
+    document.querySelectorAll<HTMLButtonElement>("[data-chain-preset]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const preset = presets[button.dataset.chainPreset as keyof typeof presets];
+        if (!preset) return;
+        input.value = preset;
+        renderChain(preset, "example evidence; no network request", "Example explained locally:");
+      });
+    });
+    responseButton.addEventListener("click", () => {
+      if (!latestFinalUrl) return;
+      sessionStorage.setItem("analysespider.response-url", latestFinalUrl);
+      window.location.assign("/tools/url-inspector?from=redirect-chain");
+    });
     copyButton.addEventListener("click", async () => {
       if (!latestEvidence) return;
       try {
@@ -169,5 +252,12 @@ X-Robots-Tag: index, follow`;
         status.textContent = "Clipboard access was unavailable. Select and copy from your browser developer tools instead.";
       }
     });
+
+    const transferred = sessionStorage.getItem("analysespider.redirect-chain");
+    if (transferred && new URLSearchParams(window.location.search).get("from") === "crawler-check") {
+      sessionStorage.removeItem("analysespider.redirect-chain");
+      input.value = transferred;
+      renderChain(transferred, "transferred from the protected crawler check", "Transferred from the URL check:");
+    }
   </script>
 </BaseLayout>

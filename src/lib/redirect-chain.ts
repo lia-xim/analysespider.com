@@ -21,6 +21,27 @@ export interface RedirectChainResult {
   outcome: "complete" | "incomplete" | "loop" | "invalid";
 }
 
+export interface LiveRedirectEvidence {
+  requestedUrl: string;
+  finalUrl: string;
+  status: number | null;
+  redirectChain: readonly {
+    url: string;
+    status: number;
+    location: string;
+  }[];
+}
+
+export function formatLiveRedirectEvidence(evidence: LiveRedirectEvidence): string {
+  const blocks = evidence.redirectChain.map((hop) =>
+    [`URL: ${hop.url}`, `HTTP/2 ${hop.status}`, `Location: ${hop.location}`].join("\n"),
+  );
+  if (evidence.status != null && evidence.finalUrl) {
+    blocks.push([`URL: ${evidence.finalUrl}`, `HTTP/2 ${evidence.status}`].join("\n"));
+  }
+  return blocks.join("\n\n");
+}
+
 const normaliseUrl = (value: string) => {
   const url = new URL(value);
   if (!/^https?:$/.test(url.protocol)) throw new Error("Only HTTP and HTTPS request URLs are supported.");

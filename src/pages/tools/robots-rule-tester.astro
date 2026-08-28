@@ -4,17 +4,17 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
 ---
 <BaseLayout
   title="Robots.txt Rule Tester — AnalyseSpider"
-  description="Test one robots.txt product token and URL against RFC 9309 group selection, longest-match, Allow, Disallow, wildcard, and end-anchor rules locally."
+  description="Check a public URL for Google, ChatGPT or Claude crawler access, or test pasted robots.txt rules locally."
   canonicalPath="/tools/robots-rule-tester"
   bodyClass="tool-page"
 >
   <section class="tool-shell">
     <aside class="tool-sidebar">
       <h1>Robots.txt Rule Tester</h1>
-      <p>Paste a robots.txt file, name one crawler product token, and test one URL or path without fetching a site.</p>
-      <button class="button sidebar-action" id="load-robots-sample" type="button">Load sample</button>
+      <p>Choose Google, ChatGPT or Claude and enter your domain. AnalyseSpider checks the public page. Pasting robots.txt rules remains available for advanced tests.</p>
+      <button class="button sidebar-action" id="load-robots-sample" type="button">Try the example</button>
       <div class="sidebar-meta">
-        <strong>RULE MODEL</strong><br />
+        <strong>How the decision works</strong><br />
         RFC 9309 groups<br />
         Exact product token<br />
         Longest path match<br />
@@ -23,11 +23,24 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
     </aside>
 
     <div class="tool-main">
-      <ToolBoundary />
+      <ToolBoundary hybrid />
       <section class="workspace" aria-labelledby="robots-input-heading">
-        <div class="workspace-toolbar"><span class="active">1. TEST INPUT</span><span>RFC 9309</span><span>NO FETCH</span></div>
+        <div class="workspace-toolbar"><span class="active">Choose a crawler and a page</span><span>Advanced rule test below</span></div>
         <div class="workspace-content">
           <h2 id="robots-input-heading" class="visually-hidden">Robots rule input</h2>
+          <div class="tool-question"><strong>Which crawler matters to you?</strong><p>Search crawlers and training crawlers are separate. Pick the job you actually want to allow or block.</p></div>
+          <div class="tool-presets" aria-label="Crawler presets">
+            <button class="is-selected" type="button" data-robots-token="OAI-SearchBot" aria-pressed="true"><strong>ChatGPT search</strong><span>May collect pages for ChatGPT search answers</span></button>
+            <button type="button" data-robots-token="GPTBot" aria-pressed="false"><strong>OpenAI training</strong><span>Separate from ChatGPT search eligibility</span></button>
+            <button type="button" data-robots-token="Claude-SearchBot" aria-pressed="false"><strong>Claude search</strong><span>Anthropic's search crawler token</span></button>
+            <button type="button" data-robots-token="Googlebot" aria-pressed="false"><strong>Google Search</strong><span>The crawler used for Google's search index</span></button>
+          </div>
+          <div class="tool-live-row">
+            <div><label for="robots-live-url">Public domain or URL</label><input id="robots-live-url" type="text" inputmode="url" autocomplete="url" placeholder="contextter.com" /></div>
+            <button class="button primary" id="check-live-robots" type="button">Check this page live</button>
+          </div>
+          <p class="field-help">The live check uses the protected crawler gateway and the selected crawler token. It does not guarantee indexing or a future visit.</p>
+          <div class="tool-advanced-heading"><strong>Advanced: test rules you already have</strong><span>Paste robots.txt below to reproduce one path decision locally.</span></div>
           <div class="input-grid">
             <div>
               <label for="robots-input">robots.txt content</label>
@@ -37,7 +50,7 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
             <div class="or-divider" aria-hidden="true">+</div>
             <div>
               <label for="product-token">Crawler product token</label>
-              <input id="product-token" value="ExampleBot" autocomplete="off" spellcheck="false" />
+              <input id="product-token" value="OAI-SearchBot" autocomplete="off" spellcheck="false" />
               <label for="target-url">URL or path to test</label>
               <input id="target-url" value="/private/preview/report" autocomplete="off" spellcheck="false" />
               <p class="field-help">Use the product token from the robots.txt user-agent line, not a full browser user-agent string.</p>
@@ -52,7 +65,7 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
       </section>
 
       <section class="result-surface" id="robots-results" hidden aria-labelledby="robots-result-heading">
-        <div class="workspace-toolbar"><span class="active">2. DECISION TRACE</span><span id="robots-observation-time"></span></div>
+        <div class="workspace-toolbar"><span class="active">Why this rule wins</span><span id="robots-observation-time"></span></div>
         <h2 id="robots-result-heading" class="visually-hidden">Robots rule decision</h2>
         <div class="diagnostic-output">
           <section class="evidence-group">
@@ -74,9 +87,11 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
 
   <section class="content-grid">
     <div class="prose">
+      <h2>Which preset should I choose?</h2>
+      <p>Choose <strong>ChatGPT search</strong> when you care about possible inclusion in ChatGPT search. GPTBot is a separate decision about model training. Claude publishes a separate search token as well. Googlebot remains the relevant crawler for Google Search and its AI search features.</p>
       <h2>What this result establishes</h2>
-      <p>The tester applies RFC 9309 group selection and path matching to the exact text, token, and target you entered. It combines repeated exact-token groups, falls back to the wildcard group only when no exact group exists, and chooses the most specific matching path rule.</p>
-      <p>It does not fetch <code>/robots.txt</code>, verify its HTTP status or content type, model a crawler vendor's undocumented behavior, or prove that a crawler will obey the file. Robots rules are crawl controls, not authentication and not a reliable way to keep a URL out of search results.</p>
+      <p>The live check reads the crawler decision returned for the public page. The advanced local test applies RFC 9309 group selection and path matching to the exact rules, token and target you pasted. It combines repeated exact-token groups, falls back to the wildcard group only when no exact group exists, and chooses the most specific matching path rule.</p>
+      <p>The local mode does not fetch <code>/robots.txt</code> or verify its HTTP status and content type. Neither mode models undocumented vendor behaviour or proves that a crawler will obey the file. Robots rules are crawl controls, not authentication and not a reliable way to keep a URL out of search results.</p>
       <p><a href="/guides/test-robots-txt-rules">Follow the complete robots.txt testing workflow</a> or inspect the <a href="/lab/crawler-benchmarks">versioned fixture evidence</a>.</p>
     </div>
     <aside class="side-note">
@@ -87,16 +102,19 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
   </section>
 
   <script>
+    import { GatewayError, normalizePublicUrl, runCrawlerCheck } from "../../lib/crawler-gateway";
     import { evaluateRobots } from "../../lib/robots";
     const source = document.querySelector<HTMLTextAreaElement>("#robots-input")!;
     const token = document.querySelector<HTMLInputElement>("#product-token")!;
     const target = document.querySelector<HTMLInputElement>("#target-url")!;
     const status = document.querySelector<HTMLElement>("#robots-status")!;
     const results = document.querySelector<HTMLElement>("#robots-results")!;
+    const liveUrl = document.querySelector<HTMLInputElement>("#robots-live-url")!;
+    const liveButton = document.querySelector<HTMLButtonElement>("#check-live-robots")!;
     const sample = `User-agent: *
 Disallow: /private/
 
-User-agent: ExampleBot
+User-agent: OAI-SearchBot
 Disallow: /private/
 Allow: /private/preview/`;
 
@@ -107,6 +125,46 @@ Allow: /private/preview/`;
         entry.textContent = item;
         return entry;
       }));
+    };
+
+    const renderLiveDecision = async () => {
+      liveButton.disabled = true;
+      results.hidden = true;
+      status.textContent = `Checking ${token.value || "the selected crawler"} against the public page …`;
+      try {
+        const normalized = normalizePublicUrl(liveUrl.value);
+        liveUrl.value = normalized;
+        const report = await runCrawlerCheck(normalized);
+        const selected = report.crawlerMatrix.find((crawler) =>
+          crawler.crawlerName.toLowerCase() === token.value.trim().toLowerCase() ||
+          crawler.crawlerId.toLowerCase() === token.value.trim().toLowerCase(),
+        );
+        const state = selected?.state ?? "unknown";
+        document.querySelector("#robots-decision")!.textContent = state === "blocked" ? "DISALLOWED" : state === "allowed" || state === "no_rule" ? "ALLOWED" : "UNKNOWN";
+        document.querySelector("#robots-reason")!.textContent = selected
+          ? `${selected.crawlerName}: ${state === "no_rule" ? "no specific blocking rule was observed" : `crawler access is ${state}`}.`
+          : "The selected crawler was not present in the live crawler matrix.";
+        setList("#robots-evidence", [
+          `Checked page: ${report.fetchFacts.finalUrl}`,
+          `Page response: ${report.fetchFacts.status ?? "unknown"}`,
+          `Crawler token: ${token.value}`,
+          `Observed robots state: ${state}`,
+        ]);
+        setList("#robots-boundaries", [
+          "This was one protected live fetch, not a request made by the named crawler.",
+          "An allowance does not prove that the crawler will visit, index or cite the page.",
+          "Firewall behavior can differ by IP, user-agent and time.",
+        ]);
+        document.querySelector("#robots-observation-time")!.textContent = `CHECKED ${new Date().toISOString()}`;
+        results.hidden = false;
+        status.textContent = `Live crawler-rule check complete: ${state}.`;
+      } catch (error) {
+        status.textContent = error instanceof GatewayError && error.code === "VALIDATION_INVALID_INPUT"
+          ? "Enter a public domain or HTTP(S) URL, for example contextter.com."
+          : "The protected live check could not be completed. You can still test pasted robots.txt rules locally.";
+      } finally {
+        liveButton.disabled = false;
+      }
     };
 
     const test = () => {
@@ -136,19 +194,31 @@ Allow: /private/preview/`;
 
     document.querySelector("#load-robots-sample")!.addEventListener("click", () => {
       source.value = sample;
-      token.value = "ExampleBot";
+      token.value = "OAI-SearchBot";
       target.value = "/private/preview/report";
       status.textContent = "Sample rules loaded locally.";
       source.focus();
     });
     document.querySelector("#clear-robots")!.addEventListener("click", () => {
       source.value = "";
-      token.value = "ExampleBot";
+      token.value = "OAI-SearchBot";
       target.value = "/";
       results.hidden = true;
       status.textContent = "Local input cleared.";
       source.focus();
     });
     document.querySelector("#test-robots")!.addEventListener("click", test);
+    liveButton.addEventListener("click", renderLiveDecision);
+    document.querySelectorAll<HTMLButtonElement>("[data-robots-token]").forEach((button) => {
+      button.addEventListener("click", () => {
+        token.value = button.dataset.robotsToken ?? "";
+        document.querySelectorAll<HTMLButtonElement>("[data-robots-token]").forEach((item) => {
+          const selected = item === button;
+          item.classList.toggle("is-selected", selected);
+          item.setAttribute("aria-pressed", String(selected));
+        });
+        status.textContent = `${token.value} selected. Enter a public URL for a live check or paste robots.txt below.`;
+      });
+    });
   </script>
 </BaseLayout>

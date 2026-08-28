@@ -11,7 +11,7 @@ import PageLead from "../components/PageLead.astro";
   <section class="content-grid">
     <article class="prose">
       <h2>Current processing boundary</h2>
-      <p>The Log File Inspector, Response Inspector, Redirect Chain tool, Robots Rule Tester, and IP Address Check run in your browser. They do not upload the submitted text or file. The crawler check is the explicit exception: it sends one public URL to the protected gateway described below.</p>
+      <p>The Log File Inspector and IP Address Check run in your browser. Pasted response headers, redirect blocks and robots.txt rules also stay local. The main crawler check and the optional public-URL modes in the Response Inspector, Redirect Chain tool and Robots Rule Tester send one public URL to the protected gateway described below.</p>
       <p>Browser-local processing reduces exposure, but it does not make unsafe input harmless. Do not paste confidential logs into any device or browser you do not control. Results remain an interpretation of the supplied material—not proof of live server behavior.</p>
 
       <h2>Hosting boundary</h2>
@@ -27,7 +27,7 @@ import PageLead from "../components/PageLead.astro";
       <p>A question the current evidence cannot answer: live DNS, the final redirect hop, rendered DOM, current index state, precise location, identity, or future behavior.</p>
 
       <h2>Live crawler check and safety gates</h2>
-      <p>AnalyseSpider exposes one tightly bounded server-side URL check. It uses a dedicated gateway operation and does not enqueue the Contextter Site Audit worker. The live production container is limited to 0.5 CPU and 256 MB RAM; the AnalyseSpider scope allows one concurrent run, six runs per ten minutes, and 30 per 24 hours for one pseudonymous client.</p>
+      <p>AnalyseSpider exposes one tightly bounded server-side URL-check operation through several interfaces. It uses a dedicated gateway operation and does not enqueue the Contextter Site Audit worker. The live production container is limited to 0.5 CPU and 256 MB RAM; the AnalyseSpider scope allows one concurrent run, six runs per ten minutes, and 30 per 24 hours for one pseudonymous client.</p>
       <p>The public fetch path enforces all of the following:</p>
       <ul>
         <li>private, loopback, link-local, metadata, and internal DNS blocking;</li>

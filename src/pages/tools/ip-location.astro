@@ -3,17 +3,17 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import ToolBoundary from "../../components/ToolBoundary.astro";
 ---
 <BaseLayout
-  title="IP Address Check — AnalyseSpider"
-  description="Classify IPv4 and IPv6 address syntax and special-use ranges locally without making location claims."
+  title="IP Range Classifier — AnalyseSpider"
+  description="Classify an IPv4 or IPv6 address copied from a technical log without making location or identity claims."
   canonicalPath="/tools/ip-location"
   bodyClass="tool-page"
 >
   <section class="tool-shell">
     <aside class="tool-sidebar">
-      <h1>IP Address Check</h1>
-      <p>Classify syntax and special-use ranges. An IP address is not a person, street address, or precise location.</p>
+      <h1>IP Range Classifier</h1>
+      <p>This tool helps when a server log contains an unfamiliar address. Paste the IP or the complete log line; AnalyseSpider extracts and classifies it.</p>
       <div class="sidebar-meta">
-        <strong>LOCAL CLASSIFICATION</strong><br />
+        <strong>What it can answer</strong><br />
         IPv4 and IPv6 syntax<br />
         Private / loopback / link-local<br />
         Documentation and multicast ranges<br />
@@ -24,21 +24,27 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
     <div class="tool-main">
       <ToolBoundary />
       <section class="workspace" aria-labelledby="ip-input-heading">
-        <div class="workspace-toolbar"><span class="active">1. ADDRESS</span><span>SYNTAX + RANGE</span><span>NO DATASET CLAIM</span></div>
+        <div class="workspace-toolbar"><span class="active">Address from a log</span><span>Syntax and range</span><span>No location dataset</span></div>
         <div class="workspace-content">
           <h2 id="ip-input-heading" class="visually-hidden">IP address input</h2>
-          <label for="ip-input">IPv4 or IPv6 address</label>
-          <input id="ip-input" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="192.0.2.10" />
+          <div class="tool-question"><strong>What do you want to understand?</strong><p>Use a preset to see the difference, or paste one line from a server, CDN or firewall log.</p></div>
+          <div class="tool-presets" aria-label="IP examples">
+            <button type="button" data-ip-preset="192.168.1.20"><strong>Private network</strong><span>Common inside a home or company network</span></button>
+            <button type="button" data-ip-preset='66.249.66.1 - - [12/May/2025:10:15:05 +0000] "GET /robots.txt HTTP/1.1" 200 512 "-" "Googlebot/2.1"'><strong>IP inside a log line</strong><span>Shows how extraction from a request line works</span></button>
+            <button type="button" data-ip-preset="2001:db8::10"><strong>IPv6 example</strong><span>A safe documentation-range address</span></button>
+          </div>
+          <label for="ip-input">IP address or one access-log line</label>
+          <input id="ip-input" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder='66.249.66.1 or a complete line starting with that address' />
           <div class="workspace-actions">
-            <button class="button" id="load-ip-sample" type="button">Use documentation sample</button>
-            <button class="button primary" id="check-ip" type="button">Check locally</button>
+            <button class="button" id="load-ip-sample" type="button">Use a safe example</button>
+            <button class="button primary" id="check-ip" type="button">Classify address</button>
           </div>
           <p class="form-status" id="ip-status" role="status" aria-live="polite">Waiting for an address.</p>
         </div>
       </section>
 
       <section class="result-surface" id="ip-results" hidden aria-labelledby="ip-result-heading">
-        <div class="workspace-toolbar"><span class="active">2. CLASSIFICATION</span><span id="ip-family"></span></div>
+        <div class="workspace-toolbar"><span class="active">What this address is</span><span id="ip-family"></span></div>
         <h2 id="ip-result-heading" class="visually-hidden">IP address classification</h2>
         <div class="diagnostic-output">
           <section class="evidence-group">
@@ -60,8 +66,10 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
 
   <section class="content-grid">
     <div class="prose">
-      <h2>What an IP can—and cannot—tell you</h2>
-      <p>An address can be syntactically valid and belong to a special-purpose range. A separate, dated allocation or commercial geolocation dataset may associate public addresses with a network, country, or approximate area. Those associations can be stale, indirect, shared, proxied, or mapped to an organization rather than a user.</p>
+      <h2>Where do I get an IP address?</h2>
+      <p>You may find one at the start of a server access-log line or in request exports from a CDN, reverse proxy or firewall. You can paste that whole line; the tool picks out the address. If you do not have a log, use the examples to understand the ranges or start with the <a href="/tools/log-file-inspector">Server Log Inspector</a>.</p>
+      <h2>What can the result tell me?</h2>
+      <p>The result distinguishes IPv4 from IPv6 and recognises private, loopback, link-local, documentation, multicast and other special-use ranges. A separate, dated dataset would be needed to associate a public IP with a network or approximate area.</p>
       <p>Use IP geography as a weak routing or analytics signal with fallbacks and user control. Do not treat it as proof of residence, identity, eligibility, fraud, or physical presence.</p>
       <p><a href="/guides/ip-geolocation-data">Read the IP geolocation data guide</a> or use the <a href="/ip2country/country_code.html">country-code reference</a>.</p>
     </div>
@@ -139,14 +147,17 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
     };
 
     const check = () => {
-      const value = input.value.trim();
+      const original = input.value.trim();
+      const candidates = [original, ...original.split(/\s+/).map((part) => part.replace(/^[\["']|[\]"',;]$/g, ""))];
+      const value = candidates.find((candidate) => ipv4Parts(candidate) || isValidV6(candidate)) ?? original;
       const v4 = ipv4Parts(value);
       const classification = v4 ? classifyV4(v4) : isValidV6(value) ? classifyV6(value) : null;
       if (!classification) {
         results.hidden = true;
-        status.textContent = "The input is not recognized as a valid standalone IPv4 or IPv6 address.";
+        status.textContent = "No IPv4 or IPv6 address was found. Paste an address such as 192.168.1.20 or a log line that begins with one.";
         return;
       }
+      input.value = value;
       document.querySelector("#ip-family")!.textContent = classification.family;
       setList("#ip-observed", [`Normalized input: ${classification.normalized}`, `Address family: ${classification.family}`, ...classification.details]);
       setList("#ip-inferred", classification.scope === "Public or unclassified" || classification.scope === "Global or unclassified"
@@ -165,6 +176,18 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
       status.textContent = "Documentation-range sample loaded.";
       input.focus();
     });
+    document.querySelectorAll<HTMLButtonElement>("[data-ip-preset]").forEach((button) => {
+      button.addEventListener("click", () => {
+        input.value = button.dataset.ipPreset ?? "";
+        check();
+      });
+    });
+    const transferredIp = sessionStorage.getItem("analysespider.ip-address");
+    if (transferredIp) {
+      sessionStorage.removeItem("analysespider.ip-address");
+      input.value = transferredIp;
+      check();
+    }
     document.querySelector("#check-ip")!.addEventListener("click", check);
     input.addEventListener("keydown", (event) => {
       if (event.key === "Enter") check();

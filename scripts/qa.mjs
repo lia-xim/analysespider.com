@@ -107,8 +107,10 @@ const approvedPortfolioLinks = new Map([
     ]),
   ],
   ["/guides", new Set(["https://seo-fanout.com/tool/"])],
+  ["/guides/appear-in-ai-search", new Set(["https://ai-fanout.com"])],
   ["/crawlers", new Set(["https://ai-fanout.com/"])],
   ["/de/wissen", new Set(["https://seo-fanout.com/tool/"])],
+  ["/de/wissen/in-ai-suche-erscheinen", new Set(["https://ai-fanout.com/de"])],
   ["/de/crawler", new Set(["https://ai-fanout.com/de"])],
 ]);
 
@@ -507,6 +509,16 @@ for (const state of [
 }
 
 await walk(distDir);
+for (const [route, href] of [
+  ["/", "https://contextter.com/features/site-audit"],
+  ["/de", "https://contextter.com/de/features/site-audit"],
+]) {
+  const homeHtml = await readFile(await findOutput(route), "utf8");
+  pass(
+    homeHtml.includes(`class="contextter-next"`) && homeHtml.includes(`href="${href}"`),
+    `${route} must expose the disclosed Contextter Site Audit link in server-rendered HTML`,
+  );
+}
 const existingRoutes = new Set(routes);
 existingRoutes.add("/404");
 existingRoutes.add("/robots.txt");

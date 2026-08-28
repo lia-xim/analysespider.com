@@ -42,6 +42,8 @@ const copy = de
       learn: "Crawler einfach erklärt",
       learnText: "Was ist ein Crawler und was kann diese Prüfung wirklich zeigen?",
       learnLink: "/de/wissen/crawler-erkennen",
+      redirectHandoff: "Beobachtete Redirect-Kette öffnen",
+      responseHandoff: "HTTP-Antwort genauer ansehen",
     }
   : {
       title: "See what a crawler finds on your page.",
@@ -77,6 +79,8 @@ const copy = de
       learn: "Crawlers in plain language",
       learnText: "What is a crawler, and what can this check actually show?",
       learnLink: "/reference/crawler-verification-methods",
+      redirectHandoff: "Open the observed redirect chain",
+      responseHandoff: "Inspect this HTTP response",
     };
 ---
 <section class="crawler-tool" data-crawler-tool data-locale={locale}>
@@ -163,6 +167,15 @@ const copy = de
         </table>
       </div>
     </details>
+
+    <div class="crawler-evidence-handoffs">
+      <button class="crawler-redirect-handoff" type="button" data-redirect-handoff hidden>
+        {copy.redirectHandoff} <span aria-hidden="true">→</span>
+      </button>
+      <button class="crawler-response-handoff" type="button" data-response-handoff>
+        {copy.responseHandoff} <span aria-hidden="true">→</span>
+      </button>
+    </div>
 
     <p class="crawler-limit-note"><span aria-hidden="true">i</span>{copy.limitations}</p>
 

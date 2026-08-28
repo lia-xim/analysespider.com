@@ -11,10 +11,10 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
   <section class="tool-shell">
     <aside class="tool-sidebar">
       <h1>Log File Inspector</h1>
-      <p>Your file stays in this browser. Parse up to 25,000 lines without uploading a byte.</p>
-      <button class="button sidebar-action" id="load-sample" type="button">Load sample</button>
+      <p>Use this to find visiting bots, failed requests or busy paths. You need a small access-log export from your host, CDN or server.</p>
+      <button class="button sidebar-action" id="load-sample" type="button">Try the example</button>
       <div class="sidebar-meta">
-        <strong>SUPPORTED INPUT</strong><br />
+        <strong>What you need</strong><br />
         Apache Common Log Format<br />
         Apache Combined Log Format<br />
         Nginx Combined Log Format<br />
@@ -26,10 +26,16 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
       <ToolBoundary />
       <section class="workspace" aria-labelledby="input-heading">
         <div class="workspace-toolbar">
-          <span class="active">1. INPUT</span><span>CLIENT-SIDE PARSER</span><span>NO RETENTION</span>
+          <span class="active">Add a log sample</span><span>Local parser</span><span>No retention</span>
         </div>
         <div class="workspace-content">
           <h2 id="input-heading" class="visually-hidden">Access-log input</h2>
+          <div class="tool-question"><strong>What are you looking for?</strong><p>Choose an example to see the answer first. Replace it with your own access log when you are ready.</p></div>
+          <div class="tool-presets" aria-label="Log analysis examples">
+            <button type="button" data-log-preset="crawlers"><strong>Which bots visited?</strong><span>Groups claimed crawler requests</span></button>
+            <button type="button" data-log-preset="status"><strong>Which requests failed?</strong><span>Separates 4xx and 5xx responses</span></button>
+            <button type="button" data-log-preset="paths"><strong>Which paths are busy?</strong><span>Counts frequently requested URLs</span></button>
+          </div>
           <div class="input-grid">
             <div class="file-panel">
               <label for="log-file">Choose log file</label>
@@ -52,7 +58,7 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
 
       <section class="result-surface" id="log-results" aria-labelledby="results-heading" hidden>
         <h2 id="results-heading" class="visually-hidden">Log analysis results</h2>
-        <div class="workspace-toolbar"><span class="active">2. AGGREGATE EVIDENCE</span><button class="button" id="export-log-evidence" type="button" disabled>Export evidence JSON</button></div>
+        <div class="workspace-toolbar"><span class="active">What the sample contains</span><button class="button" id="export-log-evidence" type="button" disabled>Export evidence JSON</button></div>
         <div class="result-tabs" role="tablist" aria-label="Result views">
           <button id="tab-overview" role="tab" aria-selected="true" aria-controls="panel-overview">Overview</button>
           <button id="tab-crawlers" role="tab" aria-selected="false" aria-controls="panel-crawlers">Crawlers</button>
@@ -95,8 +101,19 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
         <div id="panel-paths" class="result-panel" role="tabpanel" aria-labelledby="tab-paths" hidden>
           <div class="table-wrap"><table><thead><tr><th>#</th><th>Request path</th><th>Requests</th><th>Share</th></tr></thead><tbody id="path-rows"></tbody></table></div>
         </div>
+        <div class="workspace-actions result-panel"><button class="button" id="classify-log-ip" type="button" hidden>Classify the first observed IP</button></div>
       </section>
     </div>
+  </section>
+
+  <section class="content-grid">
+    <div class="prose">
+      <h2>Where do server logs come from?</h2>
+      <p>Your web server, hosting platform, CDN or firewall may record one line for each request. A line normally contains an IP address, time, path, status code and user-agent. Look for “access logs”, “request logs” or “HTTP logs”. If you cannot export them, ask the person who manages the hosting for a short Apache- or Nginx-style sample.</p>
+      <h2>What this tool can answer</h2>
+      <p>It counts crawler names, errors and frequently requested paths. It does not prove that a claimed bot is genuine: user-agent text can be copied. Use the <a href="/tools/ip-location">IP Range Classifier</a> as a first range check, then follow the bot operator's verification procedure when identity matters.</p>
+    </div>
+    <aside class="side-note"><h3>No log access yet?</h3><p>Start with the <a href="/tools/crawler-view">live URL check</a>. This log tool becomes useful after you can export request data from your host or CDN.</p></aside>
   </section>
 
   <script>
@@ -127,7 +144,9 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
     const statusMessage = document.querySelector<HTMLElement>("#log-status")!;
     const results = document.querySelector<HTMLElement>("#log-results")!;
     const exportButton = document.querySelector<HTMLButtonElement>("#export-log-evidence")!;
+    const classifyIpButton = document.querySelector<HTMLButtonElement>("#classify-log-ip")!;
     let latestEvidence: Record<string, unknown> | null = null;
+    let firstObservedIp: string | null = null;
 
     const crawlerRules: Array<[RegExp, string]> = [
       [/googlebot/i, "Googlebot"],
@@ -208,6 +227,8 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
         topPaths: pathCounts.slice(0, 100).map(([path, count]) => ({ path, requests: count })),
         unknowns: ["Crawler identity was not verified.", "Indexing, rendering, origin ownership, and root cause were not checked."],
       };
+      firstObservedIp = parsed[0]?.ip ?? null;
+      classifyIpButton.hidden = firstObservedIp == null;
       exportButton.disabled = false;
 
       document.querySelector("#metric-requests")!.textContent = total.toLocaleString();
@@ -270,11 +291,21 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
       input.focus();
     });
 
+    document.querySelectorAll<HTMLButtonElement>("[data-log-preset]").forEach((button) => {
+      button.addEventListener("click", () => {
+        input.value = sample;
+        analyse();
+        document.querySelector<HTMLButtonElement>(`#tab-${button.dataset.logPreset}`)?.click();
+      });
+    });
+
     document.querySelector("#clear-log")!.addEventListener("click", () => {
       input.value = "";
       file.value = "";
       results.hidden = true;
       latestEvidence = null;
+      firstObservedIp = null;
+      classifyIpButton.hidden = true;
       exportButton.disabled = true;
       statusMessage.textContent = "Local input cleared.";
       input.focus();
@@ -304,6 +335,12 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
       link.click();
       URL.revokeObjectURL(url);
       statusMessage.textContent = "Aggregate evidence exported locally. Raw log lines were excluded.";
+    });
+
+    classifyIpButton.addEventListener("click", () => {
+      if (!firstObservedIp) return;
+      sessionStorage.setItem("analysespider.ip-address", firstObservedIp);
+      window.location.assign("/tools/ip-location?from=log-inspector");
     });
 
     document.querySelectorAll<HTMLButtonElement>('[role="tab"]').forEach((tab) => {
