@@ -10,144 +10,66 @@ const { locale } = Astro.props;
 const de = locale === "de";
 const copy = de
   ? {
-      title: "Welches technische Problem möchtest du gerade prüfen?",
-      intro:
-        "Du brauchst kein komplettes Audit für jede Frage. Manchmal reicht eine URL. Manchmal hast du bereits einen Logauszug, eine robots.txt-Datei oder ein paar HTTP-Header. Wähle das Werkzeug nach dem Material, das vor dir liegt.",
-      liveLabel: "Du hast nur eine Domain oder URL",
-      liveTitle: "Starte mit dem Live-Check",
+      title: "Technische SEO-Tools",
+      intro: "Prüfe eine URL, eine robots.txt-Regel oder einen Server-Log. Wähle einfach das passende Werkzeug.",
+      liveTitle: "Crawler-Analyse-Tool",
       liveText:
-        "AnalyseSpider ruft genau eine öffentliche Seite über den geschützten Gateway ab. Du siehst, ob die Seite erreichbar ist, welche Crawler-Regeln gelten und ob im ersten HTML verständlicher Hauptinhalt steckt.",
-      liveInput: "Eine Domain wie example.com oder eine vollständige URL",
-      liveResult: "Abruf, Weiterleitungen, robots.txt, Indexierungsdirektiven und Hauptinhalt",
-      liveAction: "URL jetzt prüfen",
-      localHeading: "Wähle das passende Werkzeug",
-      localIntro:
-        "Redirects, HTTP und robots.txt funktionieren direkt mit einer URL. Für Server-Logs und IP-Adressen gibt es verständliche Beispiele.",
-      inputLabel: "Du bringst mit",
-      resultLabel: "Du bekommst",
-      localNote: "Live-Abrufe: Ergebnis höchstens 1 Stunde im Cache · eingefügte Logs und technische Daten: nur im Browser",
-      englishNote: "",
+        "Sieh, ob eine öffentliche Seite erreichbar ist, welche Crawler-Regeln gelten und was im ersten HTML steht.",
+      liveAction: "Crawler-Analyse starten",
+      localHeading: "Weitere Tools",
+      openTool: "Tool öffnen",
       tools: [
         {
-          question: "Ich habe einen Server- oder CDN-Logauszug",
-          title: "Welche Bots und Fehler tauchen in den Logs auf?",
-          text: "Füge einige Apache- oder Nginx-Zeilen ein. Du siehst Bots, Fehler und häufige Pfade. Wichtige Bot-Identitäten musst du anschließend verifizieren.",
-          input: "Apache- oder Nginx-Access-Log, bis 8 MB oder 25.000 Zeilen",
-          result: "Bot-Kandidaten, Statusverteilung, häufige Pfade und JSON-Export ohne Rohzeilen",
+          title: "Crawler-Log-Analyse",
           href: "/de/tools/server-log-analyse",
-          action: "Server-Log prüfen",
-          tone: "wide",
         },
         {
-          question: "Ich habe Header oder HTML kopiert",
-          title: "Was sagt diese HTTP-Antwort wirklich?",
-          text: "Gib eine URL ein oder füge Header und HTML ein. Das Ergebnis trennt Beobachtungen von Dingen, die die Antwort nicht beweist.",
-          input: "Eine Domain oder URL — alternativ kopierte Header und HTML",
-          result: "Beobachtete Signale, vorsichtige Ableitungen und weiterhin unbekannte Punkte",
+          title: "HTTP-Antwort prüfen",
           href: "/de/tools/http-antwort",
-          action: "HTTP-Antwort lesen",
-          tone: "standard",
         },
         {
-          question: "Ich habe mehrere Weiterleitungen",
-          title: "Wo endet die Redirect-Kette?",
-          text: "Gib eine URL ein. AnalyseSpider folgt den öffentlichen Weiterleitungen und zeigt jeden beobachteten Hop.",
-          input: "Eine Domain oder URL — alternativ bis zu zwölf Antwortblöcke",
-          result: "Eine Hop-Tabelle, Auffälligkeiten und ein kleiner Evidence-Export",
+          title: "Redirect-Kette prüfen",
           href: "/de/tools/weiterleitungskette",
-          action: "Redirect-Kette bauen",
-          tone: "standard",
         },
         {
-          question: "Ich will eine robots.txt-Regel nachstellen",
-          title: "Darf dieser Crawler genau diesen Pfad abrufen?",
-          text: "Wähle ChatGPT, OpenAI, Claude oder Google. Prüfe eine öffentliche URL oder stelle eigene Regeln lokal nach.",
-          input: "Eine öffentliche URL und ein Crawler-Preset — alternativ eigene robots.txt-Regeln",
-          result: "Allow/Disallow-Entscheidung mit der tatsächlich ausgewählten Regel",
+          title: "robots.txt-Tester",
           href: "/de/tools/robots-regel-test",
-          action: "robots.txt-Regel testen",
-          tone: "compact",
         },
         {
-          question: "In einem Log steht eine unbekannte IP-Adresse",
-          title: "Ist diese IP öffentlich, privat oder reserviert?",
-          text: "Füge eine IP oder eine ganze Logzeile ein. Das Tool erkennt den Adressbereich — nicht den Standort oder eine Person.",
-          input: "Eine einzelne IPv4- oder IPv6-Adresse aus einem technischen Log",
-          result: "Adressfamilie und Bereich — aber keinen Menschen, Wohnort, Provider oder Kartenpunkt",
+          title: "IP-Adressen-Check",
           href: "/de/tools/ip-adresse",
-          action: "IP-Bereich einordnen",
-          tone: "ip",
         },
       ],
     }
   : {
-      title: "What technical problem are you trying to answer?",
-      intro:
-        "You do not need a full audit for every question. Sometimes you only have a URL. Sometimes a log sample, a robots.txt file or a few HTTP headers are already in front of you. Pick the tool that matches the evidence you have.",
-      liveLabel: "You only have a domain or URL",
-      liveTitle: "Start with the live check",
+      title: "Technical SEO tools",
+      intro: "Check a URL, a robots.txt rule or a server log. Choose the tool that matches the job.",
+      liveTitle: "Crawler Analysis Tool",
       liveText:
-        "AnalyseSpider fetches one public page through the protected gateway. It shows whether the page responds, which crawler rules apply and whether the initial HTML contains understandable main content.",
-      liveInput: "A domain such as example.com or a complete URL",
-      liveResult: "Fetch, redirects, robots.txt, indexing directives and main content",
-      liveAction: "Check a URL now",
-      localHeading: "Choose the focused tool you need",
-      localIntro:
-        "Redirect, HTTP and robots checks work from a URL. Server-log and IP tools include examples you can try first.",
-      inputLabel: "Bring",
-      resultLabel: "Get",
-      localNote: "Live fetches: results cached for no more than 1 hour · pasted logs and technical evidence: browser only",
-      englishNote: "",
+        "See whether a public page responds, which crawler rules apply and what appears in its initial HTML.",
+      liveAction: "Start crawler analysis",
+      localHeading: "More tools",
+      openTool: "Open tool",
       tools: [
         {
-          question: "I have a server or CDN log sample",
-          title: "Which bots and errors appear in the log?",
-          text: "Paste a few Apache or Nginx lines. See claimed bots, errors and busy paths. Verify important bot identities afterwards.",
-          input: "Apache or Nginx access log, up to 8 MB or 25,000 lines",
-          result: "Bot candidates, status distribution, common paths and a raw-line-free JSON export",
+          title: "Crawler Log Analyzer",
           href: "/tools/log-file-inspector",
-          action: "Inspect a server log",
-          tone: "wide",
         },
         {
-          question: "I copied headers or HTML",
-          title: "What does this HTTP response actually establish?",
-          text: "Enter a URL, or paste headers and HTML. The result separates observed facts from what the response cannot prove.",
-          input: "A domain or URL — or copied headers and HTML",
-          result: "Observed signals, cautious inferences and the facts that remain unknown",
+          title: "HTTP Response Checker",
           href: "/tools/url-inspector",
-          action: "Read an HTTP response",
-          tone: "standard",
         },
         {
-          question: "I have several redirects",
-          title: "Where does this redirect chain end?",
-          text: "Enter one URL. AnalyseSpider follows the public redirects and shows every observed hop.",
-          input: "A domain or URL — or up to twelve captured response blocks",
-          result: "A hop table, specific findings and a small evidence export",
+          title: "Redirect Chain Checker",
           href: "/tools/redirect-chain",
-          action: "Build a redirect chain",
-          tone: "standard",
         },
         {
-          question: "I want to reproduce a robots.txt decision",
-          title: "May this crawler fetch this exact path?",
-          text: "Choose ChatGPT, OpenAI, Claude or Google. Check a public URL or reproduce your own rules locally.",
-          input: "A public URL and crawler preset — or your own robots.txt rules",
-          result: "An Allow/Disallow decision with the rule that actually won",
+          title: "Robots.txt Tester",
           href: "/tools/robots-rule-tester",
-          action: "Test a robots.txt rule",
-          tone: "compact",
         },
         {
-          question: "A log contains an unfamiliar IP address",
-          title: "Is this IP public, private or reserved?",
-          text: "Paste an IP or a complete log line. The tool classifies the address range — not a location or person.",
-          input: "One IPv4 or IPv6 address from technical evidence",
-          result: "Address family and range — not a person, home, provider or map pin",
+          title: "IP Address Checker",
           href: "/tools/ip-location",
-          action: "Classify an IP range",
-          tone: "ip",
         },
       ],
     };
@@ -160,33 +82,20 @@ const copy = de
 
 <section class="tool-hub-live" aria-labelledby="live-tool-heading">
   <div>
-    <span>{copy.liveLabel}</span>
     <h2 id="live-tool-heading">{copy.liveTitle}</h2>
     <p>{copy.liveText}</p>
   </div>
-  <dl>
-    <div><dt>{copy.inputLabel}</dt><dd>{copy.liveInput}</dd></div>
-    <div><dt>{copy.resultLabel}</dt><dd>{copy.liveResult}</dd></div>
-  </dl>
   <a class="button primary" href={de ? "/de/tools/crawler-sicht" : "/tools/crawler-view"}>{copy.liveAction}</a>
 </section>
 
 <section class="tool-hub-local" aria-labelledby="local-tools-heading">
-  <header>
-    <div><h2 id="local-tools-heading">{copy.localHeading}</h2><p>{copy.localIntro}</p></div>
-    <small>{copy.localNote}</small>
-  </header>
+  <h2 id="local-tools-heading">{copy.localHeading}</h2>
   <div class="tool-directory">
     {copy.tools.map((tool) => (
-      <article class={`tool-directory-item tone-${tool.tone}`}>
-        <div class="tool-directory-question">{tool.question}</div>
-        <div class="tool-directory-copy">
-          <h3>{tool.title}</h3>
-          <p>{tool.text}</p>
-          <a href={tool.href}>{tool.action} <ArrowIcon /></a>
-          {de && copy.englishNote && <small>{copy.englishNote}</small>}
-        </div>
-      </article>
+      <a class="tool-directory-item" href={tool.href}>
+        <h3>{tool.title}</h3>
+        <span>{copy.openTool} <ArrowIcon /></span>
+      </a>
     ))}
   </div>
 </section>

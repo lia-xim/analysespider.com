@@ -65,6 +65,8 @@ Each cluster must remain useful without Contextter and must link tools, workflow
 - German hub: `/de/crawler`
 - Identity detail: `/reference/crawler-user-agents`, `/reference/crawler-verification-methods`
 - Evidence boundary: `/lab/crawler-benchmarks`
+- Diagnostic workflow: `/tools/crawler-view`, `/tools/robots-rule-tester`, `/tools/log-file-inspector` and their German counterparts.
+- Hub order: crawler job -> fetch/process/select boundary -> operator table -> identity evidence -> logs -> focused tools -> technical eligibility.
 - Related AI-answer evidence and page-decision tools may be linked only in the comparison context with common ownership visible.
 - AI-search eligibility guide: `/guides/appear-in-ai-search` and `/de/wissen/in-ai-suche-erscheinen`
 - The guide separates search crawling, training crawling, user-triggered retrieval, index eligibility and later answer selection.

@@ -4,7 +4,7 @@ import chromedriver from "chromedriver";
 
 const baseUrl = process.env.ANALYSESPIDER_PREVIEW_URL ?? "http://127.0.0.1:4321";
 const chromePath = process.env.CHROME_PATH ?? "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
-const routes = ["/", "/tools", "/de", "/de/tools/http-antwort", "/lab/crawler-benchmarks", "/blog/how-to-find-search-bots-in-server-logs"];
+const routes = ["/", "/tools", "/crawlers", "/de", "/de/crawler", "/de/tools/http-antwort", "/lab/crawler-benchmarks", "/blog/how-to-find-search-bots-in-server-logs"];
 
 const runAtViewport = async (width, height) => {
   const options = new chrome.Options()
