@@ -1,3 +1,5 @@
+import { normalizeUrlInput } from "./public-url.mjs";
+
 const GATEWAY_BASE_URL = "https://tools.contextter.com/free-tools/v1";
 const TOOL_PATH = "analysespider-crawler-view";
 const TOOL_SCOPE = "tool_analysespider_crawler";
@@ -205,22 +207,12 @@ function installDispatcher(): void {
   dispatcherInstalled = true;
 }
 
-function normalizePublicUrl(raw: string): string {
-  const url = new URL(raw.trim());
-  if (url.protocol !== "http:" && url.protocol !== "https:") {
+export function normalizePublicUrl(raw: string): string {
+  try {
+    return normalizeUrlInput(raw);
+  } catch {
     throw new GatewayError("VALIDATION_INVALID_INPUT");
   }
-  if (url.username !== "" || url.password !== "" || url.hash !== "") {
-    throw new GatewayError("VALIDATION_INVALID_INPUT");
-  }
-  url.hostname = url.hostname.toLowerCase();
-  if (
-    (url.protocol === "http:" && url.port === "80") ||
-    (url.protocol === "https:" && url.port === "443")
-  ) {
-    url.port = "";
-  }
-  return url.toString();
 }
 
 async function digest(value: string): Promise<string> {

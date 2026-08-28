@@ -1,8 +1,37 @@
 import { access, readFile, readdir } from "node:fs/promises";
 import { extname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
+import { normalizeUrlInput } from "../src/lib/public-url.mjs";
 
 const dist = new URL("../dist/", import.meta.url);
+
+const publicUrlCases = [
+  ["matthiasramahi.de", "https://matthiasramahi.de/"],
+  ["www.matthiasramahi.de", "https://www.matthiasramahi.de/"],
+  [
+    "matthiasramahi.de/impressum.html?test=1#abschnitt",
+    "https://matthiasramahi.de/impressum.html?test=1",
+  ],
+  [
+    "http://MatthiasRamahi.de:80/kontakt",
+    "http://matthiasramahi.de/kontakt",
+  ],
+  ["//matthiasramahi.de/portfolio", "https://matthiasramahi.de/portfolio"],
+];
+for (const [input, expected] of publicUrlCases) {
+  if (normalizeUrlInput(input) !== expected) {
+    throw new Error(`URL normalization mismatch for ${input}`);
+  }
+}
+for (const input of ["", "ftp://matthiasramahi.de/file", "https://user:secret@example.com/"]) {
+  let rejected = false;
+  try {
+    normalizeUrlInput(input);
+  } catch {
+    rejected = true;
+  }
+  if (!rejected) throw new Error(`Unsafe URL input was accepted: ${input}`);
+}
 const distDir = fileURLToPath(dist);
 const origin = "https://analysespider.com";
 const { canonicalRoutes: routes, sitemapRoutes } = await import(

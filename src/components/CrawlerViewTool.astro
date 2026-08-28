@@ -11,11 +11,11 @@ const copy = de
   ? {
       title: "Sieh, was ein Crawler auf deiner Seite findet.",
       intro:
-        "Prüfe eine öffentliche URL. Du bekommst vier klare Antworten und konkrete nächste Schritte.",
-      label: "Öffentliche URL",
-      placeholder: "https://example.com/seite",
+        "Prüfe eine öffentliche Domain oder URL. Du bekommst vier klare Antworten und konkrete nächste Schritte.",
+      label: "Öffentliche Domain oder URL",
+      placeholder: "example.com oder https://example.com/seite",
       submit: "URL prüfen",
-      note: "Eine URL pro Prüfung · 30 Prüfungen je 24 Stunden · automatischer Missbrauchsschutz",
+      note: "https:// ist optional · 30 Prüfungen je 24 Stunden · automatischer Missbrauchsschutz",
       checking: "Die Seite wird sicher abgerufen und geprüft …",
       errorHeading: "Die Prüfung konnte nicht abgeschlossen werden.",
       actions: "Das solltest du als Nächstes tun",
@@ -35,7 +35,7 @@ const copy = de
         "AnalyseSpider, Contextter und AI Fanout werden von Matthias Ramahi betrieben und sind keine unabhängigen Empfehlungen.",
       how: "So funktioniert der Check",
       steps: [
-        ["URL prüfen", "Gib eine öffentliche URL ein und starte die Prüfung."],
+        ["URL prüfen", "Gib eine öffentliche Domain oder URL ein und starte die Prüfung."],
         ["Crawler-Antwort lesen", "Wir holen die Serverantwort wie ein einfacher HTTP-Crawler und ordnen sie ein."],
         ["Nächste Schritte umsetzen", "Du erhältst wenige konkrete Hinweise statt eines erfundenen Gesamtscores."],
       ],
@@ -46,11 +46,11 @@ const copy = de
   : {
       title: "See what a crawler finds on your page.",
       intro:
-        "Check one public URL. You get four clear answers and concrete next steps.",
-      label: "Public URL",
-      placeholder: "https://example.com/page",
+        "Check one public domain or URL. You get four clear answers and concrete next steps.",
+      label: "Public domain or URL",
+      placeholder: "example.com or https://example.com/page",
       submit: "Check URL",
-      note: "One URL per check · 30 checks per 24 hours · automatic abuse protection",
+      note: "https:// is optional · 30 checks per 24 hours · automatic abuse protection",
       checking: "Fetching and checking the page safely …",
       errorHeading: "The check could not be completed.",
       actions: "What to do next",
@@ -70,7 +70,7 @@ const copy = de
         "AnalyseSpider, Contextter and AI Fanout are operated by Matthias Ramahi and are not independent recommendations.",
       how: "How the check works",
       steps: [
-        ["Check a URL", "Enter one public URL and start the check."],
+        ["Check a URL", "Enter one public domain or URL and start the check."],
         ["Read the crawler response", "We fetch the server response like a simple HTTP crawler and explain it."],
         ["Act on the result", "You get a few concrete pointers instead of an invented overall score."],
       ],
@@ -91,7 +91,7 @@ const copy = de
       <input
         id={`crawler-url-${locale}`}
         name="url"
-        type="url"
+        type="text"
         inputmode="url"
         autocomplete="url"
         required

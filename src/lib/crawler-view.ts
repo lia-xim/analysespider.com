@@ -1,5 +1,6 @@
 import {
   GatewayError,
+  normalizePublicUrl,
   runCrawlerCheck,
   type CrawlerReport,
   type EligibilityState,
@@ -47,7 +48,7 @@ const messages = {
     links: "Links",
     error: {
       VALIDATION_INVALID_INPUT:
-        "Bitte gib eine vollständige öffentliche http- oder https-URL ein.",
+        "Bitte gib eine öffentliche Domain oder HTTP-/HTTPS-URL ein.",
       RATE_LIMITED:
         "Das kostenlose Prüflimit ist erreicht. Bitte versuche es später erneut.",
       TOOL_BUSY:
@@ -99,7 +100,7 @@ const messages = {
     chars: "characters",
     links: "links",
     error: {
-      VALIDATION_INVALID_INPUT: "Enter a complete public http or https URL.",
+      VALIDATION_INVALID_INPUT: "Enter a public domain or HTTP/HTTPS URL.",
       RATE_LIMITED:
         "The free check limit has been reached. Please try again later.",
       TOOL_BUSY:
@@ -440,6 +441,14 @@ function mount(root: Element): void {
   )
     return;
 
+  input.addEventListener("blur", () => {
+    try {
+      input.value = normalizePublicUrl(input.value);
+    } catch {
+      // Keep the original value so submit can show the localised validation error.
+    }
+  });
+
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (!input.reportValidity()) return;
@@ -448,7 +457,9 @@ function mount(root: Element): void {
     results?.setAttribute("hidden", "");
     error?.setAttribute("hidden", "");
     try {
-      const report = await runCrawlerCheck(input.value);
+      const normalizedUrl = normalizePublicUrl(input.value);
+      input.value = normalizedUrl;
+      const report = await runCrawlerCheck(normalizedUrl);
       renderStatuses(root, report, locale);
       renderActions(root, report, locale);
       renderDetails(root, report, locale);
