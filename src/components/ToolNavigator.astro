@@ -1,0 +1,28 @@
+---
+import type { Locale } from "../data/i18n";
+
+interface Props {
+  current: string;
+  locale?: Locale;
+}
+
+const { current, locale = "en" } = Astro.props;
+const de = locale === "de";
+const tools = [
+  { href: de ? "/de/tools/crawler-sicht" : "/tools/crawler-view", label: de ? "URL-Check" : "URL check" },
+  { href: "/tools/redirect-chain", label: "Redirects" },
+  { href: "/tools/url-inspector", label: "HTTP" },
+  { href: "/tools/robots-rule-tester", label: "robots.txt" },
+  { href: "/tools/log-file-inspector", label: de ? "Server-Logs" : "Server logs" },
+  { href: "/tools/ip-location", label: de ? "IP prüfen" : "IP check" },
+];
+---
+
+<nav class="tool-navigator" aria-label={de ? "Zwischen Werkzeugen wechseln" : "Switch between tools"}>
+  <a class="tool-navigator-all" href={de ? "/de/tools" : "/tools"}>{de ? "Alle Tools" : "All tools"}</a>
+  <div>
+    {tools.map((tool) => (
+      <a href={tool.href} aria-current={current === tool.href ? "page" : undefined}>{tool.label}</a>
+    ))}
+  </div>
+</nav>

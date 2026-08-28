@@ -1,5 +1,6 @@
 ---
 import CrawlerViewTool from "../../../components/CrawlerViewTool.astro";
+import ToolNavigator from "../../../components/ToolNavigator.astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 ---
 <BaseLayout
@@ -10,5 +11,6 @@ import BaseLayout from "../../../layouts/BaseLayout.astro";
   lang="de"
   bodyClass="crawler-tool-page"
 >
+  <ToolNavigator current="/de/tools/crawler-sicht" locale="de" />
   <CrawlerViewTool locale="de" />
 </BaseLayout>

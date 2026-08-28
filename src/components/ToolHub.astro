@@ -20,18 +20,18 @@ const copy = de
       liveInput: "Eine Domain wie example.com oder eine vollständige URL",
       liveResult: "Abruf, Weiterleitungen, robots.txt, Indexierungsdirektiven und Hauptinhalt",
       liveAction: "URL jetzt prüfen",
-      localHeading: "Du hast schon technische Daten",
+      localHeading: "Wähle das passende Werkzeug",
       localIntro:
-        "Jedes Werkzeug beginnt mit Beispielen und einer einfachen Frage. Redirect-, HTTP- und robots.txt-Prüfung akzeptieren auch direkt eine öffentliche URL. Eigene Logs und IP-Daten bleiben im Browser.",
+        "Redirects, HTTP und robots.txt funktionieren direkt mit einer URL. Für Server-Logs und IP-Adressen gibt es verständliche Beispiele.",
       inputLabel: "Du bringst mit",
       resultLabel: "Du bekommst",
-      localNote: "Öffentliche URLs: geschützter Live-Abruf · eingefügte Logs und technische Daten: nur im Browser",
+      localNote: "Live-Abrufe: Ergebnis höchstens 1 Stunde im Cache · eingefügte Logs und technische Daten: nur im Browser",
       englishNote: "Die Oberfläche dieses Werkzeugs ist derzeit Englisch.",
       tools: [
         {
           question: "Ich habe einen Server- oder CDN-Logauszug",
           title: "Welche Bots und Fehler tauchen in den Logs auf?",
-          text: "Lade eine kleine Apache- oder Nginx-Datei hoch oder füge einige Zeilen ein. Das Tool zählt angegebene Crawler, Statuscodes und häufige Pfade. Ein User-Agent bleibt zunächst eine Behauptung — wichtige Bots musst du anschließend verifizieren.",
+          text: "Füge einige Apache- oder Nginx-Zeilen ein. Du siehst Bots, Fehler und häufige Pfade. Wichtige Bot-Identitäten musst du anschließend verifizieren.",
           input: "Apache- oder Nginx-Access-Log, bis 8 MB oder 25.000 Zeilen",
           result: "Bot-Kandidaten, Statusverteilung, häufige Pfade und JSON-Export ohne Rohzeilen",
           href: "/tools/log-file-inspector",
@@ -41,7 +41,7 @@ const copy = de
         {
           question: "Ich habe Header oder HTML kopiert",
           title: "Was sagt diese HTTP-Antwort wirklich?",
-          text: "Gib einfach eine öffentliche URL ein. AnalyseSpider sammelt die wichtigsten Antwortsignale. Fortgeschrittene Nutzer können stattdessen kopierte Header und HTML einfügen.",
+          text: "Gib eine URL ein oder füge Header und HTML ein. Das Ergebnis trennt Beobachtungen von Dingen, die die Antwort nicht beweist.",
           input: "Eine Domain oder URL — alternativ kopierte Header und HTML",
           result: "Beobachtete Signale, vorsichtige Ableitungen und weiterhin unbekannte Punkte",
           href: "/tools/url-inspector",
@@ -51,7 +51,7 @@ const copy = de
         {
           question: "Ich habe mehrere Weiterleitungen",
           title: "Wo endet die Redirect-Kette?",
-          text: "Gib eine Domain oder URL ein und der geschützte Crawler baut die beobachtete Kette. Bereits kopierte Antwortblöcke lassen sich weiterhin lokal prüfen.",
+          text: "Gib eine URL ein. AnalyseSpider folgt den öffentlichen Weiterleitungen und zeigt jeden beobachteten Hop.",
           input: "Eine Domain oder URL — alternativ bis zu zwölf Antwortblöcke",
           result: "Eine Hop-Tabelle, Auffälligkeiten und ein kleiner Evidence-Export",
           href: "/tools/redirect-chain",
@@ -61,7 +61,7 @@ const copy = de
         {
           question: "Ich will eine robots.txt-Regel nachstellen",
           title: "Darf dieser Crawler genau diesen Pfad abrufen?",
-          text: "Wähle ChatGPT-Suche, OpenAI-Training, Claude oder Google und prüfe deine öffentliche URL. Eigene robots.txt-Regeln kannst du darunter genauer nachstellen.",
+          text: "Wähle ChatGPT, OpenAI, Claude oder Google. Prüfe eine öffentliche URL oder stelle eigene Regeln lokal nach.",
           input: "Eine öffentliche URL und ein Crawler-Preset — alternativ eigene robots.txt-Regeln",
           result: "Allow/Disallow-Entscheidung mit der tatsächlich ausgewählten Regel",
           href: "/tools/robots-rule-tester",
@@ -71,7 +71,7 @@ const copy = de
         {
           question: "In einem Log steht eine unbekannte IP-Adresse",
           title: "Ist diese IP öffentlich, privat oder reserviert?",
-          text: "Dieses Werkzeug ist kein Standortfinder. Es prüft die Schreibweise und erkennt besondere IPv4- und IPv6-Bereiche. Eine IP bekommst du zum Beispiel aus Server-, CDN- oder Firewall-Logs. Wenn du keine IP hast, brauchst du dieses Tool gerade nicht.",
+          text: "Füge eine IP oder eine ganze Logzeile ein. Das Tool erkennt den Adressbereich — nicht den Standort oder eine Person.",
           input: "Eine einzelne IPv4- oder IPv6-Adresse aus einem technischen Log",
           result: "Adressfamilie und Bereich — aber keinen Menschen, Wohnort, Provider oder Kartenpunkt",
           href: "/tools/ip-location",
@@ -91,18 +91,18 @@ const copy = de
       liveInput: "A domain such as example.com or a complete URL",
       liveResult: "Fetch, redirects, robots.txt, indexing directives and main content",
       liveAction: "Check a URL now",
-      localHeading: "You already have technical evidence",
+      localHeading: "Choose the focused tool you need",
       localIntro:
-        "Each tool starts with examples and a plain question. Redirect, HTTP and robots checks also accept a public URL. Your own logs and IP evidence stay in the browser.",
+        "Redirect, HTTP and robots checks work from a URL. Server-log and IP tools include examples you can try first.",
       inputLabel: "Bring",
       resultLabel: "Get",
-      localNote: "Public URLs: protected live fetch · pasted logs and technical evidence: browser only",
+      localNote: "Live fetches: results cached for no more than 1 hour · pasted logs and technical evidence: browser only",
       englishNote: "",
       tools: [
         {
           question: "I have a server or CDN log sample",
           title: "Which bots and errors appear in the log?",
-          text: "Load a small Apache or Nginx file, or paste a few lines. The tool counts claimed crawlers, status codes and common paths. A user-agent remains a claim; verify important bot identities afterwards.",
+          text: "Paste a few Apache or Nginx lines. See claimed bots, errors and busy paths. Verify important bot identities afterwards.",
           input: "Apache or Nginx access log, up to 8 MB or 25,000 lines",
           result: "Bot candidates, status distribution, common paths and a raw-line-free JSON export",
           href: "/tools/log-file-inspector",
@@ -112,7 +112,7 @@ const copy = de
         {
           question: "I copied headers or HTML",
           title: "What does this HTTP response actually establish?",
-          text: "Enter a public URL and AnalyseSpider collects the important response signals. Advanced users can paste headers and HTML instead.",
+          text: "Enter a URL, or paste headers and HTML. The result separates observed facts from what the response cannot prove.",
           input: "A domain or URL — or copied headers and HTML",
           result: "Observed signals, cautious inferences and the facts that remain unknown",
           href: "/tools/url-inspector",
@@ -122,7 +122,7 @@ const copy = de
         {
           question: "I have several redirects",
           title: "Where does this redirect chain end?",
-          text: "Enter a domain or URL and the protected crawler builds the observed chain. Captured response blocks can still be inspected locally.",
+          text: "Enter one URL. AnalyseSpider follows the public redirects and shows every observed hop.",
           input: "A domain or URL — or up to twelve captured response blocks",
           result: "A hop table, specific findings and a small evidence export",
           href: "/tools/redirect-chain",
@@ -132,7 +132,7 @@ const copy = de
         {
           question: "I want to reproduce a robots.txt decision",
           title: "May this crawler fetch this exact path?",
-          text: "Choose ChatGPT search, OpenAI training, Claude or Google and check your public URL. Advanced users can reproduce their own robots.txt rules below.",
+          text: "Choose ChatGPT, OpenAI, Claude or Google. Check a public URL or reproduce your own rules locally.",
           input: "A public URL and crawler preset — or your own robots.txt rules",
           result: "An Allow/Disallow decision with the rule that actually won",
           href: "/tools/robots-rule-tester",
@@ -142,7 +142,7 @@ const copy = de
         {
           question: "A log contains an unfamiliar IP address",
           title: "Is this IP public, private or reserved?",
-          text: "This is not a location finder. It validates the syntax and recognises special IPv4 and IPv6 ranges. You might copy an IP from a server, CDN or firewall log. If you do not have one, you probably do not need this tool yet.",
+          text: "Paste an IP or a complete log line. The tool classifies the address range — not a location or person.",
           input: "One IPv4 or IPv6 address from technical evidence",
           result: "Address family and range — not a person, home, provider or map pin",
           href: "/tools/ip-location",
@@ -173,8 +173,7 @@ const copy = de
 
 <section class="tool-hub-local" aria-labelledby="local-tools-heading">
   <header>
-    <h2 id="local-tools-heading">{copy.localHeading}</h2>
-    <p>{copy.localIntro}</p>
+    <div><h2 id="local-tools-heading">{copy.localHeading}</h2><p>{copy.localIntro}</p></div>
     <small>{copy.localNote}</small>
   </header>
   <div class="tool-directory">
@@ -184,10 +183,6 @@ const copy = de
         <div class="tool-directory-copy">
           <h3>{tool.title}</h3>
           <p>{tool.text}</p>
-          <dl>
-            <div><dt>{copy.inputLabel}</dt><dd>{tool.input}</dd></div>
-            <div><dt>{copy.resultLabel}</dt><dd>{tool.result}</dd></div>
-          </dl>
           <a href={tool.href}>{tool.action} <ArrowIcon /></a>
           {de && <small>{copy.englishNote}</small>}
         </div>

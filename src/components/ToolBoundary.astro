@@ -11,7 +11,7 @@ const related = relatedByPath[Astro.url.pathname];
 ---
 <div class:list={["tool-boundary", { compact }]} aria-label="Privacy boundary">
   {hybrid ? (
-    <><span>A URL uses the protected live fetch</span><span aria-hidden="true">·</span><span>Pasted responses stay in this browser</span></>
+    <><span>A URL uses the protected live fetch</span><span aria-hidden="true">·</span><span>Live results may be cached for one hour</span><span aria-hidden="true">·</span><span>Pasted responses stay in this browser</span></>
   ) : (
     <><span>Runs in this browser</span><span aria-hidden="true">·</span><span>Nothing is uploaded</span><span aria-hidden="true">·</span><span>No web request</span></>
   )}

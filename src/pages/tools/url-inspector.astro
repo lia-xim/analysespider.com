@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ToolBoundary from "../../components/ToolBoundary.astro";
+import ToolNavigator from "../../components/ToolNavigator.astro";
 ---
 <BaseLayout
   title="HTTP Response Inspector — AnalyseSpider"
@@ -24,6 +25,7 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
 
     <div class="tool-main">
       <ToolBoundary hybrid />
+      <ToolNavigator current="/tools/url-inspector" />
       <section class="workspace" aria-labelledby="response-input-heading">
         <div class="workspace-toolbar"><span class="active">Enter a URL or paste the response</span><span>The tool chooses the right mode</span></div>
         <div class="workspace-content">
@@ -221,7 +223,11 @@ content-type: text/html; charset=utf-8`;
       setList("#unknown-list", unknown);
       document.querySelector("#observation-time")!.textContent = `ANALYSED ${new Date().toISOString()}`;
       results.hidden = false;
-      status.textContent = completion;
+      status.textContent = `${completion} The result is open below.`;
+      requestAnimationFrame(() => results.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+        block: "start",
+      }));
     };
 
     const inspect = async () => {
@@ -247,7 +253,9 @@ content-type: text/html; charset=utf-8`;
           status.textContent = "The live check returned no HTTP status. No response evidence was invented.";
           return;
         }
-        inspectPasted("Live response checked through the protected crawler gateway.");
+        inspectPasted(report.fetchFacts.cacheState === "hit"
+          ? "Cached live response loaded. The gateway reuses successful results for no more than one hour."
+          : "Fresh live response checked through the protected crawler gateway.");
       } catch (error) {
         status.textContent = error instanceof GatewayError && error.code === "VALIDATION_INVALID_INPUT"
           ? "Enter a public domain or HTTP(S) URL, for example contextter.com."

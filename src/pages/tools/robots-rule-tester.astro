@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ToolBoundary from "../../components/ToolBoundary.astro";
+import ToolNavigator from "../../components/ToolNavigator.astro";
 ---
 <BaseLayout
   title="Robots.txt Rule Tester — AnalyseSpider"
@@ -24,6 +25,7 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
 
     <div class="tool-main">
       <ToolBoundary hybrid />
+      <ToolNavigator current="/tools/robots-rule-tester" />
       <section class="workspace" aria-labelledby="robots-input-heading">
         <div class="workspace-toolbar"><span class="active">Choose a crawler and a page</span><span>Advanced rule test below</span></div>
         <div class="workspace-content">
@@ -157,7 +159,8 @@ Allow: /private/preview/`;
         ]);
         document.querySelector("#robots-observation-time")!.textContent = `CHECKED ${new Date().toISOString()}`;
         results.hidden = false;
-        status.textContent = `Live crawler-rule check complete: ${state}.`;
+        status.textContent = `${report.fetchFacts.cacheState === "hit" ? "Cached result loaded" : "Fresh live check complete"}: ${state}. Successful results are reused for no more than one hour.`;
+        requestAnimationFrame(() => results.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" }));
       } catch (error) {
         status.textContent = error instanceof GatewayError && error.code === "VALIDATION_INVALID_INPUT"
           ? "Enter a public domain or HTTP(S) URL, for example contextter.com."
@@ -186,6 +189,7 @@ Allow: /private/preview/`;
         document.querySelector("#robots-observation-time")!.textContent = `TESTED ${new Date().toISOString()}`;
         results.hidden = false;
         status.textContent = `Local rule decision: ${decision.allowed ? "allowed" : "disallowed"}.`;
+        requestAnimationFrame(() => results.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" }));
       } catch (error) {
         results.hidden = true;
         status.textContent = error instanceof Error ? error.message : "The input could not be evaluated.";

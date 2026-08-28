@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ToolBoundary from "../../components/ToolBoundary.astro";
+import ToolNavigator from "../../components/ToolNavigator.astro";
 ---
 <BaseLayout
   title="IP Range Classifier — AnalyseSpider"
@@ -23,6 +24,7 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
 
     <div class="tool-main">
       <ToolBoundary />
+      <ToolNavigator current="/tools/ip-location" />
       <section class="workspace" aria-labelledby="ip-input-heading">
         <div class="workspace-toolbar"><span class="active">Address from a log</span><span>Syntax and range</span><span>No location dataset</span></div>
         <div class="workspace-content">
@@ -169,6 +171,7 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
       ]);
       results.hidden = false;
       status.textContent = "Address classified locally. No external dataset was queried.";
+      requestAnimationFrame(() => results.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" }));
     };
 
     document.querySelector("#load-ip-sample")!.addEventListener("click", () => {

@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ToolBoundary from "../../components/ToolBoundary.astro";
+import ToolNavigator from "../../components/ToolNavigator.astro";
 ---
 <BaseLayout
   title="Log File Inspector — AnalyseSpider"
@@ -24,6 +25,7 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
 
     <div class="tool-main">
       <ToolBoundary />
+      <ToolNavigator current="/tools/log-file-inspector" />
       <section class="workspace" aria-labelledby="input-heading">
         <div class="workspace-toolbar">
           <span class="active">Add a log sample</span><span>Local parser</span><span>No retention</span>

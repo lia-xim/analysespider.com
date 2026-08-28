@@ -418,6 +418,29 @@ function renderDetails(
   }
 }
 
+function renderCacheStatus(
+  root: Element,
+  report: CrawlerReport,
+  locale: Locale,
+): void {
+  const note = root.querySelector("[data-crawler-cache]");
+  if (!(note instanceof HTMLElement)) return;
+  const observed = new Intl.DateTimeFormat(locale, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(report.fetchFacts.fetchedAt));
+  note.dataset.cacheState = report.fetchFacts.cacheState;
+  if (report.fetchFacts.cacheState === "hit") {
+    note.textContent = locale === "de"
+      ? `Cache-Ergebnis vom ${observed}. Wiederholte Prüfungen derselben URL verwenden es höchstens eine Stunde lang.`
+      : `Cached result from ${observed}. Repeat checks for the same URL reuse it for no more than one hour.`;
+    return;
+  }
+  note.textContent = locale === "de"
+    ? `Frisch abgerufen am ${observed}. Dieses Ergebnis kann für dieselbe URL bis zu eine Stunde wiederverwendet werden.`
+    : `Fetched fresh on ${observed}. This result may be reused for the same URL for up to one hour.`;
+}
+
 function errorMessage(error: unknown, locale: Locale): string {
   const copy = messages[locale].error;
   const code = error instanceof GatewayError ? error.code : "default";
@@ -464,6 +487,7 @@ function mount(root: Element): void {
       renderStatuses(root, report, locale);
       renderActions(root, report, locale);
       renderDetails(root, report, locale);
+      renderCacheStatus(root, report, locale);
       const redirectHandoff = root.querySelector("[data-redirect-handoff]");
       if (redirectHandoff instanceof HTMLButtonElement) {
         if (report.fetchFacts.redirectChain.length > 0) {

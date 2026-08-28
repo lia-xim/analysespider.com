@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ToolBoundary from "../../components/ToolBoundary.astro";
+import ToolNavigator from "../../components/ToolNavigator.astro";
 ---
 <BaseLayout
   title="Redirect Chain Builder — AnalyseSpider"
@@ -25,6 +26,7 @@ import ToolBoundary from "../../components/ToolBoundary.astro";
 
     <div class="tool-main">
       <ToolBoundary hybrid />
+      <ToolNavigator current="/tools/redirect-chain" />
       <section class="workspace" aria-labelledby="chain-input-heading">
         <div class="workspace-toolbar"><span class="active">Enter a URL or paste captured responses</span><span>The tool chooses the right mode</span></div>
         <div class="workspace-content">
@@ -169,6 +171,10 @@ HTTP/2 302`,
       document.querySelector("#chain-outcome")!.textContent = `${result.outcome.toUpperCase()} · ${result.hops.length} HOPS`;
       results.hidden = false;
       status.textContent = `${completion} ${result.hops.length} observed response${result.hops.length === 1 ? "" : "s"}${result.rejectedBlocks ? `; ${result.rejectedBlocks} invalid block${result.rejectedBlocks === 1 ? "" : "s"} skipped` : ""}.`;
+      requestAnimationFrame(() => results.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+        block: "start",
+      }));
       return true;
     };
 
@@ -204,9 +210,11 @@ HTTP/2 302`,
         renderChain(
           evidence,
           "protected live fetch via tools.contextter.com",
-          report.fetchFacts.redirectChain.length
-            ? "Live check complete:"
-            : "No redirect was observed. Final response:",
+          report.fetchFacts.cacheState === "hit"
+            ? "Cached result loaded (maximum age: one hour):"
+            : report.fetchFacts.redirectChain.length
+              ? "Fresh live check complete:"
+              : "Fresh check complete; no redirect was observed:",
         );
       } catch (error) {
         status.textContent = liveError(error);

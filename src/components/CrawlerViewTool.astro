@@ -15,7 +15,7 @@ const copy = de
       label: "Öffentliche Domain oder URL",
       placeholder: "example.com oder https://example.com/seite",
       submit: "URL prüfen",
-      note: "https:// ist optional · 30 Prüfungen je 24 Stunden · automatischer Missbrauchsschutz",
+      note: "https:// ist optional · Ergebnis-Cache höchstens 1 Stunde · 30 Prüfungen je 24 Stunden",
       checking: "Die Seite wird sicher abgerufen und geprüft …",
       errorHeading: "Die Prüfung konnte nicht abgeschlossen werden.",
       actions: "Das solltest du als Nächstes tun",
@@ -52,7 +52,7 @@ const copy = de
       label: "Public domain or URL",
       placeholder: "example.com or https://example.com/page",
       submit: "Check URL",
-      note: "https:// is optional · 30 checks per 24 hours · automatic abuse protection",
+      note: "https:// is optional · results cached for no more than 1 hour · 30 checks per 24 hours",
       checking: "Fetching and checking the page safely …",
       errorHeading: "The check could not be completed.",
       actions: "What to do next",
@@ -118,6 +118,7 @@ const copy = de
   </section>
 
   <div class="crawler-results" data-crawler-results hidden>
+    <p class="crawler-cache-note" data-crawler-cache role="status"></p>
     <div class="crawler-status-list" aria-live="polite">
       <article class="crawler-status-row" data-status-row="pageFetch">
         <span class="crawler-status-icon" aria-hidden="true"></span>
