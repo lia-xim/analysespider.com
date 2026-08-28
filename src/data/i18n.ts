@@ -17,19 +17,26 @@ export const localePaths = {
   },
 } as const;
 
-const alternatePathPairs = new Map<string, string>([
+export const localePairs = [
   ["/", "/de"],
   ["/tools", "/de/tools"],
   ["/tools/crawler-view", "/de/tools/crawler-sicht"],
+  ["/tools/url-inspector", "/de/tools/http-antwort"],
+  ["/tools/redirect-chain", "/de/tools/weiterleitungskette"],
+  ["/tools/robots-rule-tester", "/de/tools/robots-regel-test"],
+  ["/tools/log-file-inspector", "/de/tools/server-log-analyse"],
+  ["/tools/ip-location", "/de/tools/ip-adresse"],
   ["/crawlers", "/de/crawler"],
   ["/guides", "/de/wissen"],
-  [
-    "/guides/http-response-debugging",
-    "/de/wissen/warum-wird-meine-seite-nicht-indexiert",
-  ],
+  ["/guides/http-response-debugging", "/de/wissen/http-antwort-verstehen"],
+  ["/guides/redirect-chain-analysis", "/de/wissen/redirect-kette-pruefen"],
+  ["/guides/test-robots-txt-rules", "/de/wissen/robots-txt-testen"],
+  ["/guides/crawler-log-analysis", "/de/wissen/crawler-in-server-logs-erkennen"],
+  ["/guides/ip-geolocation-data", "/de/wissen/ip-geolokalisierung-verstehen"],
   ["/reference/crawler-verification-methods", "/de/wissen/crawler-erkennen"],
   ["/about", "/de/ueber"],
-]);
+] as const;
+const alternatePathPairs = new Map<string, string>(localePairs);
 
 export const getLocale = (pathname: string): Locale =>
   pathname === "/de" || pathname.startsWith("/de/") ? "de" : "en";

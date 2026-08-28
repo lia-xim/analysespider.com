@@ -7,10 +7,11 @@ import { countryCodes } from "../../data/country-codes";
   title="Country code reference — AnalyseSpider"
   description="Searchable ISO 3166-1 alpha-2 country and territory code reference, independently implemented under new ownership."
   canonicalPath="/ip2country/country_code.html"
+  breadcrumbs={[{name:"Home",path:"/"},{name:"Country code reference",path:"/ip2country/country_code.html"}]}
 >
   <PageLead title="Country code reference." intro="A searchable alpha-2 reference for technical configuration and data inspection. This is a new page, not a copy of the historical resource." />
   <section class="content-grid">
-    <div class="prose" style="max-width:none">
+    <div class="prose prose-wide">
       <div class="filter-row">
         <div>
           <label for="country-filter">Filter by name or alpha-2 code</label>
@@ -28,6 +29,9 @@ import { countryCodes } from "../../data/country-codes";
       <h2>Use the right identifier</h2>
       <p>Alpha-2 country and territory codes are often used in locale tags, forms, datasets, shipping rules, and reporting. They do not by themselves prove a user's residence or the physical location of an IP address. Dataset editions and code semantics must be checked at the point of use.</p>
       <p>Names on this page are rendered from the JavaScript internationalization data available at build time. For a legal or contractual registry decision, verify the current official ISO 3166 source used by your system.</p>
+      <h2>Source and maintenance boundary</h2>
+      <p><a href="https://www.iso.org/iso-3166-country-codes.html">ISO's country-code overview</a> defines alpha-2 as its general-purpose two-letter code and points to the maintained Online Browsing Platform. The code list on this page is an independently generated convenience reference; ISO remains the authority for additions, deletions, reserved elements and name changes.</p>
+      <p>The displayed English names come from <code>Intl.DisplayNames</code> in the Node.js runtime used for the build. A code and a country name are identifiers for data exchange. Neither is an IP-location result.</p>
     </div>
     <aside class="side-note">
       <h3>Path decision</h3>
@@ -36,7 +40,7 @@ import { countryCodes } from "../../data/country-codes";
         <div><dt>Action</dt><dd>Restore 200</dd></div>
         <div><dt>Referring domains</dt><dd>7</dd></div>
         <div><dt>Implementation</dt><dd>New generated reference</dd></div>
-        <div><dt>Updated</dt><dd>2026-08-22</dd></div>
+        <div><dt>Source checked</dt><dd>2026-08-28</dd></div>
       </dl>
     </aside>
   </section>

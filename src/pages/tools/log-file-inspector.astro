@@ -2,18 +2,23 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ToolBoundary from "../../components/ToolBoundary.astro";
 import ToolNavigator from "../../components/ToolNavigator.astro";
+interface Props { locale?: "en" | "de" }
+const { locale = "en" } = Astro.props;
+const de = locale === "de";
 ---
 <BaseLayout
-  title="Log File Inspector — AnalyseSpider"
-  description="Parse up to 25,000 Apache or Nginx access-log lines locally in your browser."
-  canonicalPath="/tools/log-file-inspector"
+  title={de ? "Server-Logs analysieren — AnalyseSpider" : "Log File Inspector — AnalyseSpider"}
+  description={de ? "Analysiere bis zu 25.000 Apache- oder Nginx-Access-Logzeilen lokal in deinem Browser." : "Parse up to 25,000 Apache or Nginx access-log lines locally in your browser."}
+  canonicalPath={de ? "/de/tools/server-log-analyse" : "/tools/log-file-inspector"}
+  alternatePath={de ? "/tools/log-file-inspector" : "/de/tools/server-log-analyse"}
+  lang={locale}
   bodyClass="tool-page"
 >
   <section class="tool-shell">
     <aside class="tool-sidebar">
-      <h1>Log File Inspector</h1>
-      <p>Use this to find visiting bots, failed requests or busy paths. You need a small access-log export from your host, CDN or server.</p>
-      <button class="button sidebar-action" id="load-sample" type="button">Try the example</button>
+      <h1>{de ? "Server-Logs analysieren" : "Log File Inspector"}</h1>
+      <p>{de ? "Finde Crawler-Aufrufe, fehlgeschlagene Requests und häufige Pfade. Du brauchst dafür einen kleinen Access-Log-Export von Hoster, CDN oder Server." : "Use this to find visiting bots, failed requests or busy paths. You need a small access-log export from your host, CDN or server."}</p>
+      <button class="button sidebar-action" id="load-sample" type="button">{de ? "Beispiel laden" : "Try the example"}</button>
       <div class="sidebar-meta">
         <strong>What you need</strong><br />
         Apache Common Log Format<br />
@@ -25,34 +30,34 @@ import ToolNavigator from "../../components/ToolNavigator.astro";
 
     <div class="tool-main">
       <ToolBoundary />
-      <ToolNavigator current="/tools/log-file-inspector" />
+      <ToolNavigator current={de ? "/de/tools/server-log-analyse" : "/tools/log-file-inspector"} locale={locale} />
       <section class="workspace" aria-labelledby="input-heading">
         <div class="workspace-toolbar">
           <span class="active">Add a log sample</span><span>Local parser</span><span>No retention</span>
         </div>
         <div class="workspace-content">
           <h2 id="input-heading" class="visually-hidden">Access-log input</h2>
-          <div class="tool-question"><strong>What are you looking for?</strong><p>Choose an example to see the answer first. Replace it with your own access log when you are ready.</p></div>
+          <div class="tool-question"><strong>{de ? "Wonach suchst du?" : "What are you looking for?"}</strong><p>{de ? "Wähle zuerst ein Beispiel. Danach kannst du es durch deinen eigenen Access-Log ersetzen." : "Choose an example to see the answer first. Replace it with your own access log when you are ready."}</p></div>
           <div class="tool-presets" aria-label="Log analysis examples">
-            <button type="button" data-log-preset="crawlers"><strong>Which bots visited?</strong><span>Groups claimed crawler requests</span></button>
-            <button type="button" data-log-preset="status"><strong>Which requests failed?</strong><span>Separates 4xx and 5xx responses</span></button>
-            <button type="button" data-log-preset="paths"><strong>Which paths are busy?</strong><span>Counts frequently requested URLs</span></button>
+            <button type="button" data-log-preset="crawlers"><strong>{de ? "Welche Bots waren da?" : "Which bots visited?"}</strong><span>{de ? "Gruppiert behauptete Crawler-Aufrufe" : "Groups claimed crawler requests"}</span></button>
+            <button type="button" data-log-preset="status"><strong>{de ? "Welche Requests scheitern?" : "Which requests failed?"}</strong><span>{de ? "Trennt 4xx- und 5xx-Antworten" : "Separates 4xx and 5xx responses"}</span></button>
+            <button type="button" data-log-preset="paths"><strong>{de ? "Welche Pfade sind häufig?" : "Which paths are busy?"}</strong><span>{de ? "Zählt oft angefragte URLs" : "Counts frequently requested URLs"}</span></button>
           </div>
           <div class="input-grid">
             <div class="file-panel">
-              <label for="log-file">Choose log file</label>
+              <label for="log-file">{de ? "Logdatei auswählen" : "Choose log file"}</label>
               <input id="log-file" type="file" accept=".log,.txt,text/plain" />
               <p class="field-help" id="file-help">Plain text only. Maximum 8 MB.</p>
             </div>
             <div class="or-divider" aria-hidden="true">OR</div>
             <div>
-              <label for="log-input">Paste access log</label>
+              <label for="log-input">{de ? "Access Log einfügen" : "Paste access log"}</label>
               <textarea id="log-input" spellcheck="false" placeholder='192.0.2.10 - - [12/May/2025:10:15:02 +0000] "GET / HTTP/1.1" 200 5120'></textarea>
             </div>
           </div>
           <div class="workspace-actions">
-            <button class="button" id="clear-log" type="button">Clear</button>
-            <button class="button primary" id="analyse-log" type="button">Analyse locally</button>
+            <button class="button" id="clear-log" type="button">{de ? "Leeren" : "Clear"}</button>
+            <button class="button primary" id="analyse-log" type="button">{de ? "Lokal analysieren" : "Analyse locally"}</button>
           </div>
           <p class="form-status" id="log-status" role="status" aria-live="polite">Waiting for local input.</p>
         </div>
@@ -62,19 +67,19 @@ import ToolNavigator from "../../components/ToolNavigator.astro";
         <h2 id="results-heading" class="visually-hidden">Log analysis results</h2>
         <div class="workspace-toolbar"><span class="active">What the sample contains</span><button class="button" id="export-log-evidence" type="button" disabled>Export evidence JSON</button></div>
         <div class="result-tabs" role="tablist" aria-label="Result views">
-          <button id="tab-overview" role="tab" aria-selected="true" aria-controls="panel-overview">Overview</button>
-          <button id="tab-crawlers" role="tab" aria-selected="false" aria-controls="panel-crawlers">Crawlers</button>
+          <button id="tab-overview" role="tab" aria-selected="true" aria-controls="panel-overview">{de ? "Übersicht" : "Overview"}</button>
+          <button id="tab-crawlers" role="tab" aria-selected="false" aria-controls="panel-crawlers">Crawler</button>
           <button id="tab-status" role="tab" aria-selected="false" aria-controls="panel-status">Status</button>
-          <button id="tab-paths" role="tab" aria-selected="false" aria-controls="panel-paths">Paths</button>
+          <button id="tab-paths" role="tab" aria-selected="false" aria-controls="panel-paths">{de ? "Pfade" : "Paths"}</button>
         </div>
 
         <div id="panel-overview" class="result-panel" role="tabpanel" aria-labelledby="tab-overview">
           <dl class="summary-grid">
-            <div><dt>REQUESTS</dt><dd id="metric-requests">0</dd></div>
-            <div><dt>UNIQUE IPS</dt><dd id="metric-ips">0</dd></div>
-            <div><dt>BOT REQUESTS</dt><dd id="metric-bots">0</dd></div>
-            <div><dt>CLIENT ERRORS</dt><dd id="metric-4xx">0</dd></div>
-            <div><dt>SERVER ERRORS</dt><dd id="metric-5xx">0</dd></div>
+            <div><dt>{de ? "REQUESTS" : "REQUESTS"}</dt><dd id="metric-requests">0</dd></div>
+            <div><dt>{de ? "EINDEUTIGE IPS" : "UNIQUE IPS"}</dt><dd id="metric-ips">0</dd></div>
+            <div><dt>{de ? "BOT-REQUESTS" : "BOT REQUESTS"}</dt><dd id="metric-bots">0</dd></div>
+            <div><dt>{de ? "CLIENT-FEHLER" : "CLIENT ERRORS"}</dt><dd id="metric-4xx">0</dd></div>
+            <div><dt>{de ? "SERVER-FEHLER" : "SERVER ERRORS"}</dt><dd id="metric-5xx">0</dd></div>
           </dl>
           <div class="result-columns">
             <section class="result-column">
@@ -110,10 +115,11 @@ import ToolNavigator from "../../components/ToolNavigator.astro";
 
   <section class="content-grid">
     <div class="prose">
-      <h2>Where do server logs come from?</h2>
-      <p>Your web server, hosting platform, CDN or firewall may record one line for each request. A line normally contains an IP address, time, path, status code and user-agent. Look for “access logs”, “request logs” or “HTTP logs”. If you cannot export them, ask the person who manages the hosting for a short Apache- or Nginx-style sample.</p>
-      <h2>What this tool can answer</h2>
-      <p>It counts crawler names, errors and frequently requested paths. It does not prove that a claimed bot is genuine: user-agent text can be copied. Use the <a href="/tools/ip-location">IP Range Classifier</a> as a first range check, then follow the bot operator's verification procedure when identity matters.</p>
+      <h2>{de ? "Woher kommen Server-Logs?" : "Where do server logs come from?"}</h2>
+      <p>{de ? "Webserver, Hosting-Plattform, CDN oder Firewall können pro Anfrage eine Zeile schreiben. Darin stehen meist IP-Adresse, Zeit, Pfad, Statuscode und User-Agent. Suche nach Access Logs, Request Logs oder HTTP Logs." : "Your web server, hosting platform, CDN or firewall may record one line for each request. A line normally contains an IP address, time, path, status code and user-agent. Look for “access logs”, “request logs” or “HTTP logs”. If you cannot export them, ask the person who manages the hosting for a short Apache- or Nginx-style sample."}</p>
+      <h2>{de ? "Was das Tool beantworten kann" : "What this tool can answer"}</h2>
+      <p>{de ? <>Es zählt Crawler-Namen, Fehler und häufige Pfade. Ein User-Agent lässt sich kopieren und beweist keine Bot-Identität. Nutze die <a href="/de/tools/ip-adresse">IP-Einordnung</a> als ersten Bereichscheck und danach die Methode des jeweiligen Betreibers.</> : <>It counts crawler names, errors and frequently requested paths. It does not prove that a claimed bot is genuine: user-agent text can be copied. Use the <a href="/tools/ip-location">IP Range Classifier</a> as a first range check, then follow the bot operator's verification procedure when identity matters.</>}</p>
+      <p><a href={de ? "/de/wissen/crawler-in-server-logs-erkennen" : "/guides/crawler-log-analysis"}>{de ? "Crawler in Server-Logs richtig erkennen" : "Read the crawler log analysis guide"}</a></p>
     </div>
     <aside class="side-note"><h3>No log access yet?</h3><p>Start with the <a href="/tools/crawler-view">live URL check</a>. This log tool becomes useful after you can export request data from your host or CDN.</p></aside>
   </section>

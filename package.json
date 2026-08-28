@@ -13,6 +13,8 @@
     "preview": "astro preview",
     "check": "astro check",
     "qa": "node scripts/qa.mjs",
+    "qa:a11y": "axe http://127.0.0.1:4321/ http://127.0.0.1:4321/tools http://127.0.0.1:4321/de http://127.0.0.1:4321/de/tools/http-antwort --exit",
+    "qa:browser": "node scripts/browser-smoke.mjs",
     "verify": "pnpm build && pnpm qa"
   },
   "dependencies": {
@@ -22,8 +24,17 @@
     "pako": "2.1.0"
   },
   "devDependencies": {
+    "@axe-core/cli": "4.13.0",
     "@astrojs/check": "0.9.10",
+    "chromedriver": "151.0.5",
+    "selenium-webdriver": "4.44.0",
     "typescript": "5.9.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["chromedriver"],
+    "overrides": {
+      "chromedriver": "151.0.5"
+    }
   },
   "packageManager": "pnpm@10.33.2"
 }

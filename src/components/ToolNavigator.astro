@@ -10,11 +10,11 @@ const { current, locale = "en" } = Astro.props;
 const de = locale === "de";
 const tools = [
   { href: de ? "/de/tools/crawler-sicht" : "/tools/crawler-view", label: de ? "URL-Check" : "URL check" },
-  { href: "/tools/redirect-chain", label: "Redirects" },
-  { href: "/tools/url-inspector", label: "HTTP" },
-  { href: "/tools/robots-rule-tester", label: "robots.txt" },
-  { href: "/tools/log-file-inspector", label: de ? "Server-Logs" : "Server logs" },
-  { href: "/tools/ip-location", label: de ? "IP prüfen" : "IP check" },
+  { href: de ? "/de/tools/weiterleitungskette" : "/tools/redirect-chain", label: "Redirects" },
+  { href: de ? "/de/tools/http-antwort" : "/tools/url-inspector", label: "HTTP" },
+  { href: de ? "/de/tools/robots-regel-test" : "/tools/robots-rule-tester", label: "robots.txt" },
+  { href: de ? "/de/tools/server-log-analyse" : "/tools/log-file-inspector", label: de ? "Server-Logs" : "Server logs" },
+  { href: de ? "/de/tools/ip-adresse" : "/tools/ip-location", label: de ? "IP prüfen" : "IP check" },
 ];
 ---
 

@@ -26,7 +26,7 @@ const copy = de
       inputLabel: "Du bringst mit",
       resultLabel: "Du bekommst",
       localNote: "Live-Abrufe: Ergebnis höchstens 1 Stunde im Cache · eingefügte Logs und technische Daten: nur im Browser",
-      englishNote: "Die Oberfläche dieses Werkzeugs ist derzeit Englisch.",
+      englishNote: "",
       tools: [
         {
           question: "Ich habe einen Server- oder CDN-Logauszug",
@@ -34,7 +34,7 @@ const copy = de
           text: "Füge einige Apache- oder Nginx-Zeilen ein. Du siehst Bots, Fehler und häufige Pfade. Wichtige Bot-Identitäten musst du anschließend verifizieren.",
           input: "Apache- oder Nginx-Access-Log, bis 8 MB oder 25.000 Zeilen",
           result: "Bot-Kandidaten, Statusverteilung, häufige Pfade und JSON-Export ohne Rohzeilen",
-          href: "/tools/log-file-inspector",
+          href: "/de/tools/server-log-analyse",
           action: "Server-Log prüfen",
           tone: "wide",
         },
@@ -44,7 +44,7 @@ const copy = de
           text: "Gib eine URL ein oder füge Header und HTML ein. Das Ergebnis trennt Beobachtungen von Dingen, die die Antwort nicht beweist.",
           input: "Eine Domain oder URL — alternativ kopierte Header und HTML",
           result: "Beobachtete Signale, vorsichtige Ableitungen und weiterhin unbekannte Punkte",
-          href: "/tools/url-inspector",
+          href: "/de/tools/http-antwort",
           action: "HTTP-Antwort lesen",
           tone: "standard",
         },
@@ -54,7 +54,7 @@ const copy = de
           text: "Gib eine URL ein. AnalyseSpider folgt den öffentlichen Weiterleitungen und zeigt jeden beobachteten Hop.",
           input: "Eine Domain oder URL — alternativ bis zu zwölf Antwortblöcke",
           result: "Eine Hop-Tabelle, Auffälligkeiten und ein kleiner Evidence-Export",
-          href: "/tools/redirect-chain",
+          href: "/de/tools/weiterleitungskette",
           action: "Redirect-Kette bauen",
           tone: "standard",
         },
@@ -64,7 +64,7 @@ const copy = de
           text: "Wähle ChatGPT, OpenAI, Claude oder Google. Prüfe eine öffentliche URL oder stelle eigene Regeln lokal nach.",
           input: "Eine öffentliche URL und ein Crawler-Preset — alternativ eigene robots.txt-Regeln",
           result: "Allow/Disallow-Entscheidung mit der tatsächlich ausgewählten Regel",
-          href: "/tools/robots-rule-tester",
+          href: "/de/tools/robots-regel-test",
           action: "robots.txt-Regel testen",
           tone: "compact",
         },
@@ -74,7 +74,7 @@ const copy = de
           text: "Füge eine IP oder eine ganze Logzeile ein. Das Tool erkennt den Adressbereich — nicht den Standort oder eine Person.",
           input: "Eine einzelne IPv4- oder IPv6-Adresse aus einem technischen Log",
           result: "Adressfamilie und Bereich — aber keinen Menschen, Wohnort, Provider oder Kartenpunkt",
-          href: "/tools/ip-location",
+          href: "/de/tools/ip-adresse",
           action: "IP-Bereich einordnen",
           tone: "ip",
         },
@@ -184,7 +184,7 @@ const copy = de
           <h3>{tool.title}</h3>
           <p>{tool.text}</p>
           <a href={tool.href}>{tool.action} <ArrowIcon /></a>
-          {de && <small>{copy.englishNote}</small>}
+          {de && copy.englishNote && <small>{copy.englishNote}</small>}
         </div>
       </article>
     ))}

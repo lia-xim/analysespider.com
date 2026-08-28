@@ -1,28 +1,29 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import PageLead from "../../components/PageLead.astro";
-import { robotsFixtureResults } from "../../lib/robots";
-const allPassed = robotsFixtureResults.every((fixture) => fixture.passed);
+import { crawlerLabCases } from "../../data/crawler-lab";
 ---
-<BaseLayout title="Crawler access fixture results — AnalyseSpider" description="Versioned RFC 9309 robots.txt fixtures with exact inputs, expected decisions, actual local parser outcomes, and publication boundaries." canonicalPath="/lab/crawler-benchmarks">
-  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><span aria-current="page">Crawler access fixtures</span></nav>
-  <PageLead title="Crawler evidence starts with executable fixtures." intro="Seven versioned robots-rule cases run through the same local evaluator as the public tool. Expected and actual decisions stay visible; no external crawler leaderboard is implied." index="42" />
-  <div class="article-meta" aria-label="Fixture details"><span>Fixture set REP-2026-08-22.1</span><span>RFC 9309 model</span><span>{robotsFixtureResults.length} cases</span><span>Build verified</span><strong>{allPassed ? "ALL PASS" : "FAILURES PRESENT"}</strong></div>
+<BaseLayout title="Crawler tool benchmark protocol — AnalyseSpider" description="A public, unchanged crawler fixture and the evidence contract for future Contextter, Screaming Frog and Sitebulb comparison runs." canonicalPath="/lab/crawler-benchmarks" breadcrumbs={[{name:"Home",path:"/"},{name:"Crawler lab",path:"/lab/crawler-benchmarks"}]}>
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><span aria-current="page">Crawler lab</span></nav>
+  <PageLead title="A crawler comparison needs the same test site, settings and repeated runs." intro="This page publishes the method and the unchanged fixture first. No product is called a winner until comparable exports from several repeated runs exist." />
+  <div class="article-meta" aria-label="Study details"><span>Protocol CLP-2026-08-28.1</span><span>{crawlerLabCases.length} expected behaviours</span><span>Vendor runs: not started</span><span>Fixture: public</span><strong>RESULTS NOT PROVEN</strong></div>
   <section class="content-grid">
-    <div class="prose" style="max-width:none">
-      <h2>Executed result matrix</h2>
-      <div class="table-wrap"><table><thead><tr><th>Fixture</th><th>Rule job</th><th>Token and target</th><th>Expected</th><th>Actual</th></tr></thead><tbody>{robotsFixtureResults.map((fixture) => (<tr><td><code>{fixture.id}</code></td><td>{fixture.name}</td><td><code>{fixture.token}</code><br /><code>{fixture.target}</code></td><td>{fixture.expected ? "ALLOW" : "DISALLOW"}</td><td class:list={["status", fixture.passed ? "restore" : "retire"]}>{fixture.actual ? "ALLOW" : "DISALLOW"} · {fixture.passed ? "PASS" : "FAIL"}</td></tr>))}</tbody></table></div>
+    <div class="prose prose-wide">
+      <h2>The fixture is available before the claims</h2>
+      <p>The controlled site contains ordinary HTML links, a one-hop redirect, a canonical pointing elsewhere, a noindex page, one robots-disallowed path, a link added by JavaScript and an orphan URL. Every page is excluded from the public sitemap and carries noindex, so the laboratory does not create search-result clutter.</p>
+      <p><a href="/fixtures/crawler-lab/">Open the fixture start URL</a>. The expected behaviour is also listed here so another person can challenge the protocol before any vendor result is published.</p>
+      <div class="table-wrap"><table><thead><tr><th>Case</th><th>Test URL</th><th>Expected observation</th></tr></thead><tbody>{crawlerLabCases.map((fixture) => (<tr><th scope="row">{fixture.label}</th><td><code>{fixture.path}</code></td><td>{fixture.expected}</td></tr>))}</tbody></table></div>
 
-      <h2>Inspect the exact fixtures</h2>
-      {robotsFixtureResults.map((fixture) => (<details><summary><code>{fixture.id}</code> — {fixture.name}</summary><pre>{fixture.robots}</pre><p><strong>Decision trace:</strong> {fixture.decision.reason}</p></details>))}
+      <h2>Run contract</h2>
+      <ol><li>Record product name, exact version, licence tier, user agent and configuration export.</li><li>Use only the published start URL and the same host scope. Clear each product's project cache before a run.</li><li>Run each configuration at least three times without changing the fixture deployment.</li><li>Export discovered URLs, status, redirect target, canonical, robots status, indexability and discovery source.</li><li>Publish the raw export or a lossless redacted equivalent, run time, machine or service limits, and every manual correction.</li></ol>
 
-      <h2>What this evidence can support</h2>
-      <p>The fixtures verify deterministic group selection, exact-token fallback, repeated-group merging, longest-match precedence, equal-specificity Allow ties, wildcard and end-anchor handling, query matching, and the no-applicable-group default in the current implementation.</p>
-      <p>They do not verify a live robots.txt response, redirects, content type, caching, network failures, crawler identity, vendor extensions, or whether a crawler obeys the file. Those require a separately dated external observation.</p>
+      <h2>Measures, not a synthetic score</h2>
+      <p>The first comparison will report fixture coverage, correct response classification, canonical and noindex recognition, JavaScript discovery, robots handling, repeatability, elapsed time and peak resource use when the product exposes it. Price and workflow notes will be kept separate from technical correctness.</p>
+      <p>Contextter is operated by Matthias Ramahi, who also operates AnalyseSpider. That conflict will be repeated beside any Contextter result. Screaming Frog and Sitebulb are not affiliated with this site.</p>
 
-      <h2>Reproduction contract</h2>
-      <ol><li>Use fixture set <code>REP-2026-08-22.1</code> from the versioned source.</li><li>Run the repository build and QA; every expected decision must equal the actual result.</li><li>Repeat one case in the <a href="/tools/robots-rule-tester">public Robots.txt Rule Tester</a>.</li><li>Record tool version, input, product token, target, timestamp, output, and any parser warning.</li></ol>
+      <h2>Current result status</h2>
+      <p><strong>No vendor result has been run or verified yet.</strong> The protocol and fixture are published now so the study cannot be quietly changed after seeing a preferred result. The former parser tests remain available as a separate <a href="/lab/robots-rule-fixtures">robots-rule fixture report</a>.</p>
     </div>
-    <aside class="side-note"><h3>Evidence status</h3><p><strong>{allPassed ? "VERIFIED LOCAL FIXTURES" : "FIXTURE FAILURE"}</strong></p><p>No vendor ranking, live crawler run, or hidden provider behavior is claimed.</p><p><a href="/guides/test-robots-txt-rules">Read the testing workflow</a>.</p></aside>
+    <aside class="side-note"><h3>Evidence state</h3><p><strong>PROTOCOL VERIFIED</strong><br />Vendor results: NOT PROVEN</p><p>Published 28 August 2026. Change the protocol version if the fixture, settings or measures change.</p><p><a href="/crawlers">Compare crawler roles</a>.</p></aside>
   </section>
 </BaseLayout>

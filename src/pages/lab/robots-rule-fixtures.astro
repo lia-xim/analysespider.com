@@ -1,0 +1,18 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageLead from "../../components/PageLead.astro";
+import { robotsFixtureResults } from "../../lib/robots";
+const allPassed = robotsFixtureResults.every((fixture) => fixture.passed);
+---
+<BaseLayout title="Robots.txt rule fixture results — AnalyseSpider" description="Versioned RFC 9309 robots.txt fixtures with exact inputs, expected decisions and actual local parser outcomes." canonicalPath="/lab/robots-rule-fixtures" breadcrumbs={[{name:"Home",path:"/"},{name:"Crawler lab",path:"/lab/crawler-benchmarks"},{name:"Robots rule fixtures",path:"/lab/robots-rule-fixtures"}]}>
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/lab/crawler-benchmarks">Crawler lab</a><span aria-hidden="true">/</span><span aria-current="page">Robots rule fixtures</span></nav>
+  <PageLead title="Seven rules, exact inputs, executable results." intro="These cases test AnalyseSpider's local RFC-style evaluator. They do not benchmark an external crawler or prove that a bot obeys robots.txt." />
+  <div class="article-meta" aria-label="Fixture details"><span>Fixture REP-2026-08-22.1</span><span>RFC 9309 model</span><span>{robotsFixtureResults.length} cases</span><span>Build verified</span><strong>{allPassed ? "ALL PASS" : "FAILURES PRESENT"}</strong></div>
+  <section class="content-grid"><div class="prose prose-wide">
+    <h2>Executed result matrix</h2>
+    <div class="table-wrap"><table><thead><tr><th>Fixture</th><th>Rule job</th><th>Token and target</th><th>Expected</th><th>Actual</th></tr></thead><tbody>{robotsFixtureResults.map((fixture) => (<tr><td><code>{fixture.id}</code></td><td>{fixture.name}</td><td><code>{fixture.token}</code><br /><code>{fixture.target}</code></td><td>{fixture.expected ? "ALLOW" : "DISALLOW"}</td><td class:list={["status", fixture.passed ? "restore" : "retire"]}>{fixture.actual ? "ALLOW" : "DISALLOW"} · {fixture.passed ? "PASS" : "FAIL"}</td></tr>))}</tbody></table></div>
+    <h2>Exact fixtures and decision trace</h2>
+    {robotsFixtureResults.map((fixture) => (<details><summary><code>{fixture.id}</code> — {fixture.name}</summary><pre>{fixture.robots}</pre><p><strong>Decision trace:</strong> {fixture.decision.reason}</p></details>))}
+    <h2>Boundary</h2><p>The cases verify group selection and matching in this implementation. They do not verify a live response, caching, crawler identity, vendor extensions or compliance by an external bot.</p>
+  </div><aside class="side-note"><h3>Reproduce it</h3><p>Run <code>pnpm verify</code>, then repeat a case in the <a href="/tools/robots-rule-tester">Robots.txt Rule Tester</a>.</p></aside></section>
+</BaseLayout>

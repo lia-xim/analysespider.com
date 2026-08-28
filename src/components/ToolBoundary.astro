@@ -1,19 +1,26 @@
 ---
 interface Props { compact?: boolean; hybrid?: boolean }
 const { compact = false, hybrid = false } = Astro.props;
+const de = Astro.url.pathname === "/de" || Astro.url.pathname.startsWith("/de/");
 const relatedByPath: Record<string, { href: string; label: string }> = {
   "/tools/log-file-inspector": { href: "/guides/log-file-analysis", label: "Log analysis guide" },
   "/tools/url-inspector": { href: "/guides/http-response-debugging", label: "Response debugging guide" },
+  "/tools/redirect-chain": { href: "/guides/redirect-chain-analysis", label: "Redirect analysis guide" },
   "/tools/robots-rule-tester": { href: "/guides/test-robots-txt-rules", label: "Robots testing guide" },
   "/tools/ip-location": { href: "/guides/ip-geolocation-data", label: "IP data limits guide" },
+  "/de/tools/server-log-analyse": { href: "/de/wissen/crawler-in-server-logs-erkennen", label: "Leitfaden zur Log-Analyse" },
+  "/de/tools/http-antwort": { href: "/de/wissen/http-antwort-verstehen", label: "HTTP-Antwort verstehen" },
+  "/de/tools/weiterleitungskette": { href: "/de/wissen/redirect-kette-pruefen", label: "Redirect-Kette verstehen" },
+  "/de/tools/robots-regel-test": { href: "/de/wissen/robots-txt-testen", label: "robots.txt richtig testen" },
+  "/de/tools/ip-adresse": { href: "/de/wissen/ip-geolokalisierung-verstehen", label: "Grenzen von IP-Geodaten" },
 };
 const related = relatedByPath[Astro.url.pathname];
 ---
-<div class:list={["tool-boundary", { compact }]} aria-label="Privacy boundary">
+<div class:list={["tool-boundary", { compact }]} aria-label={de ? "Datenverarbeitung" : "Privacy boundary"}>
   {hybrid ? (
-    <><span>A URL uses the protected live fetch</span><span aria-hidden="true">·</span><span>Live results may be cached for one hour</span><span aria-hidden="true">·</span><span>Pasted responses stay in this browser</span></>
+    <><span>{de ? "Eine URL nutzt den geschützten Live-Abruf" : "A URL uses the protected live fetch"}</span><span aria-hidden="true">·</span><span>{de ? "Live-Ergebnisse höchstens eine Stunde im Cache" : "Live results may be cached for one hour"}</span><span aria-hidden="true">·</span><span>{de ? "Eingefügte Antworten bleiben im Browser" : "Pasted responses stay in this browser"}</span></>
   ) : (
-    <><span>Runs in this browser</span><span aria-hidden="true">·</span><span>Nothing is uploaded</span><span aria-hidden="true">·</span><span>No web request</span></>
+    <><span>{de ? "Läuft in diesem Browser" : "Runs in this browser"}</span><span aria-hidden="true">·</span><span>{de ? "Kein Upload" : "Nothing is uploaded"}</span><span aria-hidden="true">·</span><span>{de ? "Keine Web-Anfrage" : "No web request"}</span></>
   )}
   {related && <><span aria-hidden="true">·</span><a class="text-link" href={related.href}>{related.label}</a></>}
 </div>

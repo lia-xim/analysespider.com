@@ -2,18 +2,23 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ToolBoundary from "../../components/ToolBoundary.astro";
 import ToolNavigator from "../../components/ToolNavigator.astro";
+interface Props { locale?: "en" | "de" }
+const { locale = "en" } = Astro.props;
+const de = locale === "de";
 ---
 <BaseLayout
-  title="Redirect Chain Builder — AnalyseSpider"
-  description="Enter one public URL for a protected live redirect check, or analyse pasted HTTP response blocks locally."
-  canonicalPath="/tools/redirect-chain"
+  title={de ? "Weiterleitungskette prüfen — AnalyseSpider" : "Redirect Chain Builder — AnalyseSpider"}
+  description={de ? "Prüfe die Weiterleitungskette einer öffentlichen URL geschützt live oder werte kopierte HTTP-Antworten lokal aus." : "Enter one public URL for a protected live redirect check, or analyse pasted HTTP response blocks locally."}
+  canonicalPath={de ? "/de/tools/weiterleitungskette" : "/tools/redirect-chain"}
+  alternatePath={de ? "/tools/redirect-chain" : "/de/tools/weiterleitungskette"}
+  lang={locale}
   bodyClass="tool-page"
 >
   <section class="tool-shell">
     <aside class="tool-sidebar">
-      <h1>Map a Redirect Chain</h1>
-      <p>Enter a domain or URL for a live check. If you already captured the responses, paste those instead and they stay in this browser.</p>
-      <button class="button sidebar-action" id="load-chain-sample" type="button">Load a 3-hop example</button>
+      <h1>{de ? "Weiterleitungskette prüfen" : "Map a Redirect Chain"}</h1>
+      <p>{de ? "Gib eine Domain oder URL für die Live-Prüfung ein. Bereits kopierte Antworten kannst du lokal in diesem Browser auswerten." : "Enter a domain or URL for a live check. If you already captured the responses, paste those instead and they stay in this browser."}</p>
+      <button class="button sidebar-action" id="load-chain-sample" type="button">{de ? "Beispiel mit drei Schritten" : "Load a 3-hop example"}</button>
       <div class="sidebar-meta">
         <strong>What it accepts</strong><br />
         One public domain or URL<br />
@@ -26,25 +31,25 @@ import ToolNavigator from "../../components/ToolNavigator.astro";
 
     <div class="tool-main">
       <ToolBoundary hybrid />
-      <ToolNavigator current="/tools/redirect-chain" />
+      <ToolNavigator current={de ? "/de/tools/weiterleitungskette" : "/tools/redirect-chain"} locale={locale} />
       <section class="workspace" aria-labelledby="chain-input-heading">
         <div class="workspace-toolbar"><span class="active">Enter a URL or paste captured responses</span><span>The tool chooses the right mode</span></div>
         <div class="workspace-content">
           <h2 id="chain-input-heading" class="visually-hidden">Redirect chain input</h2>
-          <div class="tool-question"><strong>Start with a URL or an example</strong><p>You do not need to collect HTTP headers yourself. Enter a domain for a live check, or use one of these examples to see how the result works.</p></div>
+          <div class="tool-question"><strong>{de ? "Starte mit einer URL oder einem Beispiel" : "Start with a URL or an example"}</strong><p>{de ? "Du musst keine HTTP-Header zusammensuchen. Gib eine Domain ein oder nutze ein Beispiel." : "You do not need to collect HTTP headers yourself. Enter a domain for a live check, or use one of these examples to see how the result works."}</p></div>
           <div class="tool-presets" aria-label="Redirect examples">
-            <button type="button" data-chain-preset="clean"><strong>No redirect</strong><span>A final page responds with 200</span></button>
-            <button type="button" data-chain-preset="single"><strong>One redirect</strong><span>A normal 301 points to the final page</span></button>
-            <button type="button" data-chain-preset="broken"><strong>Broken chain</strong><span>A redirect is missing its destination</span></button>
+            <button type="button" data-chain-preset="clean"><strong>{de ? "Keine Weiterleitung" : "No redirect"}</strong><span>{de ? "Die Zielseite antwortet mit 200" : "A final page responds with 200"}</span></button>
+            <button type="button" data-chain-preset="single"><strong>{de ? "Eine Weiterleitung" : "One redirect"}</strong><span>{de ? "Ein 301 zeigt auf die Zielseite" : "A normal 301 points to the final page"}</span></button>
+            <button type="button" data-chain-preset="broken"><strong>{de ? "Defekte Kette" : "Broken chain"}</strong><span>{de ? "Einer Weiterleitung fehlt das Ziel" : "A redirect is missing its destination"}</span></button>
           </div>
-          <label for="chain-input">Domain, URL or captured HTTP response blocks</label>
+          <label for="chain-input">{de ? "Domain, URL oder kopierte HTTP-Antwortblöcke" : "Domain, URL or captured HTTP response blocks"}</label>
           <textarea id="chain-input" spellcheck="false" placeholder="contextter.com&#10;&#10;or paste:&#10;&#10;URL: https://example.com/old&#10;HTTP/2 301&#10;Location: /new&#10;&#10;URL: https://example.com/new&#10;HTTP/2 200"></textarea>
           <p class="field-help">A single URL uses the same protected crawler gateway as the main check. Pasted blocks are analysed locally; each needs a <code>URL:</code> line and an HTTP status line.</p>
           <div class="workspace-actions">
-            <button class="button" id="clear-chain" type="button">Clear</button>
-            <button class="button primary" id="analyse-chain" type="button">Check redirect chain</button>
+            <button class="button" id="clear-chain" type="button">{de ? "Leeren" : "Clear"}</button>
+            <button class="button primary" id="analyse-chain" type="button">{de ? "Kette prüfen" : "Check redirect chain"}</button>
           </div>
-          <p class="form-status" id="chain-status" role="status" aria-live="polite">Enter a URL or paste captured responses.</p>
+          <p class="form-status" id="chain-status" role="status" aria-live="polite">{de ? "Gib eine URL ein oder füge Antworten ein." : "Enter a URL or paste captured responses."}</p>
         </div>
       </section>
 
@@ -54,17 +59,17 @@ import ToolNavigator from "../../components/ToolNavigator.astro";
         <div class="result-panel">
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Hop</th><th>Request URL</th><th>Status</th><th>Location</th><th>Resolved destination</th></tr></thead>
+              <thead><tr><th>{de ? "Schritt" : "Hop"}</th><th>Request URL</th><th>Status</th><th>Location</th><th>{de ? "Aufgelöstes Ziel" : "Resolved destination"}</th></tr></thead>
               <tbody id="chain-rows"></tbody>
             </table>
           </div>
         </div>
         <div class="diagnostic-output">
-          <section class="evidence-group"><h3>FINDINGS</h3><div><ul id="chain-findings"></ul></div></section>
-          <section class="evidence-group"><h3>UNKNOWN</h3><div><ul id="chain-unknowns"></ul></div></section>
+          <section class="evidence-group"><h3>{de ? "BEFUNDE" : "FINDINGS"}</h3><div><ul id="chain-findings"></ul></div></section>
+          <section class="evidence-group"><h3>{de ? "OFFEN" : "UNKNOWN"}</h3><div><ul id="chain-unknowns"></ul></div></section>
         </div>
         <div class="workspace-actions result-panel">
-          <button class="button" id="copy-chain-evidence" type="button">Copy evidence JSON</button>
+          <button class="button" id="copy-chain-evidence" type="button">{de ? "Evidence-JSON kopieren" : "Copy evidence JSON"}</button>
           <a class="button" href="/tools/crawler-view">Run the main URL check</a>
           <button class="button primary" id="open-final-response" type="button" hidden>Inspect the final HTTP response</button>
         </div>
@@ -74,11 +79,11 @@ import ToolNavigator from "../../components/ToolNavigator.astro";
 
   <section class="content-grid">
     <div class="prose">
-      <h2>One chain, several separate decisions</h2>
-      <p><strong>If you only have a URL:</strong> paste it into the field above. AnalyseSpider follows at most three public HTTP redirects through the protected gateway and builds the response blocks for you.</p>
-      <p><strong>If you already have headers:</strong> paste each observed response block. That mode makes no network request and is useful for private test environments or a response captured with browser developer tools or curl.</p>
-      <p>A status and Location field establish an observed hop. They do not establish that the destination is indexable, canonical, live in every request context, or equivalent to the source page.</p>
-      <p>Capture each response before following it. Then inspect the final representation with the <a href="/tools/url-inspector">Response Inspector</a> and apply the <a href="/guides/redirect-chain-analysis">redirect-chain workflow</a> before changing routing rules.</p>
+      <h2>{de ? "Eine Kette, mehrere getrennte Fragen" : "One chain, several separate decisions"}</h2>
+      <p>{de ? <><strong>Wenn du nur eine URL hast:</strong> Füge sie oben ein. AnalyseSpider folgt höchstens drei öffentlichen HTTP-Weiterleitungen über das geschützte Gateway.</> : <><strong>If you only have a URL:</strong> paste it into the field above. AnalyseSpider follows at most three public HTTP redirects through the protected gateway and builds the response blocks for you.</>}</p>
+      <p>{de ? <><strong>Wenn du Header hast:</strong> Füge jeden beobachteten Antwortblock ein. Dieser Modus macht keine Netzwerkanfrage.</> : <><strong>If you already have headers:</strong> paste each observed response block. That mode makes no network request and is useful for private test environments or a response captured with browser developer tools or curl.</>}</p>
+      <p>{de ? "Status und Location belegen genau einen beobachteten Schritt. Sie beweisen nicht, dass das Ziel indexierbar, canonical, immer erreichbar oder inhaltlich gleichwertig ist." : "A status and Location field establish an observed hop. They do not establish that the destination is indexable, canonical, live in every request context, or equivalent to the source page."}</p>
+      <p><a href={de ? "/de/wissen/redirect-kette-pruefen" : "/guides/redirect-chain-analysis"}>{de ? "Die vollständige Redirect-Diagnose lesen" : "Apply the redirect-chain workflow"}</a></p>
       <h3>What the JSON contains</h3>
       <p>The export contains normalised request URLs, statuses, Location fields, resolved destinations, findings, unknowns, and an analysis timestamp. It excludes the raw pasted block.</p>
     </div>

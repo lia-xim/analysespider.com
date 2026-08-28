@@ -1,0 +1,12 @@
+192.0.2.10 - - [28/Aug/2026:08:01:01 +0000] "GET / HTTP/1.1" 200 5120 "-" "Mozilla/5.0"
+66.249.66.1 - - [28/Aug/2026:08:01:02 +0000] "GET /robots.txt HTTP/1.1" 200 420 "-" "Googlebot/2.1 (+http://www.google.com/bot.html)"
+66.249.66.1 - - [28/Aug/2026:08:01:03 +0000] "GET /old-guide HTTP/1.1" 301 0 "-" "Googlebot/2.1 (+http://www.google.com/bot.html)"
+66.249.66.1 - - [28/Aug/2026:08:01:04 +0000] "GET /guides/new-guide HTTP/1.1" 200 2840 "-" "Googlebot/2.1 (+http://www.google.com/bot.html)"
+157.55.39.1 - - [28/Aug/2026:08:01:05 +0000] "GET /missing-product HTTP/1.1" 404 920 "-" "bingbot/2.0 (+http://www.bing.com/bingbot.htm)"
+198.51.100.24 - - [28/Aug/2026:08:01:06 +0000] "GET /api/export HTTP/1.1" 429 260 "-" "GPTBot/1.2"
+203.0.113.77 - - [28/Aug/2026:08:01:07 +0000] "GET /pricing HTTP/1.1" 200 1450 "-" "Googlebot/2.1 (+http://www.google.com/bot.html)"
+192.0.2.10 - - [28/Aug/2026:08:01:08 +0000] "GET /old-page HTTP/1.1" 301 0 "-" "Mozilla/5.0"
+192.0.2.11 - - [28/Aug/2026:08:01:09 +0000] "GET /gone HTTP/1.1" 404 610 "-" "Mozilla/5.0"
+192.0.2.12 - - [28/Aug/2026:08:01:10 +0000] "GET /broken HTTP/1.1" 500 780 "-" "Mozilla/5.0"
+192.0.2.13 - - [28/Aug/2026:08:01:11 +0000] "GET /about HTTP/1.1" 200 1620 "-" "Mozilla/5.0"
+this line is deliberately malformed and must be rejected

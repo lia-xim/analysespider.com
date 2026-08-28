@@ -2,46 +2,51 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ToolBoundary from "../../components/ToolBoundary.astro";
 import ToolNavigator from "../../components/ToolNavigator.astro";
+interface Props { locale?: "en" | "de" }
+const { locale = "en" } = Astro.props;
+const de = locale === "de";
 ---
 <BaseLayout
-  title="IP Range Classifier — AnalyseSpider"
-  description="Classify an IPv4 or IPv6 address copied from a technical log without making location or identity claims."
-  canonicalPath="/tools/ip-location"
+  title={de ? "IP-Adresse einordnen — AnalyseSpider" : "IP Range Classifier — AnalyseSpider"}
+  description={de ? "Ordne eine IPv4- oder IPv6-Adresse aus einem technischen Log ein, ohne Standort oder Identität zu behaupten." : "Classify an IPv4 or IPv6 address copied from a technical log without making location or identity claims."}
+  canonicalPath={de ? "/de/tools/ip-adresse" : "/tools/ip-location"}
+  alternatePath={de ? "/tools/ip-location" : "/de/tools/ip-adresse"}
+  lang={locale}
   bodyClass="tool-page"
 >
   <section class="tool-shell">
     <aside class="tool-sidebar">
-      <h1>IP Range Classifier</h1>
-      <p>This tool helps when a server log contains an unfamiliar address. Paste the IP or the complete log line; AnalyseSpider extracts and classifies it.</p>
+      <h1>{de ? "IP-Adresse einordnen" : "IP Range Classifier"}</h1>
+      <p>{de ? "Das Tool hilft, wenn in einem Server-Log eine unbekannte Adresse steht. Füge die IP oder die ganze Logzeile ein; AnalyseSpider findet und klassifiziert sie." : "This tool helps when a server log contains an unfamiliar address. Paste the IP or the complete log line; AnalyseSpider extracts and classifies it."}</p>
       <div class="sidebar-meta">
-        <strong>What it can answer</strong><br />
+        <strong>{de ? "Was es beantworten kann" : "What it can answer"}</strong><br />
         IPv4 and IPv6 syntax<br />
         Private / loopback / link-local<br />
         Documentation and multicast ranges<br />
-        No external geolocation lookup
+        {de ? "Keine externe Standortabfrage" : "No external geolocation lookup"}
       </div>
     </aside>
 
     <div class="tool-main">
       <ToolBoundary />
-      <ToolNavigator current="/tools/ip-location" />
+      <ToolNavigator current={de ? "/de/tools/ip-adresse" : "/tools/ip-location"} locale={locale} />
       <section class="workspace" aria-labelledby="ip-input-heading">
         <div class="workspace-toolbar"><span class="active">Address from a log</span><span>Syntax and range</span><span>No location dataset</span></div>
         <div class="workspace-content">
           <h2 id="ip-input-heading" class="visually-hidden">IP address input</h2>
-          <div class="tool-question"><strong>What do you want to understand?</strong><p>Use a preset to see the difference, or paste one line from a server, CDN or firewall log.</p></div>
+          <div class="tool-question"><strong>{de ? "Was möchtest du verstehen?" : "What do you want to understand?"}</strong><p>{de ? "Nutze ein Beispiel oder füge eine Zeile aus einem Server-, CDN- oder Firewall-Log ein." : "Use a preset to see the difference, or paste one line from a server, CDN or firewall log."}</p></div>
           <div class="tool-presets" aria-label="IP examples">
-            <button type="button" data-ip-preset="192.168.1.20"><strong>Private network</strong><span>Common inside a home or company network</span></button>
-            <button type="button" data-ip-preset='66.249.66.1 - - [12/May/2025:10:15:05 +0000] "GET /robots.txt HTTP/1.1" 200 512 "-" "Googlebot/2.1"'><strong>IP inside a log line</strong><span>Shows how extraction from a request line works</span></button>
-            <button type="button" data-ip-preset="2001:db8::10"><strong>IPv6 example</strong><span>A safe documentation-range address</span></button>
+            <button type="button" data-ip-preset="192.168.1.20"><strong>{de ? "Privates Netzwerk" : "Private network"}</strong><span>{de ? "Typisch in Heim- oder Firmennetzen" : "Common inside a home or company network"}</span></button>
+            <button type="button" data-ip-preset='66.249.66.1 - - [12/May/2025:10:15:05 +0000] "GET /robots.txt HTTP/1.1" 200 512 "-" "Googlebot/2.1"'><strong>{de ? "IP in einer Logzeile" : "IP inside a log line"}</strong><span>{de ? "Zeigt die automatische Extraktion" : "Shows how extraction from a request line works"}</span></button>
+            <button type="button" data-ip-preset="2001:db8::10"><strong>{de ? "IPv6-Beispiel" : "IPv6 example"}</strong><span>{de ? "Sichere Dokumentationsadresse" : "A safe documentation-range address"}</span></button>
           </div>
-          <label for="ip-input">IP address or one access-log line</label>
+          <label for="ip-input">{de ? "IP-Adresse oder eine Access-Logzeile" : "IP address or one access-log line"}</label>
           <input id="ip-input" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder='66.249.66.1 or a complete line starting with that address' />
           <div class="workspace-actions">
-            <button class="button" id="load-ip-sample" type="button">Use a safe example</button>
-            <button class="button primary" id="check-ip" type="button">Classify address</button>
+            <button class="button" id="load-ip-sample" type="button">{de ? "Sicheres Beispiel laden" : "Use a safe example"}</button>
+            <button class="button primary" id="check-ip" type="button">{de ? "Adresse einordnen" : "Classify address"}</button>
           </div>
-          <p class="form-status" id="ip-status" role="status" aria-live="polite">Waiting for an address.</p>
+          <p class="form-status" id="ip-status" role="status" aria-live="polite">{de ? "Warte auf eine Adresse." : "Waiting for an address."}</p>
         </div>
       </section>
 
@@ -50,15 +55,15 @@ import ToolNavigator from "../../components/ToolNavigator.astro";
         <h2 id="ip-result-heading" class="visually-hidden">IP address classification</h2>
         <div class="diagnostic-output">
           <section class="evidence-group">
-            <h3>OBSERVED</h3>
+            <h3>{de ? "BEOBACHTET" : "OBSERVED"}</h3>
             <div><ul id="ip-observed"></ul></div>
           </section>
           <section class="evidence-group">
-            <h3>INFERRED</h3>
+            <h3>{de ? "ABGELEITET" : "INFERRED"}</h3>
             <div><ul id="ip-inferred"></ul></div>
           </section>
           <section class="evidence-group">
-            <h3>UNKNOWN</h3>
+            <h3>{de ? "OFFEN" : "UNKNOWN"}</h3>
             <div><ul id="ip-unknown"></ul></div>
           </section>
         </div>
@@ -68,12 +73,12 @@ import ToolNavigator from "../../components/ToolNavigator.astro";
 
   <section class="content-grid">
     <div class="prose">
-      <h2>Where do I get an IP address?</h2>
-      <p>You may find one at the start of a server access-log line or in request exports from a CDN, reverse proxy or firewall. You can paste that whole line; the tool picks out the address. If you do not have a log, use the examples to understand the ranges or start with the <a href="/tools/log-file-inspector">Server Log Inspector</a>.</p>
-      <h2>What can the result tell me?</h2>
-      <p>The result distinguishes IPv4 from IPv6 and recognises private, loopback, link-local, documentation, multicast and other special-use ranges. A separate, dated dataset would be needed to associate a public IP with a network or approximate area.</p>
-      <p>Use IP geography as a weak routing or analytics signal with fallbacks and user control. Do not treat it as proof of residence, identity, eligibility, fraud, or physical presence.</p>
-      <p><a href="/guides/ip-geolocation-data">Read the IP geolocation data guide</a> or use the <a href="/ip2country/country_code.html">country-code reference</a>.</p>
+      <h2>{de ? "Woher bekomme ich eine IP-Adresse?" : "Where do I get an IP address?"}</h2>
+      <p>{de ? <>Sie steht oft am Anfang einer Server-Logzeile oder in einem Request-Export von CDN, Reverse Proxy oder Firewall. Du kannst die ganze Zeile einfügen. Ohne Log helfen die Beispiele; für mehrere Zeilen nutze die <a href="/de/tools/server-log-analyse">Server-Log-Analyse</a>.</> : <>You may find one at the start of a server access-log line or in request exports from a CDN, reverse proxy or firewall. You can paste that whole line; the tool picks out the address. If you do not have a log, use the examples to understand the ranges or start with the <a href="/tools/log-file-inspector">Server Log Inspector</a>.</>}</p>
+      <h2>{de ? "Was sagt das Ergebnis?" : "What can the result tell me?"}</h2>
+      <p>{de ? "Das Ergebnis unterscheidet IPv4 und IPv6 und erkennt private, Loopback-, Link-Local-, Dokumentations-, Multicast- und andere Sonderbereiche. Für Netzbetreiber oder einen ungefähren Standort wäre ein eigener, datierter Datensatz nötig." : "The result distinguishes IPv4 from IPv6 and recognises private, loopback, link-local, documentation, multicast and other special-use ranges. A separate, dated dataset would be needed to associate a public IP with a network or approximate area."}</p>
+      <p>{de ? "Nutze IP-Geografie höchstens als schwaches, korrigierbares Signal. Sie beweist weder Wohnort noch Identität, Berechtigung, Betrug oder körperliche Anwesenheit." : "Use IP geography as a weak routing or analytics signal with fallbacks and user control. Do not treat it as proof of residence, identity, eligibility, fraud, or physical presence."}</p>
+      <p><a href={de ? "/de/wissen/ip-geolokalisierung-verstehen" : "/guides/ip-geolocation-data"}>{de ? "IP-Geolokalisierung verständlich erklärt" : "Read the IP geolocation data guide"}</a></p>
     </div>
     <aside class="side-note">
       <h3>No precision theatre</h3>
@@ -82,6 +87,7 @@ import ToolNavigator from "../../components/ToolNavigator.astro";
   </section>
 
   <script>
+    const de = document.documentElement.lang === "de";
     type Classification = { family: "IPv4" | "IPv6"; normalized: string; scope: string; details: string[] };
     const input = document.querySelector<HTMLInputElement>("#ip-input")!;
     const status = document.querySelector<HTMLElement>("#ip-status")!;
@@ -156,7 +162,7 @@ import ToolNavigator from "../../components/ToolNavigator.astro";
       const classification = v4 ? classifyV4(v4) : isValidV6(value) ? classifyV6(value) : null;
       if (!classification) {
         results.hidden = true;
-        status.textContent = "No IPv4 or IPv6 address was found. Paste an address such as 192.168.1.20 or a log line that begins with one.";
+        status.textContent = de ? "Keine IPv4- oder IPv6-Adresse gefunden. Füge zum Beispiel 192.168.1.20 oder eine damit beginnende Logzeile ein." : "No IPv4 or IPv6 address was found. Paste an address such as 192.168.1.20 or a log line that begins with one.";
         return;
       }
       input.value = value;
@@ -170,7 +176,7 @@ import ToolNavigator from "../../components/ToolNavigator.astro";
         "No person, device, or precise physical position can be established from this local classification.",
       ]);
       results.hidden = false;
-      status.textContent = "Address classified locally. No external dataset was queried.";
+      status.textContent = de ? "Adresse lokal eingeordnet. Es wurde kein externer Datensatz abgefragt." : "Address classified locally. No external dataset was queried.";
       requestAnimationFrame(() => results.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" }));
     };
 

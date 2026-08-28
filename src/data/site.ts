@@ -65,5 +65,5 @@ export const site: SiteConfig = {
 };
 
 export const robotsContent = site.indexing === "public"
-  ? `User-agent: *\nAllow: /\nSitemap: ${site.origin}/sitemap.xml\n`
+  ? `User-agent: *\nAllow: /\nDisallow: /fixtures/crawler-lab/disallowed\nSitemap: ${site.origin}/sitemap.xml\n`
   : `User-agent: *\nDisallow: /\nSitemap: ${site.origin}/sitemap.xml\n`;

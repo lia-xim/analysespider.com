@@ -2,18 +2,23 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ToolBoundary from "../../components/ToolBoundary.astro";
 import ToolNavigator from "../../components/ToolNavigator.astro";
+interface Props { locale?: "en" | "de" }
+const { locale = "en" } = Astro.props;
+const de = locale === "de";
 ---
 <BaseLayout
-  title="HTTP Response Inspector — AnalyseSpider"
-  description="Enter a public URL for a protected live response check, or inspect pasted headers and HTML locally."
-  canonicalPath="/tools/url-inspector"
+  title={de ? "HTTP-Antwort verstehen — AnalyseSpider" : "HTTP Response Inspector — AnalyseSpider"}
+  description={de ? "Prüfe eine öffentliche URL geschützt live oder werte kopierte Header und HTML lokal im Browser aus." : "Enter a public URL for a protected live response check, or inspect pasted headers and HTML locally."}
+  canonicalPath={de ? "/de/tools/http-antwort" : "/tools/url-inspector"}
+  alternatePath={de ? "/tools/url-inspector" : "/de/tools/http-antwort"}
+  lang={locale}
   bodyClass="tool-page"
 >
   <section class="tool-shell">
     <aside class="tool-sidebar">
-      <h1>Read an HTTP Response</h1>
-      <p>Enter a public URL and AnalyseSpider collects the useful response signals. If you already copied headers or HTML, you can inspect those locally instead.</p>
-      <button class="button sidebar-action" id="load-response-sample" type="button">Try the example</button>
+      <h1>{de ? "HTTP-Antwort verstehen" : "Read an HTTP Response"}</h1>
+      <p>{de ? "Gib eine öffentliche URL ein. AnalyseSpider liest Status, Weiterleitung, Robots-Angaben und Canonical. Kopierte Header oder HTML kannst du stattdessen lokal prüfen." : "Enter a public URL and AnalyseSpider collects the useful response signals. If you already copied headers or HTML, you can inspect those locally instead."}</p>
+      <button class="button sidebar-action" id="load-response-sample" type="button">{de ? "Beispiel laden" : "Try the example"}</button>
       <div class="sidebar-meta">
         <strong>Where to copy it from</strong><br />
         Browser network panel<br />
@@ -25,34 +30,34 @@ import ToolNavigator from "../../components/ToolNavigator.astro";
 
     <div class="tool-main">
       <ToolBoundary hybrid />
-      <ToolNavigator current="/tools/url-inspector" />
+      <ToolNavigator current={de ? "/de/tools/http-antwort" : "/tools/url-inspector"} locale={locale} />
       <section class="workspace" aria-labelledby="response-input-heading">
         <div class="workspace-toolbar"><span class="active">Enter a URL or paste the response</span><span>The tool chooses the right mode</span></div>
         <div class="workspace-content">
           <h2 id="response-input-heading" class="visually-hidden">Response input</h2>
-          <div class="tool-question"><strong>What do you want to check?</strong><p>Try a typical response first, or put a domain in the first field for a live check.</p></div>
+          <div class="tool-question"><strong>{de ? "Was möchtest du prüfen?" : "What do you want to check?"}</strong><p>{de ? "Teste zuerst ein Beispiel oder gib im ersten Feld eine Domain für die Live-Prüfung ein." : "Try a typical response first, or put a domain in the first field for a live check."}</p></div>
           <div class="tool-presets" aria-label="HTTP response examples">
-            <button type="button" data-response-preset="healthy"><strong>Healthy page</strong><span>200 response with an indexable canonical</span></button>
-            <button type="button" data-response-preset="redirect"><strong>Redirect</strong><span>301 response pointing to a new URL</span></button>
-            <button type="button" data-response-preset="noindex"><strong>Blocked indexing</strong><span>200 response carrying noindex</span></button>
+            <button type="button" data-response-preset="healthy"><strong>{de ? "Erreichbare Seite" : "Healthy page"}</strong><span>{de ? "200 mit indexierbarem Canonical" : "200 response with an indexable canonical"}</span></button>
+            <button type="button" data-response-preset="redirect"><strong>{de ? "Weiterleitung" : "Redirect"}</strong><span>{de ? "301 zeigt auf eine neue URL" : "301 response pointing to a new URL"}</span></button>
+            <button type="button" data-response-preset="noindex"><strong>{de ? "Indexierung blockiert" : "Blocked indexing"}</strong><span>{de ? "200-Antwort mit noindex" : "200 response carrying noindex"}</span></button>
           </div>
           <div class="input-grid">
             <div>
-              <label for="header-input">Domain, URL or response headers</label>
+              <label for="header-input">{de ? "Domain, URL oder Antwort-Header" : "Domain, URL or response headers"}</label>
               <textarea id="header-input" spellcheck="false" placeholder="contextter.com&#10;&#10;or paste:&#10;HTTP/2 301&#10;location: https://example.com/new-path"></textarea>
-              <p class="field-help">A single URL uses the protected live fetch. A block beginning with HTTP/ stays in this browser.</p>
+              <p class="field-help">{de ? "Eine einzelne URL nutzt den geschützten Live-Abruf. Ein Block ab HTTP/ bleibt in diesem Browser." : "A single URL uses the protected live fetch. A block beginning with HTTP/ stays in this browser."}</p>
             </div>
             <div class="or-divider" aria-hidden="true">+</div>
             <div>
-              <label for="html-input">HTML source or head excerpt (optional)</label>
+              <label for="html-input">{de ? "HTML-Quelltext oder Head-Ausschnitt (optional)" : "HTML source or head excerpt (optional)"}</label>
               <textarea id="html-input" spellcheck="false" placeholder='<link rel="canonical" href="https://example.com/new-path">&#10;<meta name="robots" content="index,follow">'></textarea>
             </div>
           </div>
           <div class="workspace-actions">
-            <button class="button" id="clear-response" type="button">Clear</button>
-            <button class="button primary" id="inspect-response" type="button">Inspect response</button>
+            <button class="button" id="clear-response" type="button">{de ? "Leeren" : "Clear"}</button>
+            <button class="button primary" id="inspect-response" type="button">{de ? "Antwort prüfen" : "Inspect response"}</button>
           </div>
-          <p class="form-status" id="response-status" role="status" aria-live="polite">Waiting for pasted evidence.</p>
+          <p class="form-status" id="response-status" role="status" aria-live="polite">{de ? "Warte auf eine URL oder kopierte Antwort." : "Waiting for pasted evidence."}</p>
         </div>
       </section>
 
@@ -61,15 +66,15 @@ import ToolNavigator from "../../components/ToolNavigator.astro";
         <h2 id="response-result-heading" class="visually-hidden">Response inspection result</h2>
         <div class="diagnostic-output">
           <section class="evidence-group">
-            <h3>OBSERVED</h3>
+            <h3>{de ? "BEOBACHTET" : "OBSERVED"}</h3>
             <div><ul id="observed-list"></ul></div>
           </section>
           <section class="evidence-group">
-            <h3>INFERRED</h3>
+            <h3>{de ? "ABGELEITET" : "INFERRED"}</h3>
             <div><ul id="inferred-list"></ul></div>
           </section>
           <section class="evidence-group">
-            <h3>UNKNOWN</h3>
+            <h3>{de ? "OFFEN" : "UNKNOWN"}</h3>
             <div><ul id="unknown-list"></ul></div>
           </section>
         </div>
@@ -79,9 +84,10 @@ import ToolNavigator from "../../components/ToolNavigator.astro";
 
   <section class="content-grid">
     <div class="prose">
-      <h2>Where do these headers come from?</h2>
-      <p>If you only have a domain, enter it above. AnalyseSpider fetches one public page through the protected gateway and turns the observed status, content type, robots directives and canonical into readable evidence.</p>
-      <p>For a response from a private test environment, open the Network panel in your browser developer tools and reload the page, or run <code>curl -I https://example.com/</code>. Paste those headers here; that mode makes no network request.</p>
+      <h2>{de ? "Woher kommen diese Header?" : "Where do these headers come from?"}</h2>
+      <p>{de ? "Wenn du nur eine Domain hast, gib sie oben ein. AnalyseSpider ruft genau eine öffentliche Seite über das geschützte Gateway ab und erklärt Status, Content-Type, Robots-Angaben und Canonical." : "If you only have a domain, enter it above. AnalyseSpider fetches one public page through the protected gateway and turns the observed status, content type, robots directives and canonical into readable evidence."}</p>
+      <p>{de ? <>Für eine private Testumgebung öffnest du im Browser die Netzwerkansicht oder nutzt <code>curl -I https://example.com/</code>. Eingefügte Header werden ohne Netzwerkanfrage ausgewertet.</> : <>For a response from a private test environment, open the Network panel in your browser developer tools and reload the page, or run <code>curl -I https://example.com/</code>. Paste those headers here; that mode makes no network request.</>}</p>
+      <p><a href={de ? "/de/wissen/http-antwort-verstehen" : "/guides/http-response-debugging"}>{de ? "HTTP-Antwort Schritt für Schritt verstehen" : "Read the response debugging guide"}</a></p>
     </div>
     <aside class="side-note">
       <h3>Useful collection commands</h3>

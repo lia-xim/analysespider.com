@@ -6,6 +6,7 @@ export interface RouteRecord {
   canonical: true;
   indexable: true;
   source: "static" | "content-registry";
+  updatedAt?: string;
 }
 
 const staticRoutes = [
@@ -24,11 +25,21 @@ const staticRoutes = [
   "/de",
   "/de/tools",
   "/de/tools/crawler-sicht",
+  "/de/tools/http-antwort",
+  "/de/tools/weiterleitungskette",
+  "/de/tools/robots-regel-test",
+  "/de/tools/server-log-analyse",
+  "/de/tools/ip-adresse",
   "/de/crawler",
   "/de/wissen",
   "/de/wissen/warum-wird-meine-seite-nicht-indexiert",
   "/de/wissen/crawler-erkennen",
   "/de/wissen/in-ai-suche-erscheinen",
+  "/de/wissen/http-antwort-verstehen",
+  "/de/wissen/redirect-kette-pruefen",
+  "/de/wissen/robots-txt-testen",
+  "/de/wissen/crawler-in-server-logs-erkennen",
+  "/de/wissen/ip-geolokalisierung-verstehen",
   "/de/ueber",
   "/guides/test-robots-txt-rules",
   "/blog",
@@ -37,6 +48,7 @@ const staticRoutes = [
   "/about",
   "/changelog",
   "/lab/crawler-benchmarks",
+  "/lab/robots-rule-fixtures",
   "/methodology-and-privacy",
   "/new-ownership",
   "/legacy",
@@ -69,6 +81,7 @@ export const routeRegistry: RouteRecord[] = [
     canonical: true as const,
     indexable: true as const,
     source: "content-registry" as const,
+    updatedAt: page.updatedAt,
   })),
 ];
 
@@ -79,3 +92,7 @@ export const canonicalRoutes = routeRegistry
 export const sitemapRoutes = routeRegistry
   .filter((route) => route.status === 200 && route.canonical && route.indexable)
   .map((route) => route.path);
+
+export const sitemapRouteRecords = routeRegistry.filter(
+  (route) => route.status === 200 && route.canonical && route.indexable,
+);

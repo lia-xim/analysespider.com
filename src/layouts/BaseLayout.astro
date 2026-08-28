@@ -26,6 +26,8 @@ interface Props {
   includeStructuredData?: boolean;
   lang?: Locale;
   alternatePath?: string | null;
+  breadcrumbs?: { name: string; path: string }[];
+  socialImagePath?: string;
 }
 
 const {
@@ -41,10 +43,13 @@ const {
   includeStructuredData = true,
   lang = getLocale(Astro.url.pathname),
   alternatePath = getAlternatePath(canonicalPath),
+  breadcrumbs = [],
+  socialImagePath = "/og/analysespider-editorial.png",
 } = Astro.props;
 const canonical = new URL(canonicalPath, site.origin).toString();
 const alternateLocale: Locale = lang === "en" ? "de" : "en";
 const alternateUrl = alternatePath ? new URL(alternatePath, site.origin).toString() : null;
+const socialImage = new URL(socialImagePath, site.origin).toString();
 const robots = indexing === "noindex"
   ? "noindex, follow"
   : site.indexing === "public"
@@ -54,6 +59,7 @@ const operatorEntity = {
   "@type": "Person",
   "@id": site.operator.schemaId,
   name: site.operator.name,
+  url: `${site.origin}/about#editor`,
   email: site.operator.email,
   telephone: site.operator.telephone,
   address: {
@@ -86,19 +92,31 @@ const pageEntity = {
   headline: pageType === "article" ? title.replace(/ — AnalyseSpider$/, "") : undefined,
   description,
   url: canonical,
+  inLanguage: lang,
   mainEntityOfPage: pageType === "article" ? canonical : undefined,
   datePublished: pageType === "article" ? publishedTime : undefined,
   dateModified: pageType === "article" ? (modifiedTime ?? publishedTime) : undefined,
   author: pageType === "article" ? { "@id": site.operator.schemaId } : undefined,
   publisher: pageType === "article" ? { "@id": site.operator.schemaId } : undefined,
+  image: socialImage,
   applicationCategory: schemaType === "WebApplication" ? "DeveloperApplication" : undefined,
   operatingSystem: schemaType === "WebApplication" ? "Any" : undefined,
   browserRequirements: schemaType === "WebApplication" ? "JavaScript enabled" : undefined,
   isPartOf: { "@id": `${site.origin}/#website` },
 };
+const breadcrumbEntity = breadcrumbs.length > 1 ? {
+  "@type": "BreadcrumbList",
+  "@id": `${canonical}#breadcrumb`,
+  itemListElement: breadcrumbs.map((item, index) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    name: item.name,
+    item: new URL(item.path, site.origin).toString(),
+  })),
+} : null;
 const structuredData = {
   "@context": "https://schema.org",
-  "@graph": [operatorEntity, websiteEntity, pageEntity],
+  "@graph": [operatorEntity, websiteEntity, pageEntity, breadcrumbEntity].filter(Boolean),
 };
 ---
 <!doctype html>
@@ -111,6 +129,7 @@ const structuredData = {
     <meta name="robots" content={robots} />
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" type="application/atom+xml" title="AnalyseSpider articles" href="/feed.xml" />
     {includeCanonical && <link rel="canonical" href={canonical} />}
     {alternateUrl && <link rel="alternate" hreflang={lang} href={canonical} />}
     {alternateUrl && <link rel="alternate" hreflang={alternateLocale} href={alternateUrl} />}
@@ -120,6 +139,14 @@ const structuredData = {
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     {includeCanonical && <meta property="og:url" content={canonical} />}
+    <meta property="og:image" content={socialImage} />
+    <meta property="og:image:width" content="1536" />
+    <meta property="og:image:height" content="1024" />
+    <meta property="og:image:alt" content="Abstract crawler paths connecting web pages and server responses" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage} />
     {pageType === "article" && publishedTime && <meta property="article:published_time" content={publishedTime} />}
     {pageType === "article" && modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
     {includeStructuredData && <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />}
@@ -134,8 +161,5 @@ const structuredData = {
       </main>
       <SiteFooter />
     </div>
-    <script is:inline>
-      document.documentElement.classList.add("js");
-    </script>
   </body>
 </html>

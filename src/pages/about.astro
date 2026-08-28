@@ -7,6 +7,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   canonicalPath="/about"
   alternatePath="/de/ueber"
   bodyClass="simple-content"
+  breadcrumbs={[{ name: "Home", path: "/" }, { name: "About", path: "/about" }]}
 >
   <header class="simple-page-lead">
     <h1>AnalyseSpider helps you understand technical website signals.</h1>
@@ -19,7 +20,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     </section>
     <section>
       <h2>What AnalyseSpider does not do</h2>
-      <p>The site does not crawl arbitrary third-party websites, run security scans or promise indexing. The free tools currently do not send the data you enter to AnalyseSpider.</p>
+      <p>The site does not crawl arbitrary third-party websites, run security scans or promise indexing. Logs and IP addresses stay in the browser. The response, redirect and robots tools also offer a protected fetch of exactly one public URL.</p>
     </section>
     <section>
       <h2>The former domain</h2>
@@ -29,6 +30,12 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     <section>
       <h2>Connection to Contextter</h2>
       <p>AnalyseSpider and Contextter are operated by Matthias Ramahi. AnalyseSpider remains useful without Contextter. When a Contextter link appears, the common operator is named beside it.</p>
+    </section>
+    <section id="editor">
+      <h2>Editorial and technical responsibility</h2>
+      <p>Matthias Ramahi writes and technically reviews the current AnalyseSpider guides and maintains the tool interfaces. Each technical article links to the primary documentation used for its claims and states when that source set was last checked.</p>
+      <p>Examples and tests are either reproducible fixtures published on this site or are explicitly labelled as not yet run. Drafting tools may assist with structure and language; claims, links, examples and release changes are checked against the implementation and cited sources before publication.</p>
+      <p>This describes responsibility for the new site. It does not claim authorship of former AnalyseSpider software, texts, data or branding.</p>
     </section>
   </article>
 </BaseLayout>

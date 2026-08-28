@@ -43,6 +43,10 @@ const { robotsFixtureResults } = await import(
 const { redirectChainFixtureResults } = await import(
   new URL("../src/lib/redirect-chain.ts", import.meta.url)
 );
+const { crawlerLabBuiltPaths } = await import(
+  new URL("../src/data/crawler-lab.ts", import.meta.url)
+);
+const { localePairs } = await import(new URL("../src/data/i18n.ts", import.meta.url));
 const editorialRoutes = new Set([
   "/guides/log-file-analysis",
   "/guides/crawler-log-analysis",
@@ -76,6 +80,11 @@ const toolRoutes = new Set([
   "/tools/redirect-chain",
   "/tools/robots-rule-tester",
   "/tools/ip-location",
+  "/de/tools/http-antwort",
+  "/de/tools/weiterleitungskette",
+  "/de/tools/robots-regel-test",
+  "/de/tools/server-log-analyse",
+  "/de/tools/ip-adresse",
 ]);
 const approvedPortfolioLinks = new Map([
   [
@@ -321,7 +330,7 @@ const robots = await readFile(new URL("robots.txt", dist), "utf8");
 const sitemap = await readFile(new URL("sitemap.xml", dist), "utf8");
 pass(robots.includes("Allow: /"), "robots.txt must allow crawling at launch");
 pass(
-  !robots.includes("Disallow: /"),
+  !/^Disallow:\s*\/$/m.test(robots),
   "robots.txt still blocks crawling at launch",
 );
 pass(
@@ -338,6 +347,25 @@ pass(
   (sitemap.match(/<url>/g) ?? []).length === sitemapRoutes.length,
   "sitemap URL count must match indexable canonical 200 route inventory",
 );
+const lastModifiedValues = [...sitemap.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)].map((match) => match[1]);
+pass(lastModifiedValues.length > 0, "sitemap must retain verified editorial modification dates");
+pass(lastModifiedValues.length < sitemapRoutes.length, "sitemap must omit lastmod where no reliable page date exists");
+pass(lastModifiedValues.every((value) => /^\d{4}-\d{2}-\d{2}$/.test(value)), "sitemap lastmod values must be ISO dates");
+pass(!/<loc>https:\/\/analysespider\.com\/<\/loc><lastmod>/.test(sitemap), "homepage must not receive a build-date lastmod");
+for (const page of (await import(new URL("../src/data/content.ts", import.meta.url))).contentPages) {
+  const root = { guide: "/guides", "lab-note": "/blog", reference: "/reference", audience: "/for" }[page.kind];
+  const location = new URL(`${root}/${page.slug}`, origin).href;
+  pass(sitemap.includes(`<loc>${location}</loc><lastmod>${page.updatedAt}</lastmod>`), `sitemap lastmod mismatch for ${location}`);
+}
+
+for (const [english, german] of localePairs) {
+  const englishHtml = await readFile(await findOutput(english), "utf8");
+  const germanHtml = await readFile(await findOutput(german), "utf8");
+  const englishUrl = new URL(english, origin).href;
+  const germanUrl = new URL(german, origin).href;
+  pass(englishHtml.includes(`hreflang="de" href="${germanUrl}"`), `English alternate missing for ${english}`);
+  pass(germanHtml.includes(`hreflang="en" href="${englishUrl}"`), `German alternate missing for ${german}`);
+}
 
 const manifest = JSON.parse(
   await readFile(
@@ -457,23 +485,24 @@ pass(
   "CSP must allow the local Cap proof worker",
 );
 pass(
-  csp.includes("script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'"),
-  "CSP must allow WebAssembly compilation for the local Cap proof solver",
+  csp.includes("script-src 'self' 'wasm-unsafe-eval'"),
+  "CSP must allow only self-hosted scripts plus WebAssembly compilation for the local Cap proof solver",
 );
+pass(!csp.includes("'unsafe-inline'"), "CSP must not allow inline script or style execution");
 pass(
   !csp.includes(" 'unsafe-eval'"),
   "CSP must not enable unrestricted JavaScript eval",
 );
 
-const benchmark = await readFile(
-  await findOutput("/lab/crawler-benchmarks"),
+const robotsFixturePage = await readFile(
+  await findOutput("/lab/robots-rule-fixtures"),
   "utf8",
 );
 for (const fixture of robotsFixtureResults) {
   pass(fixture.passed, "robots fixture failed: " + fixture.id);
   pass(
-    benchmark.includes(fixture.id),
-    "benchmark page missing fixture: " + fixture.id,
+    robotsFixturePage.includes(fixture.id),
+    "robots fixture page missing fixture: " + fixture.id,
   );
 }
 for (const fixture of redirectChainFixtureResults) {
@@ -524,6 +553,16 @@ existingRoutes.add("/404");
 existingRoutes.add("/robots.txt");
 existingRoutes.add("/sitemap.xml");
 existingRoutes.add("/favicon.svg");
+existingRoutes.add("/feed.xml");
+existingRoutes.add("/fixtures/synthetic-crawler-access.log");
+for (const path of crawlerLabBuiltPaths) existingRoutes.add(path.replace(/\/$/, "") || "/");
+existingRoutes.add("/fixtures/crawler-lab/redirect-one-hop");
+for (const path of [...crawlerLabBuiltPaths, "/fixtures/crawler-lab/redirect-one-hop"]) {
+  pass(
+    !sitemap.includes(`<loc>${new URL(path, origin).href}</loc>`),
+    `noindex crawler fixture leaked into sitemap: ${path}`,
+  );
+}
 for (const file of htmlFiles) {
   const html = await readFile(file, "utf8");
   const hrefs = [...html.matchAll(/href="([^"]+)"/g)].map((match) => match[1]);

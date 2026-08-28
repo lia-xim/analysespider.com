@@ -18,6 +18,12 @@ const roots = {
 const root = roots[page.kind];
 const canonicalPath = `${root.path}/${page.slug}`;
 const article = page.kind !== "audience";
+const takeawayLabel = page.kind === "lab-note" ? "Observed in this case" : page.kind === "reference" ? "Definition" : page.kind === "audience" ? "Use this when" : "In short";
+const breadcrumbs = [
+  { name: "Home", path: "/" },
+  { name: root.label, path: root.path },
+  { name: page.title, path: canonicalPath },
+];
 ---
 <BaseLayout
   title={`${page.title} — AnalyseSpider`}
@@ -26,6 +32,7 @@ const article = page.kind !== "audience";
   pageType={article ? "article" : "website"}
   publishedTime={article ? page.publishedAt : undefined}
   modifiedTime={article ? page.updatedAt : undefined}
+  breadcrumbs={breadcrumbs}
 >
   <nav class="breadcrumbs" aria-label="Breadcrumb">
     <a href="/">Home</a><span aria-hidden="true">/</span>
@@ -36,22 +43,21 @@ const article = page.kind !== "audience";
 
   <div class="article-meta" aria-label="Publication details">
     <span>{page.eyebrow}</span>
-    <span>{article ? `Published ${formatDate(page.publishedAt)}` : "Audience route"}</span>
+    <span>{article ? `Published ${formatDate(page.publishedAt)}` : "For this audience"}</span>
     <span>Updated {formatDate(page.updatedAt)}</span>
     <span>{page.readingMinutes} min read</span>
-    <strong>PUBLIC · INDEXABLE</strong>
+    {article && <a href="/about#editor">Written and technically reviewed by Matthias Ramahi</a>}
   </div>
 
-  <div class="article-shell">
+  <div class:list={["article-shell", page.kind === "lab-note" && "article-shell-full"]}>
     <article class="article-prose">
       <div class="takeaway">
-        <span>In short</span>
+        <span>{takeawayLabel}</span>
         <p>{page.takeaway}</p>
       </div>
 
       {page.sections.map((section, sectionIndex) => (
         <section aria-labelledby={`section-${sectionIndex}`}>
-          <span class="section-index">{String(sectionIndex + 1).padStart(2, "0")}</span>
           <h2 id={`section-${sectionIndex}`}>{section.heading}</h2>
           {section.paragraphs?.map((paragraph) => <p>{paragraph}</p>)}
           {section.bullets && (
@@ -64,12 +70,18 @@ const article = page.kind !== "audience";
               {section.steps.map((item) => <li>{item}</li>)}
             </ol>
           )}
+          {section.code && <pre class="article-code"><code>{section.code}</code></pre>}
+          {section.evidence && (
+            <dl class="evidence-grid">
+              {section.evidence.map((item) => <div><dt>{item.label}</dt><dd>{item.value}</dd></div>)}
+            </dl>
+          )}
           {section.callout && <p class="article-callout">{section.callout}</p>}
         </section>
       ))}
     </article>
 
-    <aside class="article-aside" aria-label="Article context">
+    {page.kind !== "lab-note" && <aside class="article-aside" aria-label="Article context">
       <div>
         <span class="aside-label">Scope</span>
         <p>{page.description}</p>
@@ -78,15 +90,14 @@ const article = page.kind !== "audience";
         <span class="aside-label">Evidence state</span>
         <p>Technical claims are tied to the primary documentation listed below. Current tool behavior is verified against the browser-local implementation.</p>
       </div>
-    </aside>
+    </aside>}
   </div>
 
   {page.sources.length > 0 && (
     <section class="source-section" aria-labelledby="sources-heading">
       <header>
-        <span class="section-index">90</span>
         <h2 id="sources-heading">Primary sources</h2>
-        <p>Checked for this page on 28 August 2026. External documentation can change.</p>
+        <p>Checked for this edition on {formatDate(page.sourceCheckedAt ?? page.updatedAt)}. External documentation can change.</p>
       </header>
       <ol class="source-list">
         {page.sources.map((source, index) => (
@@ -104,13 +115,11 @@ const article = page.kind !== "audience";
 
   <section class="related-section" aria-labelledby="related-heading">
     <header>
-      <span class="section-index">99</span>
       <h2 id="related-heading">What to do next</h2>
     </header>
     <div class="related-grid">
-      {page.related.map((item, index) => (
+      {page.related.map((item) => (
         <a href={item.href}>
-          <span class="section-index">{String(index + 1).padStart(2, "0")}</span>
           <h3>{item.label}</h3>
           <p>{item.note}</p>
           <span class="text-link">Open <ArrowIcon /></span>

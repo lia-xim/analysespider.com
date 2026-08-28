@@ -1,0 +1,30 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ArrowIcon from "./ArrowIcon.astro";
+
+interface Section { heading: string; paragraphs?: string[]; bullets?: string[]; callout?: string; }
+interface Source { label: string; href: string; note: string; }
+interface Props {
+  title: string;
+  description: string;
+  canonicalPath: string;
+  alternatePath: string;
+  intro: string;
+  answer: string;
+  sections: Section[];
+  sources: Source[];
+  tool: { href: string; label: string; note: string };
+}
+const { title, description, canonicalPath, alternatePath, intro, answer, sections, sources, tool } = Astro.props;
+---
+<BaseLayout title={`${title} — AnalyseSpider`} description={description} canonicalPath={canonicalPath} alternatePath={alternatePath} lang="de" pageType="article" publishedTime="2026-08-28" modifiedTime="2026-08-28" bodyClass="simple-content" breadcrumbs={[{name:"Start",path:"/de"},{name:"Wissen",path:"/de/wissen"},{name:title,path:canonicalPath}]}>
+  <nav class="breadcrumbs" aria-label="Brotkrumen"><a href="/de">Start</a><span aria-hidden="true">/</span><a href="/de/wissen">Wissen</a><span aria-hidden="true">/</span><span aria-current="page">{title}</span></nav>
+  <header class="simple-page-lead editorial-lead"><span class="section-kicker">Praktischer Leitfaden</span><h1>{title}</h1><p>{intro}</p></header>
+  <div class="editorial-byline"><a href="/de/ueber#redaktion">Geschrieben und technisch geprüft von Matthias Ramahi</a><span>Veröffentlicht und aktualisiert am 28. August 2026</span></div>
+  <article class="simple-prose editorial-guide">
+    <aside class="plain-answer"><strong>Die kurze Antwort</strong><p>{answer}</p></aside>
+    {sections.map((section) => <section><h2>{section.heading}</h2>{section.paragraphs?.map((paragraph) => <p>{paragraph}</p>)}{section.bullets && <ul>{section.bullets.map((item) => <li>{item}</li>)}</ul>}{section.callout && <p class="article-callout">{section.callout}</p>}</section>)}
+    <section class="guide-tool-next"><h2>Direkt ausprobieren</h2><p>{tool.note}</p><a class="button primary" href={tool.href}>{tool.label} <ArrowIcon /></a></section>
+    <section><h2>Primärquellen</h2><p>Zuletzt geprüft am 28. August 2026.</p><ul>{sources.map((source) => <li><a href={source.href}>{source.label}</a> — {source.note}</li>)}</ul></section>
+  </article>
+</BaseLayout>

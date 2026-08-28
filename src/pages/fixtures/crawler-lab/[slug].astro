@@ -1,0 +1,39 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+
+interface Fixture {
+  title: string;
+  text: string;
+  canonical?: string;
+  javascript?: boolean;
+}
+
+export function getStaticPaths() {
+  const entries: Array<[string, Fixture]> = [
+    ["static-200", { title: "Static 200 fixture", text: "A linked page returning a normal 200 response." }],
+    ["canonical-source", { title: "Canonical source fixture", text: "This 200 page declares the canonical target URL.", canonical: "/fixtures/crawler-lab/canonical-target" }],
+    ["canonical-target", { title: "Canonical target fixture", text: "The target selected by the canonical source." }],
+    ["noindex", { title: "Noindex fixture", text: "A discoverable 200 response with an explicit noindex directive." }],
+    ["disallowed", { title: "Robots-disallowed fixture", text: "The public robots.txt disallows this exact path." }],
+    ["js-only", { title: "JavaScript link fixture", text: "The target link is appended only after JavaScript runs.", javascript: true }],
+    ["js-target", { title: "JavaScript target fixture", text: "The target of the rendered-only link." }],
+    ["orphan", { title: "Orphan fixture", text: "No fixture page links here. It is found only when supplied separately." }],
+  ];
+  return entries.map(([slug, fixture]) => ({ params: { slug }, props: { fixture, slug } }));
+}
+
+const { fixture, slug } = Astro.props as { fixture: Fixture; slug: string };
+const canonicalPath = fixture.canonical ?? `/fixtures/crawler-lab/${slug}`;
+---
+<BaseLayout title={fixture.title} description={fixture.text} canonicalPath={canonicalPath} indexing="noindex" includeStructuredData={false}>
+  <main class="fixture-page"><p>Protocol CLP-2026-08-28.1</p><h1>{fixture.title}</h1><p>{fixture.text}</p>{slug === "static-200" && <a href="/fixtures/crawler-lab/canonical-target">Static child link</a>}<div id="rendered-link"></div></main>
+  {fixture.javascript && <script>
+    const target = document.querySelector("#rendered-link");
+    if (target) {
+      const link = document.createElement("a");
+      link.href = "/fixtures/crawler-lab/js-target";
+      link.textContent = "Rendered-only target";
+      target.append(link);
+    }
+  </script>}
+</BaseLayout>

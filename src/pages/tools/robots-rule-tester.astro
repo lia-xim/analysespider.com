@@ -2,18 +2,23 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ToolBoundary from "../../components/ToolBoundary.astro";
 import ToolNavigator from "../../components/ToolNavigator.astro";
+interface Props { locale?: "en" | "de" }
+const { locale = "en" } = Astro.props;
+const de = locale === "de";
 ---
 <BaseLayout
-  title="Robots.txt Rule Tester — AnalyseSpider"
-  description="Check a public URL for Google, ChatGPT or Claude crawler access, or test pasted robots.txt rules locally."
-  canonicalPath="/tools/robots-rule-tester"
+  title={de ? "robots.txt-Regel testen — AnalyseSpider" : "Robots.txt Rule Tester — AnalyseSpider"}
+  description={de ? "Prüfe eine öffentliche URL für Google-, ChatGPT- oder Claude-Crawler oder teste kopierte robots.txt-Regeln lokal." : "Check a public URL for Google, ChatGPT or Claude crawler access, or test pasted robots.txt rules locally."}
+  canonicalPath={de ? "/de/tools/robots-regel-test" : "/tools/robots-rule-tester"}
+  alternatePath={de ? "/tools/robots-rule-tester" : "/de/tools/robots-regel-test"}
+  lang={locale}
   bodyClass="tool-page"
 >
   <section class="tool-shell">
     <aside class="tool-sidebar">
-      <h1>Robots.txt Rule Tester</h1>
-      <p>Choose Google, ChatGPT or Claude and enter your domain. AnalyseSpider checks the public page. Pasting robots.txt rules remains available for advanced tests.</p>
-      <button class="button sidebar-action" id="load-robots-sample" type="button">Try the example</button>
+      <h1>{de ? "robots.txt-Regel testen" : "Robots.txt Rule Tester"}</h1>
+      <p>{de ? "Wähle Google, ChatGPT oder Claude und gib deine Domain ein. Für genaue Einzelfälle kannst du robots.txt-Regeln auch direkt einfügen." : "Choose Google, ChatGPT or Claude and enter your domain. AnalyseSpider checks the public page. Pasting robots.txt rules remains available for advanced tests."}</p>
+      <button class="button sidebar-action" id="load-robots-sample" type="button">{de ? "Beispiel laden" : "Try the example"}</button>
       <div class="sidebar-meta">
         <strong>How the decision works</strong><br />
         RFC 9309 groups<br />
@@ -25,42 +30,42 @@ import ToolNavigator from "../../components/ToolNavigator.astro";
 
     <div class="tool-main">
       <ToolBoundary hybrid />
-      <ToolNavigator current="/tools/robots-rule-tester" />
+      <ToolNavigator current={de ? "/de/tools/robots-regel-test" : "/tools/robots-rule-tester"} locale={locale} />
       <section class="workspace" aria-labelledby="robots-input-heading">
         <div class="workspace-toolbar"><span class="active">Choose a crawler and a page</span><span>Advanced rule test below</span></div>
         <div class="workspace-content">
           <h2 id="robots-input-heading" class="visually-hidden">Robots rule input</h2>
-          <div class="tool-question"><strong>Which crawler matters to you?</strong><p>Search crawlers and training crawlers are separate. Pick the job you actually want to allow or block.</p></div>
+          <div class="tool-question"><strong>{de ? "Welcher Crawler ist für dich wichtig?" : "Which crawler matters to you?"}</strong><p>{de ? "Such- und Trainingscrawler sind getrennt. Wähle genau die Aufgabe, die du erlauben oder blockieren willst." : "Search crawlers and training crawlers are separate. Pick the job you actually want to allow or block."}</p></div>
           <div class="tool-presets" aria-label="Crawler presets">
-            <button class="is-selected" type="button" data-robots-token="OAI-SearchBot" aria-pressed="true"><strong>ChatGPT search</strong><span>May collect pages for ChatGPT search answers</span></button>
+            <button class="is-selected" type="button" data-robots-token="OAI-SearchBot" aria-pressed="true"><strong>{de ? "ChatGPT-Suche" : "ChatGPT search"}</strong><span>{de ? "Kann Seiten für ChatGPT-Suchantworten abrufen" : "May collect pages for ChatGPT search answers"}</span></button>
             <button type="button" data-robots-token="GPTBot" aria-pressed="false"><strong>OpenAI training</strong><span>Separate from ChatGPT search eligibility</span></button>
             <button type="button" data-robots-token="Claude-SearchBot" aria-pressed="false"><strong>Claude search</strong><span>Anthropic's search crawler token</span></button>
-            <button type="button" data-robots-token="Googlebot" aria-pressed="false"><strong>Google Search</strong><span>The crawler used for Google's search index</span></button>
+            <button type="button" data-robots-token="Googlebot" aria-pressed="false"><strong>Google Search</strong><span>{de ? "Crawler für den Google-Suchindex" : "The crawler used for Google's search index"}</span></button>
           </div>
           <div class="tool-live-row">
-            <div><label for="robots-live-url">Public domain or URL</label><input id="robots-live-url" type="text" inputmode="url" autocomplete="url" placeholder="contextter.com" /></div>
-            <button class="button primary" id="check-live-robots" type="button">Check this page live</button>
+            <div><label for="robots-live-url">{de ? "Öffentliche Domain oder URL" : "Public domain or URL"}</label><input id="robots-live-url" type="text" inputmode="url" autocomplete="url" placeholder="contextter.com" /></div>
+            <button class="button primary" id="check-live-robots" type="button">{de ? "Seite live prüfen" : "Check this page live"}</button>
           </div>
           <p class="field-help">The live check uses the protected crawler gateway and the selected crawler token. It does not guarantee indexing or a future visit.</p>
           <div class="tool-advanced-heading"><strong>Advanced: test rules you already have</strong><span>Paste robots.txt below to reproduce one path decision locally.</span></div>
           <div class="input-grid">
             <div>
-              <label for="robots-input">robots.txt content</label>
+              <label for="robots-input">{de ? "Inhalt der robots.txt" : "robots.txt content"}</label>
               <textarea id="robots-input" spellcheck="false" placeholder="User-agent: *&#10;Disallow: /private/&#10;Allow: /private/preview/"></textarea>
               <p class="field-help">Input is capped at 500 KiB and stays in this browser tab.</p>
             </div>
             <div class="or-divider" aria-hidden="true">+</div>
             <div>
-              <label for="product-token">Crawler product token</label>
+              <label for="product-token">{de ? "Crawler-Produkt-Token" : "Crawler product token"}</label>
               <input id="product-token" value="OAI-SearchBot" autocomplete="off" spellcheck="false" />
-              <label for="target-url">URL or path to test</label>
+              <label for="target-url">{de ? "Zu prüfende URL oder Pfad" : "URL or path to test"}</label>
               <input id="target-url" value="/private/preview/report" autocomplete="off" spellcheck="false" />
               <p class="field-help">Use the product token from the robots.txt user-agent line, not a full browser user-agent string.</p>
             </div>
           </div>
           <div class="workspace-actions">
-            <button class="button" id="clear-robots" type="button">Clear</button>
-            <button class="button primary" id="test-robots" type="button">Test rule locally</button>
+            <button class="button" id="clear-robots" type="button">{de ? "Leeren" : "Clear"}</button>
+            <button class="button primary" id="test-robots" type="button">{de ? "Regel lokal testen" : "Test rule locally"}</button>
           </div>
           <p class="form-status" id="robots-status" role="status" aria-live="polite">Waiting for a robots.txt rule set.</p>
         </div>
@@ -71,15 +76,15 @@ import ToolNavigator from "../../components/ToolNavigator.astro";
         <h2 id="robots-result-heading" class="visually-hidden">Robots rule decision</h2>
         <div class="diagnostic-output">
           <section class="evidence-group">
-            <h3>DECISION</h3>
+            <h3>{de ? "ENTSCHEIDUNG" : "DECISION"}</h3>
             <div><p id="robots-decision"></p><p id="robots-reason"></p></div>
           </section>
           <section class="evidence-group">
-            <h3>MATCHED EVIDENCE</h3>
+            <h3>{de ? "PASSENDE REGELN" : "MATCHED EVIDENCE"}</h3>
             <div><ul id="robots-evidence"></ul></div>
           </section>
           <section class="evidence-group">
-            <h3>BOUNDARIES</h3>
+            <h3>{de ? "GRENZEN" : "BOUNDARIES"}</h3>
             <div><ul id="robots-boundaries"></ul></div>
           </section>
         </div>
@@ -89,10 +94,11 @@ import ToolNavigator from "../../components/ToolNavigator.astro";
 
   <section class="content-grid">
     <div class="prose">
-      <h2>Which preset should I choose?</h2>
-      <p>Choose <strong>ChatGPT search</strong> when you care about possible inclusion in ChatGPT search. GPTBot is a separate decision about model training. Claude publishes a separate search token as well. Googlebot remains the relevant crawler for Google Search and its AI search features.</p>
-      <h2>What this result establishes</h2>
-      <p>The live check reads the crawler decision returned for the public page. The advanced local test applies RFC 9309 group selection and path matching to the exact rules, token and target you pasted. It combines repeated exact-token groups, falls back to the wildcard group only when no exact group exists, and chooses the most specific matching path rule.</p>
+      <h2>{de ? "Welches Preset passt?" : "Which preset should I choose?"}</h2>
+      <p>{de ? "Wähle OAI-SearchBot für die mögliche Aufnahme in die ChatGPT-Suche. GPTBot betrifft mögliches Modelltraining. Claude veröffentlicht ebenfalls getrennte Tokens. Für Google Search und dessen AI-Funktionen bleibt Googlebot relevant." : <>Choose <strong>ChatGPT search</strong> when you care about possible inclusion in ChatGPT search. GPTBot is a separate decision about model training. Claude publishes a separate search token as well. Googlebot remains the relevant crawler for Google Search and its AI search features.</>}</p>
+      <h2>{de ? "Was das Ergebnis belegt" : "What this result establishes"}</h2>
+      <p>{de ? "Die Live-Prüfung liest die für die öffentliche Seite zurückgegebene Crawler-Entscheidung. Der lokale Test wendet Gruppenauswahl und Pfad-Matching nach RFC 9309 auf deine eingefügten Regeln an." : "The live check reads the crawler decision returned for the public page. The advanced local test applies RFC 9309 group selection and path matching to the exact rules, token and target you pasted. It combines repeated exact-token groups, falls back to the wildcard group only when no exact group exists, and chooses the most specific matching path rule."}</p>
+      <p><a href={de ? "/de/wissen/robots-txt-testen" : "/guides/test-robots-txt-rules"}>{de ? "Den vollständigen robots.txt-Leitfaden lesen" : "Follow the complete robots.txt testing workflow"}</a></p>
       <p>The local mode does not fetch <code>/robots.txt</code> or verify its HTTP status and content type. Neither mode models undocumented vendor behaviour or proves that a crawler will obey the file. Robots rules are crawl controls, not authentication and not a reliable way to keep a URL out of search results.</p>
       <p><a href="/guides/test-robots-txt-rules">Follow the complete robots.txt testing workflow</a> or inspect the <a href="/lab/crawler-benchmarks">versioned fixture evidence</a>.</p>
     </div>
@@ -119,6 +125,17 @@ Disallow: /private/
 User-agent: OAI-SearchBot
 Disallow: /private/
 Allow: /private/preview/`;
+
+    const requestedCrawler = new URLSearchParams(window.location.search).get("crawler")?.trim();
+    if (requestedCrawler && /^[A-Za-z_-]+$/.test(requestedCrawler)) {
+      token.value = requestedCrawler;
+      document.querySelectorAll<HTMLButtonElement>("[data-robots-token]").forEach((button) => {
+        const selected = button.dataset.robotsToken?.toLowerCase() === requestedCrawler.toLowerCase();
+        button.classList.toggle("is-selected", selected);
+        button.setAttribute("aria-pressed", String(selected));
+      });
+      status.textContent = `${requestedCrawler} selected from the crawler reference. Enter a public URL or paste robots.txt below.`;
+    }
 
     const setList = (selector: string, items: string[]) => {
       const list = document.querySelector<HTMLUListElement>(selector)!;

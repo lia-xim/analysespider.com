@@ -12,6 +12,8 @@ export interface ContentSection {
   bullets?: string[];
   steps?: string[];
   callout?: string;
+  code?: string;
+  evidence?: { label: string; value: string }[];
 }
 
 export interface ContentPage {
@@ -24,6 +26,7 @@ export interface ContentPage {
   takeaway: string;
   publishedAt: string;
   updatedAt: string;
+  sourceCheckedAt?: string;
   readingMinutes: number;
   sections: ContentSection[];
   sources: ContentSource[];
@@ -313,68 +316,64 @@ export const blogPosts: ContentPage[] = [
     slug: "how-to-find-search-bots-in-server-logs",
     kind: "lab-note",
     eyebrow: "Technical SEO Article 01",
-    title: "How to find search bots in server logs",
-    description: "Use user-agent strings to find candidate crawler requests, then keep claimed and verified bot traffic separate.",
-    intro: "Search the user-agent field first. That gives you candidates quickly. Do not rename those rows “Googlebot traffic” or “Bingbot traffic” until the IP evidence passes the operator's published verification method.",
-    takeaway: "A useful report can contain both counts: claimed crawler requests and the verified subset.",
+    title: "A 12-line crawler log: what the inspector finds and misses",
+    description: "A reproducible field note using one downloadable synthetic access log, exact local results and a spoofed Googlebot case the parser cannot verify.",
+    intro: "This is not another general log-analysis checklist. Download the same 12-line file used below, run it through the browser-local inspector and compare the output with the hand-checked expected result.",
+    takeaway: "The inspector finds five crawler claims, three 4xx responses and one 5xx response. It cannot tell that one Googlebot claim comes from a documentation-only address rather than a verified Google range.",
     publishedAt: "2026-08-22",
     updatedAt: "2026-08-28",
-    readingMinutes: 9,
+    sourceCheckedAt: "2026-08-28",
+    readingMinutes: 6,
     sections: [
       {
-        heading: "Start with the field your server logged",
+        heading: "The file is deliberately small and slightly deceptive",
         paragraphs: [
-          "Combined Apache and Nginx formats commonly include the User-Agent request header. The client supplies that value, so it is evidence about what the requester claimed to be.",
-          "Filter for the operator's current tokens and retain the original string. A broad search for “bot” is useful for discovery but mixes search crawlers, monitoring systems, scrapers, and arbitrary labels.",
+          "All addresses use IANA documentation ranges, all paths are invented and no person or production system appears in the sample. Eleven rows match the Apache Combined-style parser. One malformed line is intentional and must be reported as rejected.",
+          "The file contains two ordinary Googlebot strings, one Bingbot string, one GPTBot string and one copied Googlebot string attached to 203.0.113.77. The parser groups all five as crawler claims because it has no DNS or published-range verification step.",
+        ],
+        code: "203.0.113.77 - - [28/Aug/2026:08:01:07 +0000] \"GET /pricing HTTP/1.1\" 200 1450 \"-\" \"Googlebot/2.1 (+http://www.google.com/bot.html)\"",
+      },
+      {
+        heading: "Expected local result",
+        paragraphs: ["Run the sample without editing it. These counts are a deterministic check of the current parser, not an estimate."],
+        evidence: [
+          { label: "Accepted rows", value: "11" },
+          { label: "Rejected rows", value: "1" },
+          { label: "Unique addresses", value: "8" },
+          { label: "Claimed crawler requests", value: "5" },
+          { label: "4xx responses", value: "3" },
+          { label: "5xx responses", value: "1" },
+        ],
+        callout: "Download the sample from the next-step panel and use “Analyse locally”. Nothing in the file needs a live network request.",
+      },
+      {
+        heading: "The useful finding is the mismatch, not the bot total",
+        paragraphs: [
+          "One Googlebot claim receives a 301 on /old-guide and the following request reaches /guides/new-guide with 200. That pair is evidence of two server responses. It does not prove that Google consolidated the URLs or indexed the destination.",
+          "Bingbot receives a 404 on /missing-product. GPTBot receives 429 on /api/export. Those are specific investigation leads: confirm whether the URLs should exist and whether the throttling rule is intended for that verified requester.",
         ],
       },
       {
-        heading: "Use three identity states",
-        bullets: [
-          "Claimed: the string matches a known crawler token, but the source is not verified.",
-          "Verified: the IP or DNS check passed the operator's current published method.",
-          "Unknown: the field is absent, custom, ambiguous, or failed verification.",
-        ],
+        heading: "What the local parser cannot settle",
         paragraphs: [
-          "This small distinction prevents a spoofed user agent from inflating a crawl report or triggering a production block rule.",
+          "The 203.0.113.77 row looks like Googlebot to a text classifier and stays labelled as a claim. To attribute it to Google, follow Google's current verification method using published ranges or reverse and forward DNS. The address in this synthetic file is reserved for documentation, so it is intentionally not a real Google crawler address.",
+          "The sample also cannot answer whether JavaScript rendered, whether a URL entered an index, which canonical an engine selected or why the 500 occurred. Each of those needs different evidence.",
         ],
       },
       {
-        heading: "Count what helps you decide",
-        paragraphs: [
-          "Group the candidate rows by URL class, status, and date. A useful table shows successful content requests, redirects, 404s, and server errors separately.",
-          "If a crawler never appears on an important page, the log does not tell you why. Check links, sitemaps, robots controls, response behavior, and the engine's own reporting before choosing a cause.",
-        ],
-      },
-      {
-        heading: "Verify only where the consequence justifies it",
-        paragraphs: [
-          "Verification takes more work than a text filter. Use it where the result changes an access rule, an incident decision, a capacity assumption, or a report presented as operator-specific traffic. A broad exploratory chart can keep the candidate label as long as that boundary stays visible.",
-          "Google documents published address ranges and a reverse-then-forward DNS method. Other operators publish different evidence. Store the method and check time beside the result because address lists and operator guidance can change.",
-        ],
-      },
-      {
-        heading: "Turn the rows into a diagnostic sequence",
+        heading: "Reproduce the check",
         steps: [
-          "Parse the configured log format and keep the raw time, path, status, address and user-agent fields needed for the question.",
-          "Filter crawler candidates by current operator tokens without discarding the original string.",
-          "Group by status family, URL class and time window before looking at individual requests.",
-          "Verify the identities that affect an operational decision and leave the rest labelled as claims.",
-          "Compare the result with robots.txt, sitemap and internal-link evidence before assigning a cause.",
-        ],
-        callout: "No requests in one log sample means only that the sample contains no observed requests. It does not prove that a crawler cannot discover or index the page.",
-      },
-      {
-        heading: "Report the evidence without hiding uncertainty",
-        paragraphs: [
-          "A useful handoff states the log source, timezone, time window, included hosts, parsing failures and identity method. Show claimed and verified counts separately. Keep raw rows available to the authorised operator, but share a minimised aggregate when individual addresses and query values are not needed.",
-          "End with the smallest next test: inspect a specific blocked response, verify one address, add an internal link, or wait for a defined observation window. That is more useful than turning an incomplete log sample into a generic crawl-health score.",
+          "Download the synthetic Combined-style access log.",
+          "Open the Log File Inspector and load or paste the file.",
+          "Run the local analysis and compare the six counts with the expected result above.",
+          "Open the crawler table and keep all five rows labelled as claims.",
+          "Use the operator-specific verification method before changing a firewall rule or publishing an attributed bot count.",
         ],
       },
     ],
     sources: [sources.apacheLogs, sources.nginxLogs, sources.googleCrawlers, sources.googleVerify, sources.bingCrawlers],
     related: [
-      { label: "Crawler log analysis guide", href: "/guides/crawler-log-analysis", note: "Run the full verification and interpretation workflow." },
+      { label: "Download the 12-line sample", href: "/fixtures/synthetic-crawler-access.log", note: "Synthetic Apache Combined-style input; no production or personal data." },
       { label: "Crawler user-agent reference", href: "/reference/crawler-user-agents", note: "Keep tokens, strings, IPs, and identity claims distinct." },
       { label: "Log File Inspector", href: "/tools/log-file-inspector", note: "Filter a bounded log sample locally." },
     ],
@@ -754,7 +753,7 @@ export const audiencePages: ContentPage[] = [
     slug: "technical-seos",
     kind: "audience",
     eyebrow: "For technical SEOs",
-    title: "Trace crawl and response evidence before opening another audit ticket",
+    title: "Technical SEO evidence before conclusions",
     description: "Browser-local log and response inspection for technical SEOs who need a reproducible first pass without uploading client evidence.",
     intro: "Use AnalyseSpider for the small evidence step before a larger crawl or platform investigation: isolate the requests, responses, directives, and unknowns that justify the next check.",
     takeaway: "The output is a diagnostic handoff, not an automated verdict about indexing or ranking.",
@@ -777,17 +776,17 @@ export const audiencePages: ContentPage[] = [
     slug: "web-developers",
     kind: "audience",
     eyebrow: "For web developers",
-    title: "Reproduce response behavior before changing routing code",
+    title: "Web diagnostics for developers",
     description: "Inspect raw HTTP response evidence, redirect hops, directives, and local logs before editing middleware, proxy, or application rules.",
     intro: "A routing bug often crosses layers: CDN, proxy, framework, application, and browser. AnalyseSpider helps keep the captured evidence intact while you decide which layer to inspect next.",
     takeaway: "Use the tools to narrow the owner of a response. Do not treat a pasted capture as proof of every environment or request context.",
     publishedAt: "2026-08-22",
-    updatedAt: "2026-08-22",
+    updatedAt: "2026-08-28",
     readingMinutes: 4,
     sections: [
       { heading: "Capture the response as delivered", paragraphs: ["Keep status, Location, cache fields, content type, X-Robots-Tag, and relevant HTML together. Record the exact URL and request context that produced them."], bullets: ["Relative and absolute redirect targets", "Host and scheme changes", "Header and HTML directive conflicts", "Final response status and representation"] },
       { heading: "Use unknowns as test cases", paragraphs: ["If the capture omits a request header, intermediate hop, CDN state, or authenticated variant, mark it unknown. That missing field becomes the next reproducible test rather than an excuse for a broad configuration change."] },
-      { heading: "No network side effects", paragraphs: ["The current inspectors parse pasted input in the browser. They do not issue an unrestricted server-side request, scan ports, or crawl a target."], callout: "Networked diagnostics remain out of scope until egress controls, DNS-rebinding protection, rate limits, response caps, abuse monitoring, and ownership are reviewed." },
+      { heading: "A bounded network path", paragraphs: ["Log files and IP addresses stay in the browser. Response headers, redirect chains and robots.txt rules can also be pasted and analysed locally. Their optional live modes send one public URL to a protected gateway with private-network blocking, redirect and response caps, a proof challenge and rate limits."], callout: "This is a single-URL diagnostic request, not an unrestricted crawler, port scanner or authenticated-site inspection." },
     ],
     sources: [],
     related: [
@@ -800,7 +799,7 @@ export const audiencePages: ContentPage[] = [
     slug: "site-owners",
     kind: "audience",
     eyebrow: "For site owners",
-    title: "Understand what a technical report actually observed",
+    title: "Technical reports for site owners",
     description: "Plain evidence boundaries for site owners reviewing redirect, crawler, response, or IP findings before authorising a change.",
     intro: "Technical reports often compress a chain of observations into one confident sentence. AnalyseSpider keeps the status, path, directive, and uncertainty visible so you can ask for the missing proof.",
     takeaway: "A useful diagnosis tells you what was seen, what it may mean, what remains unknown, and which check would change the decision.",

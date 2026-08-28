@@ -2,17 +2,20 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import PageLead from "../../components/PageLead.astro";
 ---
-<BaseLayout title="IP geolocation data: limits and safe use — AnalyseSpider" description="Understand IP allocation, routing, and geolocation estimates without treating an address as identity or precise physical location." canonicalPath="/guides/ip-geolocation-data">
+<BaseLayout title="IP geolocation data: limits and safe use — AnalyseSpider" description="Understand IP allocation, routing, and geolocation estimates without treating an address as identity or precise physical location." canonicalPath="/guides/ip-geolocation-data" pageType="article" publishedTime="2026-08-22" modifiedTime="2026-08-28" breadcrumbs={[{name:"Home",path:"/"},{name:"Guides",path:"/guides"},{name:"IP geolocation data",path:"/guides/ip-geolocation-data"}]}>
   <PageLead title="IP geography is an estimate, not identity." intro="Read allocation, routing, and commercial location data as dated signals with failure modes—not as proof of a person or precise place." />
   <section class="content-grid">
     <article class="prose">
       <h2>Three different questions</h2>
       <h3>Who received the address block?</h3>
-      <p>Registry and allocation records can identify an organization responsible for a block. That organization may be a carrier, cloud provider, enterprise, or intermediary. It is not necessarily the current end user.</p>
+      <p>IANA coordinates the global address pools and allocates large blocks to the five Regional Internet Registries. RIRs and local registries then allocate or assign resources to network operators. A registration record therefore describes number-resource administration. It is not a record of the person currently using one address.</p>
       <h3>Who announces the route?</h3>
-      <p>Routing observations can associate an address with an autonomous system. Routing changes, anycast, hosting, VPNs, and intermediaries make this a network observation rather than a personal location.</p>
+      <p>An Autonomous System Number identifies a routing domain used by network operators. A route-origin observation can associate a prefix with an AS at a particular time. It can change, and anycast can announce the same prefix from several places. That makes ASN and route data useful for network diagnosis, not proof of a user's country or city.</p>
       <h3>Where does a dataset place it?</h3>
-      <p>Commercial and public geolocation datasets may estimate a country, region, or city using different signals and update schedules. Agreement between products does not turn an estimate into precise physical evidence.</p>
+      <p>Commercial and public geolocation datasets estimate a location using their own signals and update schedules. RIPE NCC explicitly says it is not a geolocation provider; its database may contain user-maintained location attributes, while RIPEstat labels third-party geolocation as such. Agreement between products does not turn an estimate into precise physical evidence.</p>
+
+      <h2>Four common reasons a location estimate moves</h2>
+      <dl class="facts-list"><div><dt>Mobile networks</dt><dd>Traffic can exit through a carrier gateway far from the device.</dd></div><div><dt>VPN or proxy</dt><dd>The visible address belongs to the exit service, not the user's access network.</dd></div><div><dt>Anycast</dt><dd>One prefix can be announced from multiple sites and routed to a nearby edge.</dd></div><div><dt>Reassignment</dt><dd>Allocation, routing and commercial datasets can update on different schedules.</dd></div></dl>
 
       <h2>Safe product patterns</h2>
       <ul>
@@ -25,6 +28,10 @@ import PageLead from "../../components/PageLead.astro";
 
       <h2>Why the former database is not here</h2>
       <p>The historical domain advertised IP-country data and related downloads. No former database, update contract, license, or distribution right transferred. This page is an independently written limitations guide and does not offer those files.</p>
+
+      <h2>Primary sources</h2>
+      <p>Sources checked 28 August 2026.</p>
+      <ul><li><a href="https://www.iana.org/numbers">IANA Number Resources</a> — address and ASN coordination and the RIR allocation chain.</li><li><a href="https://www.iana.org/assignments/as-numbers">IANA Autonomous System Number registry</a> — current ASN purpose and allocation records.</li><li><a href="https://docs.db.ripe.net/Related-Software-and-Tools/Geolocation-in-the-RIPE-Database/">RIPE Database geolocation documentation</a> — RIPE NCC's explicit provider boundary.</li><li><a href="https://stat.ripe.net/docs/getting-started/ripestat-data-sources">RIPEstat data sources</a> — separation of registry, routing and third-party geolocation sources.</li></ul>
     </article>
     <aside class="side-note">
       <h3>Minimum metadata</h3>

@@ -6,6 +6,7 @@ Each cluster must remain useful without Contextter and must link tools, workflow
 
 - Hub: `/guides`
 - Tool: `/tools/log-file-inspector`
+- German pair: `/de/tools/server-log-analyse`, `/de/wissen/crawler-in-server-logs-erkennen`
 - Guides: `/guides/log-file-analysis`, `/guides/crawler-log-analysis`
 - Lab note: `/blog/how-to-find-search-bots-in-server-logs`, `/blog/private-data-in-access-logs`
 - Reference: `/reference/crawler-user-agents`, `/reference/crawler-verification-methods`
@@ -15,6 +16,7 @@ Each cluster must remain useful without Contextter and must link tools, workflow
 
 - Hub: `/tools` and `/guides`
 - Tools: `/tools/url-inspector`, `/tools/redirect-chain`
+- German pairs: `/de/tools/http-antwort`, `/de/wissen/http-antwort-verstehen`, `/de/tools/weiterleitungskette`, `/de/wissen/redirect-kette-pruefen`
 - Guides: `/guides/http-response-debugging`, `/guides/redirect-chain-analysis`
 - Lab note: `/blog/what-a-301-response-does-not-prove`
 - Reference: `/reference/http-status-codes`, `/reference/robots-directives`
@@ -34,13 +36,15 @@ Each cluster must remain useful without Contextter and must link tools, workflow
 - Tool: `/tools/robots-rule-tester`
 - Guide: `/guides/test-robots-txt-rules`
 - Reference: `/reference/robots-directives`, `/reference/crawler-user-agents`
-- Proof asset: `/lab/crawler-benchmarks`
+- Parser proof: `/lab/robots-rule-fixtures`
+- External crawler protocol and controlled fixture: `/lab/crawler-benchmarks`, `/fixtures/crawler-lab/`
 - Method boundary: `/methodology-and-privacy`
 
 ## 4. IP and geography limits
 
 - Tool: `/tools/ip-location`
 - Guide: `/guides/ip-geolocation-data`
+- German pair: `/de/tools/ip-adresse`, `/de/wissen/ip-geolokalisierung-verstehen`
 - Restored references: `/ip2country/country_code.html`, `/geo-targeting/geo-targeting.html`
 - Legacy redirects: `/ip2country/lookup.php`, `/ip2country/lookup.html`, `/ip2country/ip_country.html`
 
@@ -68,7 +72,7 @@ Each cluster must remain useful without Contextter and must link tools, workflow
 ## 8. German entry layer
 
 - Entry pages: `/de`, `/de/tools`, `/de/wissen`, `/de/ueber`
-- These pages explain the current English detail library in simple German and do not pretend every linked tool or guide is already translated.
-- English and German core pages use reciprocal `hreflang` alternates; detail translations require a distinct maintained user job.
+- Five core jobs now have one shared-function German tool and one maintained German guide: HTTP, redirects, robots.txt, server logs and IP geography.
+- Reciprocal `hreflang` is emitted only for maintained counterparts. Related but non-equivalent pages remain unpaired.
 
 Link rule: use descriptive HTML anchors in the relevant workflow. Do not add sitewide portfolio links, reciprocal exact-match links, or unrelated homepage redirects.
