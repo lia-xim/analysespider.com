@@ -11,7 +11,7 @@ const copy = de
   ? {
       title: "Prüfe bis zu 50 URLs deiner Website.",
       intro:
-        "Gib nur die Domain ein. AnalyseSpider liest robots.txt und Sitemap, prüft die gefundenen URLs und zeigt technische Indexierungsprobleme in einer Tabelle.",
+        "Gib nur die Domain ein. AnalyseSpider prüft bis zu 50 gefundene URLs technisch. Danach kannst du jede URL mit einer öffentlichen Google-site:-Suche gegenprüfen.",
       label: "Öffentliche Website",
       placeholder: "example.com",
       submit: "Website prüfen",
@@ -23,7 +23,7 @@ const copy = de
       error: "Der Website-Check konnte nicht abgeschlossen werden.",
       checked: "Geprüft",
       fetchable: "Abrufbar",
-      indexable: "Technisch indexierbar",
+      indexable: "Ohne technischen Index-Blocker",
       problems: "Mit Problemen",
       all: "Alle URLs",
       issues: "Nur Probleme",
@@ -33,11 +33,24 @@ const copy = de
       homepage: "Nur Startseite",
       url: "URL",
       http: "HTTP",
-      robots: "Googlebot",
-      indexing: "Indexierung",
+      robots: "Googlebot erlaubt?",
+      indexing: "Indexierung erlaubt?",
       canonical: "Canonical",
+      google: "Google-Spot-Check",
       finding: "Hinweis",
       download: "JSON herunterladen",
+      googleSite: "Domain auf Google prüfen",
+      googleUrl: "URL auf Google prüfen",
+      googleSeen: "Google-Treffer gesehen",
+      googleUnchecked: "Google-Checks offen",
+      columnHelpTitle: "Was bedeuten diese Spalten?",
+      httpHelp: "HTTP zeigt, ob der Server eine erfolgreiche Antwort wie 200 oder einen Fehler bzw. Redirect liefert.",
+      robotsHelp: "Googlebot erlaubt bedeutet nur, dass die beobachtete robots.txt den Google-Suchcrawler für diese URL nicht sperrt.",
+      indexingHelp: "Indexierung erlaubt bedeutet nur, dass in der gelieferten Antwort kein noindex gefunden wurde. Es beweist keine Aufnahme in Google.",
+      canonicalHelp: "Canonical zeigt, welche URL die Seite selbst als bevorzugte Version nennt. Google kann trotzdem eine andere Version wählen.",
+      googleHelp: "Der Link öffnet eine öffentliche site:-Suche für genau diese URL. Kehre danach zurück und halte fest, ob du einen Treffer gesehen hast. Ein fehlender Treffer bleibt unklare Evidenz.",
+      evidenceScale: "Evidenz: technischer Abruf = aktueller Live-Befund · Google-Treffer = öffentlicher Hinweis · kein Google-Treffer = unklar · Search Console = verifizierter Property-Status.",
+      googlePrivacy: "Google erhält die geprüfte URL erst, wenn du einen Google-Spot-Check anklickst.",
       boundaryTitle: "Das ist ein technischer Website-Check, kein Google-Indexbericht.",
       boundary:
         "Ein grünes Ergebnis bedeutet: Die beobachtete Serverantwort enthält keinen offensichtlichen technischen Blocker. Ob Google die URL tatsächlich indexiert hat, lässt sich zuverlässig nur über deine Search-Console-Property prüfen.",
@@ -49,7 +62,7 @@ const copy = de
   : {
       title: "Check up to 50 URLs on your website.",
       intro:
-        "Enter only the domain. AnalyseSpider reads robots.txt and the sitemap, checks the discovered URLs, and shows technical indexing problems in one table.",
+        "Enter only the domain. AnalyseSpider technically checks up to 50 discovered URLs. You can then spot-check each URL with a public Google site: search.",
       label: "Public website",
       placeholder: "example.com",
       submit: "Check website",
@@ -60,7 +73,7 @@ const copy = de
       error: "The website check could not be completed.",
       checked: "Checked",
       fetchable: "Fetchable",
-      indexable: "Technically indexable",
+      indexable: "No technical index blocker",
       problems: "With problems",
       all: "All URLs",
       issues: "Problems only",
@@ -70,11 +83,24 @@ const copy = de
       homepage: "Homepage only",
       url: "URL",
       http: "HTTP",
-      robots: "Googlebot",
-      indexing: "Indexing",
+      robots: "Googlebot allowed?",
+      indexing: "Indexing allowed?",
       canonical: "Canonical",
+      google: "Google spot-check",
       finding: "Finding",
       download: "Download JSON",
+      googleSite: "Check domain on Google",
+      googleUrl: "Check URL on Google",
+      googleSeen: "Google results seen",
+      googleUnchecked: "Google checks open",
+      columnHelpTitle: "What do these columns mean?",
+      httpHelp: "HTTP shows whether the server returned a successful response such as 200, an error, or a redirect.",
+      robotsHelp: "Googlebot allowed only means the observed robots.txt does not block Google's search crawler from this URL.",
+      indexingHelp: "Indexing allowed only means no noindex directive was found in the delivered response. It does not prove inclusion in Google.",
+      canonicalHelp: "Canonical shows which URL the page itself names as its preferred version. Google can still choose another version.",
+      googleHelp: "The link opens a public site: search for this exact URL. Return afterwards and record whether you saw a result. An absent result remains inconclusive evidence.",
+      evidenceScale: "Evidence: technical fetch = current live observation · Google result = public clue · no Google result = unknown · Search Console = verified property status.",
+      googlePrivacy: "Google receives the checked URL only after you click a Google spot-check.",
       boundaryTitle: "This is a technical website check, not a Google index report.",
       boundary:
         "A green result means the observed server response contains no obvious technical blocker. Only your Search Console property can reliably show whether Google has actually indexed the URL.",
@@ -129,6 +155,7 @@ const copy = de
           <option value="all">{copy.all}</option>
           <option value="issues">{copy.issues}</option>
         </select>
+        <a href="https://www.google.com/" target="_blank" rel="noreferrer" data-domain-google-site-check>{copy.googleSite}</a>
         <button type="button" data-domain-scan-download>{copy.download}</button>
       </div>
     </div>
@@ -138,17 +165,33 @@ const copy = de
       <article><span>{copy.fetchable}</span><strong data-summary="fetchable">0</strong></article>
       <article><span>{copy.indexable}</span><strong data-summary="indexable">0</strong></article>
       <article><span>{copy.problems}</span><strong data-summary="problems">0</strong></article>
+      <article><span>{copy.googleSeen}</span><strong data-summary="google-seen">0</strong></article>
+      <article><span>{copy.googleUnchecked}</span><strong data-summary="google-unchecked">0</strong></article>
     </div>
+
+    <details class="domain-scan-help">
+      <summary>{copy.columnHelpTitle}</summary>
+      <dl>
+        <div><dt>{copy.http}</dt><dd>{copy.httpHelp}</dd></div>
+        <div><dt>{copy.robots}</dt><dd>{copy.robotsHelp}</dd></div>
+        <div><dt>{copy.indexing}</dt><dd>{copy.indexingHelp}</dd></div>
+        <div><dt>{copy.canonical}</dt><dd>{copy.canonicalHelp}</dd></div>
+        <div><dt>{copy.google}</dt><dd>{copy.googleHelp}</dd></div>
+      </dl>
+      <p><strong>{copy.evidenceScale}</strong></p>
+      <p>{copy.googlePrivacy}</p>
+    </details>
 
     <div class="domain-scan-table-wrap">
       <table class="domain-scan-table">
         <thead>
           <tr>
             <th scope="col">{copy.url}</th>
-            <th scope="col">{copy.http}</th>
-            <th scope="col">{copy.robots}</th>
-            <th scope="col">{copy.indexing}</th>
-            <th scope="col">{copy.canonical}</th>
+            <th scope="col"><abbr title={copy.httpHelp}>{copy.http}</abbr></th>
+            <th scope="col"><abbr title={copy.robotsHelp}>{copy.robots}</abbr></th>
+            <th scope="col"><abbr title={copy.indexingHelp}>{copy.indexing}</abbr></th>
+            <th scope="col"><abbr title={copy.canonicalHelp}>{copy.canonical}</abbr></th>
+            <th scope="col"><abbr title={copy.googleHelp}>{copy.google}</abbr></th>
             <th scope="col">{copy.finding}</th>
           </tr>
         </thead>

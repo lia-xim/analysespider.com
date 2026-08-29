@@ -19,6 +19,14 @@ const copy = {
     homepage_links: "Links auf der Startseite",
     homepage_only: "nur Startseite",
     noIssue: "Kein offensichtlicher Blocker",
+    allowed: "Erlaubt",
+    blocked: "Blockiert",
+    checkGoogle: "Auf Google prüfen",
+    notChecked: "Nicht geprüft",
+    resultSeen: "Treffer gesehen",
+    noResultSeen: "Kein Treffer gesehen · unklar",
+    markSeen: "Treffer gesehen",
+    markMissing: "Keinen Treffer gesehen",
     noFilteredRows: "Keine URLs entsprechen diesem Filter.",
     truncated: "Die Website enthält mehr URLs; geprüft wurden die ersten 50.",
     invalid: "Bitte gib eine öffentliche Domain oder HTTP-/HTTPS-URL ein.",
@@ -38,6 +46,14 @@ const copy = {
     homepage_links: "homepage links",
     homepage_only: "homepage only",
     noIssue: "No obvious blocker",
+    allowed: "Allowed",
+    blocked: "Blocked",
+    checkGoogle: "Check on Google",
+    notChecked: "Not checked",
+    resultSeen: "Result seen",
+    noResultSeen: "No result seen · inconclusive",
+    markSeen: "I saw a result",
+    markMissing: "I saw no result",
     noFilteredRows: "No URLs match this filter.",
     truncated: "The website contains more URLs; the first 50 were checked.",
     invalid: "Enter a public domain or HTTP/HTTPS URL.",
@@ -47,6 +63,14 @@ const copy = {
     busy: "Another website check is running. Please try again shortly.",
   },
 } as const;
+
+type GoogleSpotCheckOutcome = "result_seen" | "no_result_seen";
+
+interface GoogleSpotCheckObservation {
+  readonly url: string;
+  readonly outcome: GoogleSpotCheckOutcome;
+  readonly observedAt: string;
+}
 
 const findingLabels: Readonly<Record<string, readonly [string, string]>> = {
   page_fetch_failed: ["Seite nicht abrufbar", "Page could not be fetched"],
@@ -86,6 +110,10 @@ function findingLabel(code: string, locale: Locale): string {
   return value?.[locale === "de" ? 0 : 1] ?? code.replaceAll("_", " ");
 }
 
+function googleSiteSearchUrl(url: string): string {
+  return `https://www.google.com/search?q=${encodeURIComponent(`site:${url}`)}`;
+}
+
 function errorMessage(error: unknown, locale: Locale): string {
   if (!(error instanceof GatewayError)) return copy[locale].unavailable;
   if (error.code === "VALIDATION_INVALID_INPUT") return copy[locale].invalid;
@@ -122,6 +150,7 @@ function renderRows(
   report: DomainScanReport,
   locale: Locale,
   filter: string,
+  googleObservations: ReadonlyMap<string, GoogleSpotCheckObservation>,
 ): void {
   const body = root.querySelector("[data-domain-scan-rows]");
   const empty = root.querySelector("[data-domain-scan-empty]");
@@ -150,7 +179,11 @@ function renderRows(
     const robotsCell = document.createElement("td");
     robotsCell.append(
       badge(
-        stateLabel(row.robotsAllowed, locale),
+        row.robotsAllowed === "yes"
+          ? copy[locale].allowed
+          : row.robotsAllowed === "no"
+            ? copy[locale].blocked
+            : stateLabel(row.robotsAllowed, locale),
         row.robotsAllowed === "yes"
           ? "good"
           : row.robotsAllowed === "no"
@@ -161,7 +194,11 @@ function renderRows(
     const indexCell = document.createElement("td");
     indexCell.append(
       badge(
-        stateLabel(row.indexingAllowed, locale),
+        row.indexingAllowed === "yes"
+          ? copy[locale].allowed
+          : row.indexingAllowed === "no"
+            ? copy[locale].blocked
+            : stateLabel(row.indexingAllowed, locale),
         row.indexingAllowed === "yes"
           ? "good"
           : row.indexingAllowed === "no"
@@ -171,6 +208,37 @@ function renderRows(
     );
     const canonicalCell = document.createElement("td");
     canonicalCell.textContent = row.canonicalState.replaceAll("_", " ");
+    const googleCell = document.createElement("td");
+    const googleLink = document.createElement("a");
+    googleLink.href = googleSiteSearchUrl(row.requestedUrl);
+    googleLink.target = "_blank";
+    googleLink.rel = "noreferrer";
+    googleLink.dataset.googleSiteCheck = "url";
+    googleLink.textContent = copy[locale].checkGoogle;
+    const googleStatus = document.createElement("span");
+    googleStatus.className = "domain-scan-google-status";
+    const observation = googleObservations.get(row.requestedUrl);
+    googleStatus.textContent = observation == null
+      ? copy[locale].notChecked
+      : observation.outcome === "result_seen"
+        ? copy[locale].resultSeen
+        : copy[locale].noResultSeen;
+    googleStatus.dataset.state = observation?.outcome ?? "not_checked";
+    const googleChoices = document.createElement("span");
+    googleChoices.className = "domain-scan-google-choices";
+    for (const [outcome, label] of [
+      ["result_seen", copy[locale].markSeen],
+      ["no_result_seen", copy[locale].markMissing],
+    ] as const) {
+      const choice = document.createElement("button");
+      choice.type = "button";
+      choice.dataset.googleObservation = outcome;
+      choice.dataset.googleUrl = row.requestedUrl;
+      choice.textContent = label;
+      choice.setAttribute("aria-pressed", String(observation?.outcome === outcome));
+      googleChoices.append(choice);
+    }
+    googleCell.append(googleLink, googleStatus, googleChoices);
     const findingCell = document.createElement("td");
     const relevantFindings = row.findings.filter(
       (code) => code !== "meta_description_missing",
@@ -188,6 +256,7 @@ function renderRows(
       robotsCell,
       indexCell,
       canonicalCell,
+      googleCell,
       findingCell,
     );
     body.append(tr);
@@ -198,8 +267,19 @@ function renderRows(
   }
 }
 
-function download(report: DomainScanReport): void {
-  const blob = new Blob([JSON.stringify(report, null, 2)], {
+function download(
+  report: DomainScanReport,
+  googleObservations: ReadonlyMap<string, GoogleSpotCheckObservation>,
+): void {
+  const exportedReport = {
+    ...report,
+    googleSpotChecks: {
+      method: "user_observed_google_site_operator",
+      accuracy: "result_seen_is_supporting_evidence;no_result_seen_is_inconclusive",
+      observations: [...googleObservations.values()],
+    },
+  };
+  const blob = new Blob([JSON.stringify(exportedReport, null, 2)], {
     type: "application/json",
   });
   const href = URL.createObjectURL(blob);
@@ -220,7 +300,21 @@ function mount(root: Element): void {
   const error = root.querySelector("[data-domain-scan-error]");
   const filter = root.querySelector("[data-domain-scan-filter]");
   const downloadButton = root.querySelector("[data-domain-scan-download]");
+  const domainGoogleButton = root.querySelector("[data-domain-google-site-check]");
   let report: DomainScanReport | null = null;
+  const googleObservations = new Map<string, GoogleSpotCheckObservation>();
+
+  const updateGoogleSummary = (): void => {
+    if (report == null) return;
+    const seen = [...googleObservations.values()].filter(
+      (observation) => observation.outcome === "result_seen",
+    ).length;
+    text(root.querySelector('[data-summary="google-seen"]'), String(seen));
+    text(
+      root.querySelector('[data-summary="google-unchecked"]'),
+      String(Math.max(0, report.checkedUrlCount - googleObservations.size)),
+    );
+  };
 
   if (
     !(form instanceof HTMLFormElement) ||
@@ -253,17 +347,23 @@ function mount(root: Element): void {
         root.querySelector('[data-summary="problems"]'),
         String(report.rows.filter(hasIssue).length),
       );
+      googleObservations.clear();
+      updateGoogleSummary();
       const meta = `${copy[locale].source}: ${copy[locale][report.discoveredFrom]} · ${
         report.cacheState === "hit"
           ? copy[locale].cacheHit
           : copy[locale].cacheMiss
       }${report.truncated ? ` · ${copy[locale].truncated}` : ""}`;
       text(root.querySelector("[data-domain-scan-meta]"), meta);
+      if (domainGoogleButton instanceof HTMLAnchorElement) {
+        domainGoogleButton.href = googleSiteSearchUrl(report.siteUrl);
+      }
       renderRows(
         root,
         report,
         locale,
         filter instanceof HTMLSelectElement ? filter.value : "all",
+        googleObservations,
       );
       if (results instanceof HTMLElement) {
         results.hidden = false;
@@ -296,13 +396,51 @@ function mount(root: Element): void {
   });
   filter?.addEventListener("change", () => {
     if (report != null && filter instanceof HTMLSelectElement) {
-      renderRows(root, report, locale, filter.value);
+      renderRows(root, report, locale, filter.value, googleObservations);
     }
   });
   downloadButton?.addEventListener("click", () => {
     if (report != null) {
-      download(report);
+      download(report, googleObservations);
       trackEvent("report_action", { action: "download", outcome: "success" });
+    }
+  });
+  root.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const link = target.closest("[data-google-site-check], [data-domain-google-site-check]");
+    if (link instanceof HTMLAnchorElement) {
+      trackEvent("google_spot_check_opened", {
+        tool: "domain_scan",
+        scope: link.hasAttribute("data-domain-google-site-check") ? "domain" : "url",
+      });
+    }
+    const observationButton = target.closest("[data-google-observation]");
+    if (observationButton instanceof HTMLButtonElement && report != null) {
+      const url = observationButton.dataset.googleUrl;
+      const outcome = observationButton.dataset.googleObservation;
+      if (
+        typeof url === "string" &&
+        (outcome === "result_seen" || outcome === "no_result_seen")
+      ) {
+        googleObservations.set(url, {
+          url,
+          outcome,
+          observedAt: new Date().toISOString(),
+        });
+        renderRows(
+          root,
+          report,
+          locale,
+          filter instanceof HTMLSelectElement ? filter.value : "all",
+          googleObservations,
+        );
+        updateGoogleSummary();
+        trackEvent("google_spot_check_recorded", {
+          tool: "domain_scan",
+          outcome,
+        });
+      }
     }
   });
 }

@@ -1516,7 +1516,11 @@ a {
 }
 
 .domain-scan-actions select,
-.domain-scan-actions button {
+.domain-scan-actions button,
+.domain-scan-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-height: 42px;
   padding: 0.6rem 0.85rem;
   border: 1px solid var(--line-strong);
@@ -1525,6 +1529,7 @@ a {
   color: var(--paper);
   font: inherit;
   font-size: 0.88rem;
+  text-decoration: none;
 }
 
 .domain-scan-actions button {
@@ -1535,14 +1540,58 @@ a {
 }
 
 .domain-scan-actions button:hover,
-.domain-scan-actions button:focus-visible {
+.domain-scan-actions button:focus-visible,
+.domain-scan-actions a:hover,
+.domain-scan-actions a:focus-visible {
   background: var(--signal);
   color: #fff;
 }
 
+.domain-scan-actions a {
+  border-color: var(--signal);
+  color: var(--signal);
+  font-weight: 600;
+}
+
+.domain-scan-help {
+  margin: 0 0 1rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--surface) 60%, #fff);
+}
+
+.domain-scan-help summary {
+  color: var(--paper);
+  cursor: pointer;
+  font-weight: 650;
+}
+
+.domain-scan-help dl {
+  display: grid;
+  gap: 0.65rem;
+  margin: 1rem 0;
+}
+
+.domain-scan-help dl div {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.28fr) 1fr;
+  gap: 1rem;
+}
+
+.domain-scan-help dt {
+  font-weight: 650;
+}
+
+.domain-scan-help dd,
+.domain-scan-help p {
+  margin: 0;
+  color: var(--paper-soft);
+}
+
 .domain-scan-summary {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   margin-bottom: 1rem;
   border: 1px solid var(--line);
   border-radius: 7px;
@@ -1578,7 +1627,7 @@ a {
 
 .domain-scan-table {
   width: 100%;
-  min-width: 940px;
+  min-width: 1120px;
   border-collapse: collapse;
   background: #fff;
 }
@@ -1597,6 +1646,64 @@ a {
   color: var(--paper-soft);
   font-weight: 600;
   white-space: nowrap;
+}
+
+.domain-scan-table th abbr {
+  text-decoration: underline dotted;
+  text-underline-offset: 0.18em;
+  cursor: help;
+}
+
+.domain-scan-table td [data-google-site-check] {
+  color: var(--signal);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.domain-scan-table td:has([data-google-site-check]) {
+  min-width: 190px;
+}
+
+.domain-scan-google-status {
+  display: block;
+  margin-top: 0.45rem;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.domain-scan-google-status[data-state="result_seen"] {
+  color: var(--ok);
+  font-weight: 700;
+}
+
+.domain-scan-google-status[data-state="no_result_seen"] {
+  color: var(--paper-soft);
+  font-weight: 650;
+}
+
+.domain-scan-google-choices {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 0.55rem;
+}
+
+.domain-scan-google-choices button {
+  padding: 0.35rem 0.45rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  background: #fff;
+  color: var(--paper-soft);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.7rem;
+  text-align: left;
+}
+
+.domain-scan-google-choices button[aria-pressed="true"] {
+  border-color: var(--signal);
+  background: color-mix(in srgb, var(--signal) 8%, #fff);
+  color: var(--signal);
+  font-weight: 700;
 }
 
 .domain-scan-table tbody tr:last-child td {
@@ -2211,8 +2318,14 @@ a {
   }
 
   .domain-scan-actions select,
-  .domain-scan-actions button {
+  .domain-scan-actions button,
+  .domain-scan-actions a {
     width: 100%;
+  }
+
+  .domain-scan-help dl div {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
   }
 
   .domain-scan-summary {
@@ -2225,6 +2338,10 @@ a {
 
   .domain-scan-summary article:nth-child(n + 3) {
     border-top: 1px solid var(--line);
+  }
+
+  .domain-scan-summary article:nth-child(odd) {
+    border-left: 0;
   }
 
   .crawler-tool-intro h1 {

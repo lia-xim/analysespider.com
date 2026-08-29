@@ -98,6 +98,14 @@ const eventSchemas = {
     ],
     outcome: ["success", "failure", "unavailable"],
   },
+  google_spot_check_opened: {
+    tool: ["domain_scan"],
+    scope: ["domain", "url"],
+  },
+  google_spot_check_recorded: {
+    tool: ["domain_scan"],
+    outcome: ["result_seen", "no_result_seen"],
+  },
   tool_preset_used: {
     tool: [
       "http_response",

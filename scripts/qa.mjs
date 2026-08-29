@@ -718,6 +718,10 @@ const domainScanSource = await readFile(
   new URL("../src/lib/domain-scan.ts", import.meta.url),
   "utf8",
 );
+const analyticsSource = await readFile(
+  new URL("../src/lib/analytics.ts", import.meta.url),
+  "utf8",
+);
 const domainScanHtml = await readFile(
   await findOutput("/tools/google-index-check"),
   "utf8",
@@ -763,7 +767,9 @@ for (const marker of [
   "data-domain-scan-form",
   "data-domain-scan-filter",
   "data-domain-scan-download",
+  "data-domain-google-site-check",
   "technical website check, not a Google index report",
+  "Google spot-check",
 ]) {
   pass(
     domainScanHtml.includes(marker),
@@ -778,8 +784,22 @@ pass(
 );
 pass(
   domainScanSource.includes('tool: "domain_scan"') &&
+    domainScanSource.includes('trackEvent("google_spot_check_opened"') &&
     !domainScanSource.includes("requestedUrl: report.siteUrl"),
   "website scan analytics must remain input-free",
+);
+pass(
+  analyticsSource.includes("google_spot_check_opened") &&
+    analyticsSource.includes("google_spot_check_recorded") &&
+    analyticsSource.includes('scope: ["domain", "url"]'),
+  "Google spot-check analytics must record only bounded scope and outcome, never the checked URL",
+);
+
+pass(
+  domainScanSource.includes("user_observed_google_site_operator") &&
+    domainScanSource.includes("result_seen_is_supporting_evidence;no_result_seen_is_inconclusive") &&
+    domainScanSource.includes("observedAt"),
+  "Google spot-check observations must remain explicitly user-observed, timestamped and evidence-bounded",
 );
 const benchmarkEvidence = JSON.parse(
   await readFile(
