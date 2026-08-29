@@ -541,6 +541,10 @@ pass(
   "CSP must allow the local Cap proof worker",
 );
 pass(csp.includes("script-src 'self' 'wasm-unsafe-eval' https://analytics.contextter.com"), "CSP must allow local scripts, the Cap WASM solver and the analytics host");
+pass(
+  csp.includes("style-src 'self' 'unsafe-hashes' 'sha256-wztaw4JykxcHsDODFshiqt3woVAWzD4k5Zi3KJI3B5U='"),
+  "CSP must allow only the reviewed Cap inline-style hash",
+);
 pass(!csp.includes("'unsafe-inline'"), "CSP must not allow inline script or style execution");
 pass(
   !csp.includes(" 'unsafe-eval'"),
