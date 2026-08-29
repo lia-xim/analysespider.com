@@ -3,6 +3,9 @@ import { normalizeUrlInput } from "./public-url.mjs";
 const GATEWAY_BASE_URL = "https://tools.contextter.com/free-tools/v1";
 const TOOL_PATH = "analysespider-crawler-view";
 const TOOL_SCOPE = "tool_analysespider_crawler";
+const DOMAIN_SCAN_PATH = "analysespider-domain-scan";
+const DOMAIN_SCAN_SCOPE = "tool_analysespider_domain_scan";
+const DOMAIN_SCAN_MAX_URLS = 50;
 const CAP_ORIGIN = "https://cap.local";
 
 export type EligibilityState = "yes" | "no" | "mixed" | "unknown";
@@ -84,6 +87,39 @@ export interface CrawlerReport {
   readonly limitations: readonly string[];
 }
 
+export interface DomainScanReport {
+  readonly requestedUrl: string;
+  readonly siteUrl: string;
+  readonly discoveredFrom: "sitemap" | "homepage_links" | "homepage_only";
+  readonly sitemapUrls: readonly string[];
+  readonly discoveredUrlCount: number;
+  readonly checkedUrlCount: number;
+  readonly truncated: boolean;
+  readonly summary: {
+    readonly fetchable: number;
+    readonly indexable: number;
+    readonly blocked: number;
+    readonly errors: number;
+  };
+  readonly rows: readonly {
+    readonly requestedUrl: string;
+    readonly finalUrl: string;
+    readonly status: number | null;
+    readonly fetchState: "fetched" | "blocked_or_challenged" | "failed";
+    readonly robotsAllowed: "yes" | "no" | "unknown";
+    readonly indexingAllowed: "yes" | "no" | "unknown";
+    readonly canonicalState:
+      "missing" | "invalid" | "self" | "same_origin" | "different_origin";
+    readonly canonicalUrl: string | null;
+    readonly titlePresent: boolean;
+    readonly visibleMainTextLength: number;
+    readonly findings: readonly string[];
+  }[];
+  readonly cacheState: "hit" | "miss";
+  readonly fetchedAt: string;
+  readonly limitations: readonly string[];
+}
+
 interface CapProof {
   readonly token: string;
   readonly solutions: readonly number[];
@@ -94,6 +130,7 @@ interface CapProof {
 
 interface ActiveSession {
   readonly inputDigest: string;
+  readonly scope: string;
   proof?: CapProof;
   error?: GatewayError;
 }
@@ -184,7 +221,7 @@ function installDispatcher(): void {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          scope: TOOL_SCOPE,
+          scope: session.scope,
           inputDigest: session.inputDigest,
         }),
       });
@@ -241,7 +278,10 @@ async function digest(value: string): Promise<string> {
   ).join("");
 }
 
-async function solveProof(inputDigest: string): Promise<CapProof> {
+async function solveProof(
+  scope: string,
+  inputDigest: string,
+): Promise<CapProof> {
   if (
     typeof Worker !== "function" ||
     typeof crypto.subtle === "undefined" ||
@@ -259,7 +299,7 @@ async function solveProof(inputDigest: string): Promise<CapProof> {
       : Array.from(crypto.getRandomValues(new Uint8Array(16)), (byte) =>
           byte.toString(16).padStart(2, "0"),
         ).join("");
-  const session: ActiveSession = { inputDigest };
+  const session: ActiveSession = { inputDigest, scope };
   sessions.set(id, session);
   let cap: CapInstance | undefined;
   try {
@@ -290,6 +330,23 @@ function isCrawlerReport(value: unknown): value is CrawlerReport {
   );
 }
 
+function isDomainScanReport(value: unknown): value is DomainScanReport {
+  return (
+    isRecord(value) &&
+    typeof value.siteUrl === "string" &&
+    typeof value.checkedUrlCount === "number" &&
+    isRecord(value.summary) &&
+    Array.isArray(value.rows) &&
+    value.rows.every(
+      (row) =>
+        isRecord(row) &&
+        typeof row.requestedUrl === "string" &&
+        (typeof row.status === "number" || row.status === null) &&
+        typeof row.indexingAllowed === "string",
+    )
+  );
+}
+
 export async function runCrawlerCheck(
   rawUrl: string,
   requestIdentity?: CrawlerRequestIdentity,
@@ -306,7 +363,7 @@ export async function runCrawlerCheck(
     requestIdentity === undefined
       ? normalizedUrl
       : `${normalizedUrl}|request-identity=${requestIdentity}`;
-  const proof = await solveProof(await digest(normalizedInput));
+  const proof = await solveProof(TOOL_SCOPE, await digest(normalizedInput));
   const response = await window.fetch(`${GATEWAY_BASE_URL}/${TOOL_PATH}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -324,6 +381,37 @@ export async function runCrawlerCheck(
     !isRecord(payload) ||
     payload.success !== true ||
     !isCrawlerReport(payload.data)
+  ) {
+    throw new GatewayError("SERVICE_UNAVAILABLE");
+  }
+  return payload.data;
+}
+
+export async function runDomainScan(rawUrl: string): Promise<DomainScanReport> {
+  const normalizedUrl = normalizePublicUrl(rawUrl);
+  const maxUrls = DOMAIN_SCAN_MAX_URLS;
+  const normalizedInput = `${normalizedUrl}|max-urls=${String(maxUrls)}`;
+  const proof = await solveProof(
+    DOMAIN_SCAN_SCOPE,
+    await digest(normalizedInput),
+  );
+  const response = await window.fetch(
+    `${GATEWAY_BASE_URL}/${DOMAIN_SCAN_PATH}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        input: { url: normalizedUrl, maxUrls },
+        cap: proof,
+      }),
+    },
+  );
+  if (!response.ok) throw await publicError(response);
+  const payload: unknown = await response.json().catch(() => undefined);
+  if (
+    !isRecord(payload) ||
+    payload.success !== true ||
+    !isDomainScanReport(payload.data)
   ) {
     throw new GatewayError("SERVICE_UNAVAILABLE");
   }

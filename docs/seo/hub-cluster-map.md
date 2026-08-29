@@ -27,6 +27,7 @@ Each cluster must remain useful without Contextter and must link tools, workflow
 
 - English tool: `/tools/crawler-view`
 - German tool: `/de/tools/crawler-sicht`
+- Index-readiness focus: `/tools/google-index-check`, `/de/tools/google-index-check`
 - Local follow-up: `/tools/url-inspector`, `/tools/robots-rule-tester`
 - Method and privacy boundary: `/methodology-and-privacy`, `/privacy`
 - Crawler identity and role context: `/crawlers`, `/de/crawler`, `/reference/crawler-verification-methods`
@@ -34,6 +35,7 @@ Each cluster must remain useful without Contextter and must link tools, workflow
 - Result path: four eligibility answers -> visible purpose-based crawler matrix -> local Markdown/JSON export -> 24-hour browser-local comparison -> optional simulated-token response comparison.
 - The simulation is one additional bounded request with an allowlisted product token. It exposes the exact User-Agent and compares status, response headers, canonical, noindex, visible text and HTML hash, but never presents the request as the real vendor crawler.
 - Rendering guide pair: `/blog/initial-html-vs-rendered-dom`, `/de/wissen/initiales-html-vs-gerenderter-dom`.
+- The index checker reports only current technical readiness. A manual `site:` link is labelled as a clue; authenticated Google URL Inspection remains the deeper common-owner workflow.
 
 ## 3. Robots and crawler access
 

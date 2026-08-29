@@ -1,0 +1,182 @@
+---
+import type { Locale } from "../data/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const de = locale === "de";
+const copy = de
+  ? {
+      title: "Prüfe bis zu 50 URLs deiner Website.",
+      intro:
+        "Gib nur die Domain ein. AnalyseSpider liest robots.txt und Sitemap, prüft die gefundenen URLs und zeigt technische Indexierungsprobleme in einer Tabelle.",
+      label: "Öffentliche Website",
+      placeholder: "example.com",
+      submit: "Website prüfen",
+      note: "Maximal 50 URLs · 2 Scans je 10 Minuten · 10 Scans je 24 Stunden · Cache höchstens 1 Stunde",
+      warning:
+        "Keine privaten, signierten oder geheimen URLs eingeben. Vollständige URLs können im zeitlich begrenzten Gateway-Cache stehen.",
+      progress:
+        "Sitemap wird gesucht und bis zu 50 öffentliche URLs werden geprüft …",
+      error: "Der Website-Check konnte nicht abgeschlossen werden.",
+      checked: "Geprüft",
+      fetchable: "Abrufbar",
+      indexable: "Technisch indexierbar",
+      problems: "Mit Problemen",
+      all: "Alle URLs",
+      issues: "Nur Probleme",
+      source: "Gefunden über",
+      sitemap: "Sitemap",
+      links: "Links auf der Startseite",
+      homepage: "Nur Startseite",
+      url: "URL",
+      http: "HTTP",
+      robots: "Googlebot",
+      indexing: "Indexierung",
+      canonical: "Canonical",
+      finding: "Hinweis",
+      download: "JSON herunterladen",
+      boundaryTitle: "Das ist ein technischer Website-Check, kein Google-Indexbericht.",
+      boundary:
+        "Ein grünes Ergebnis bedeutet: Die beobachtete Serverantwort enthält keinen offensichtlichen technischen Blocker. Ob Google die URL tatsächlich indexiert hat, lässt sich zuverlässig nur über deine Search-Console-Property prüfen.",
+      contextter: "Echten Google-Status in Contextter prüfen",
+      disclosure:
+        "Contextter und AnalyseSpider werden von Matthias Ramahi betrieben. Das ist eine weiterführende Funktion desselben Betreibers, keine unabhängige Empfehlung.",
+      guide: "Warum eine technisch erreichbare Seite trotzdem fehlen kann",
+    }
+  : {
+      title: "Check up to 50 URLs on your website.",
+      intro:
+        "Enter only the domain. AnalyseSpider reads robots.txt and the sitemap, checks the discovered URLs, and shows technical indexing problems in one table.",
+      label: "Public website",
+      placeholder: "example.com",
+      submit: "Check website",
+      note: "Maximum 50 URLs · 2 scans per 10 minutes · 10 scans per 24 hours · cached for no more than 1 hour",
+      warning:
+        "Do not enter private, signed, or secret-bearing URLs. Complete URLs can appear in the time-limited gateway cache.",
+      progress: "Finding the sitemap and checking up to 50 public URLs …",
+      error: "The website check could not be completed.",
+      checked: "Checked",
+      fetchable: "Fetchable",
+      indexable: "Technically indexable",
+      problems: "With problems",
+      all: "All URLs",
+      issues: "Problems only",
+      source: "Discovered from",
+      sitemap: "Sitemap",
+      links: "Homepage links",
+      homepage: "Homepage only",
+      url: "URL",
+      http: "HTTP",
+      robots: "Googlebot",
+      indexing: "Indexing",
+      canonical: "Canonical",
+      finding: "Finding",
+      download: "Download JSON",
+      boundaryTitle: "This is a technical website check, not a Google index report.",
+      boundary:
+        "A green result means the observed server response contains no obvious technical blocker. Only your Search Console property can reliably show whether Google has actually indexed the URL.",
+      contextter: "Check the real Google status in Contextter",
+      disclosure:
+        "Contextter and AnalyseSpider are operated by Matthias Ramahi. This is a deeper feature from the same operator, not an independent recommendation.",
+      guide: "How HTTP responses affect crawl and indexing checks",
+    };
+---
+
+<section class="domain-scan" data-domain-scan data-locale={locale}>
+  <header class="domain-scan-intro">
+    <p class="eyebrow">{de ? "Website Index Check" : "Website index check"}</p>
+    <h1>{copy.title}</h1>
+    <p>{copy.intro}</p>
+  </header>
+
+  <form class="crawler-check-form" data-domain-scan-form novalidate>
+    <label class="visually-hidden" for={`domain-scan-url-${locale}`}>{copy.label}</label>
+    <div class="crawler-input-row">
+      <input
+        id={`domain-scan-url-${locale}`}
+        name="url"
+        type="text"
+        inputmode="url"
+        autocomplete="url"
+        required
+        maxlength="2048"
+        placeholder={copy.placeholder}
+        aria-describedby={`domain-scan-note-${locale} domain-scan-warning-${locale}`}
+      />
+      <button type="submit">{copy.submit}</button>
+    </div>
+    <p id={`domain-scan-note-${locale}`} class="crawler-form-note">{copy.note}</p>
+    <p id={`domain-scan-warning-${locale}`} class="crawler-form-note crawler-sensitive-url-note">{copy.warning}</p>
+  </form>
+
+  <p class="crawler-progress" data-domain-scan-progress role="status" aria-live="polite" hidden>
+    <span aria-hidden="true"></span>{copy.progress}
+  </p>
+
+  <section class="crawler-error" data-domain-scan-error role="alert" hidden>
+    <h2>{copy.error}</h2>
+    <p data-domain-scan-error-text></p>
+  </section>
+
+  <div class="domain-scan-results" data-domain-scan-results hidden>
+    <div class="domain-scan-result-header">
+      <p data-domain-scan-meta></p>
+      <div class="domain-scan-actions">
+        <select data-domain-scan-filter aria-label={de ? "URLs filtern" : "Filter URLs"}>
+          <option value="all">{copy.all}</option>
+          <option value="issues">{copy.issues}</option>
+        </select>
+        <button type="button" data-domain-scan-download>{copy.download}</button>
+      </div>
+    </div>
+
+    <div class="domain-scan-summary" aria-live="polite">
+      <article><span>{copy.checked}</span><strong data-summary="checked">0</strong></article>
+      <article><span>{copy.fetchable}</span><strong data-summary="fetchable">0</strong></article>
+      <article><span>{copy.indexable}</span><strong data-summary="indexable">0</strong></article>
+      <article><span>{copy.problems}</span><strong data-summary="problems">0</strong></article>
+    </div>
+
+    <div class="domain-scan-table-wrap">
+      <table class="domain-scan-table">
+        <thead>
+          <tr>
+            <th scope="col">{copy.url}</th>
+            <th scope="col">{copy.http}</th>
+            <th scope="col">{copy.robots}</th>
+            <th scope="col">{copy.indexing}</th>
+            <th scope="col">{copy.canonical}</th>
+            <th scope="col">{copy.finding}</th>
+          </tr>
+        </thead>
+        <tbody data-domain-scan-rows></tbody>
+      </table>
+    </div>
+    <p class="domain-scan-empty" data-domain-scan-empty hidden></p>
+
+    <section class="crawler-index-boundary">
+      <div>
+        <p class="eyebrow">{de ? "Grenze des Checks" : "Check boundary"}</p>
+        <h2>{copy.boundaryTitle}</h2>
+        <p>{copy.boundary}</p>
+      </div>
+      <div class="crawler-index-actions">
+        <a class="button primary" href={de ? "https://contextter.com/de/features/site-audit" : "https://contextter.com/features/site-audit"}>
+          {copy.contextter}
+        </a>
+      </div>
+      <p class="crawler-policy-note">{copy.disclosure}</p>
+      <p class="crawler-policy-note">
+        <a href={de ? "/de/wissen/warum-wird-meine-seite-nicht-indexiert" : "/guides/http-response-debugging"}>{copy.guide}</a>
+      </p>
+    </section>
+  </div>
+</section>
+
+<script>
+  import { mountDomainScanTools } from "../lib/domain-scan";
+  mountDomainScanTools();
+</script>

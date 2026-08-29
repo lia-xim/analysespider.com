@@ -3,10 +3,12 @@ import type { Locale } from "../data/i18n";
 
 interface Props {
   locale: Locale;
+  variant?: "crawler" | "index";
 }
 
-const { locale } = Astro.props;
+const { locale, variant = "crawler" } = Astro.props;
 const de = locale === "de";
+const indexMode = variant === "index";
 const copy = de
   ? {
       title: "Sieh, was ein Crawler auf deiner Seite findet.",
@@ -132,11 +134,19 @@ const copy = de
       redirectHandoff: "Open the observed redirect chain",
       responseHandoff: "Inspect this HTTP response",
     };
+const pageTitle = indexMode
+  ? (de ? "Ist diese URL technisch bereit für Google?" : "Is this URL technically ready for Google?")
+  : copy.title;
+const pageIntro = indexMode
+  ? (de
+      ? "Prüfe eine URL auf die häufigsten technischen Indexierungsbremsen. Für den echten Google-Indexstatus brauchst du Search Console."
+      : "Check one URL for the most common technical indexing blockers. The actual Google index status requires Search Console.")
+  : copy.intro;
 ---
-<section class="crawler-tool" data-crawler-tool data-locale={locale}>
+<section class="crawler-tool" data-crawler-tool data-locale={locale} data-tool-variant={variant}>
   <div class="crawler-tool-intro">
-    <h1>{copy.title}</h1>
-    <p>{copy.intro}</p>
+    <h1>{pageTitle}</h1>
+    <p>{pageIntro}</p>
   </div>
 
   <form class="crawler-check-form" data-crawler-form novalidate>
@@ -196,6 +206,35 @@ const copy = de
         <p data-status-description></p>
       </article>
     </div>
+
+    {indexMode && (
+      <section class="crawler-index-boundary" aria-labelledby={`crawler-index-boundary-${locale}`}>
+        <div>
+          <p class="eyebrow">{de ? "Wichtige Grenze" : "Important boundary"}</p>
+          <h2 id={`crawler-index-boundary-${locale}`}>
+            {de ? "Technisch indexierbar ist nicht dasselbe wie bei Google indexiert." : "Technically indexable is not the same as indexed by Google."}
+          </h2>
+          <p>
+            {de
+              ? "Dieser Check prüft die aktuelle Serverantwort, robots.txt, noindex, Canonical und sichtbaren HTML-Inhalt. Er fragt Google nicht automatisiert ab und verspricht keine Indexierung."
+              : "This check reads the current server response, robots.txt, noindex, canonical and visible HTML. It does not automate Google Search and cannot promise indexing."}
+          </p>
+        </div>
+        <div class="crawler-index-actions">
+          <a class="button" data-google-search-link href="https://www.google.com/search?q=site%3Aexample.com" target="_blank" rel="noreferrer">
+            {de ? "Manuell bei Google prüfen" : "Check manually on Google"}
+          </a>
+          <a class="button primary" href="https://contextter.com/features/site-audit">
+            {de ? "Tiefen Index-Monitor öffnen" : "Open the deep index monitor"}
+          </a>
+        </div>
+        <p class="crawler-policy-note">
+          {de
+            ? "Eine site:-Suche ist nur ein Hinweis. Der Contextter-Monitor nutzt deine eigene Search-Console-Property und zeigt Googles URL-Inspection-Antwort neben dem Live-Crawl. Gemeinsamer Betreiber: Matthias Ramahi."
+            : "A site: search is only a clue. The Contextter monitor uses your own Search Console property and places Google's URL Inspection answer next to the live crawl. Common operator: Matthias Ramahi."}
+        </p>
+      </section>
+    )}
 
     <section class="crawler-policy-summary" aria-labelledby={`crawler-policy-${locale}`}>
       <header>

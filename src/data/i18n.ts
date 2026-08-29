@@ -21,6 +21,7 @@ export const localePairs = [
   ["/", "/de"],
   ["/tools", "/de/tools"],
   ["/tools/crawler-view", "/de/tools/crawler-sicht"],
+  ["/tools/google-index-check", "/de/tools/google-index-check"],
   ["/tools/url-inspector", "/de/tools/http-antwort"],
   ["/tools/redirect-chain", "/de/tools/weiterleitungskette"],
   ["/tools/robots-rule-tester", "/de/tools/robots-regel-test"],

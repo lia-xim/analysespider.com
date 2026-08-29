@@ -1,0 +1,15 @@
+---
+import DomainScanTool from "../../../components/DomainScanTool.astro";
+import ToolNavigator from "../../../components/ToolNavigator.astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+---
+<BaseLayout
+  title="Google Index Checker: technische Indexierbarkeit prüfen — AnalyseSpider"
+  description="Gib eine Website ein und prüfe bis zu 50 Sitemap-URLs auf HTTP-, robots.txt-, noindex-, Canonical- und HTML-Probleme."
+  canonicalPath="/de/tools/google-index-check"
+  alternatePath="/tools/google-index-check"
+  bodyClass="crawler-tool-page"
+>
+  <ToolNavigator current="/de/tools/google-index-check" locale="de" />
+  <DomainScanTool locale="de" />
+</BaseLayout>

@@ -26,6 +26,21 @@
       "permanent": true
     },
     {
+      "source": "/ip2country",
+      "destination": "/tools/ip-location",
+      "permanent": true
+    },
+    {
+      "source": "/ip2country/",
+      "destination": "/tools/ip-location",
+      "permanent": true
+    },
+    {
+      "source": "/ip2country/IP-COUNTRY-REGION.html",
+      "destination": "/guides/ip-geolocation-data",
+      "permanent": true
+    },
+    {
       "source": "/index.html",
       "destination": "/",
       "permanent": true
@@ -53,6 +68,22 @@
     {
       "source": "/download.html",
       "destination": "/api/legacy-gone?path=/download.html"
+    },
+    {
+      "source": "/download",
+      "destination": "/api/legacy-gone?path=/download"
+    },
+    {
+      "source": "/download/",
+      "destination": "/api/legacy-gone?path=/download/"
+    },
+    {
+      "source": "/download.h",
+      "destination": "/api/legacy-gone?path=/download.h"
+    },
+    {
+      "source": "/lander",
+      "destination": "/api/legacy-gone?path=/lander"
     },
     {
       "source": "/order.html",

@@ -8,7 +8,7 @@ Launch state: public, indexable
 
 Build a standalone, plain-language crawling and technical SEO resource for technical SEOs, developers, site owners, and web-operations teams. The site must let a visitor use a tool, answer one practical question, or compare crawler roles before asking them to use another product.
 
-The maintained product combines browser-local evidence tools with one protected, bounded public-URL operation:
+The maintained product combines browser-local evidence tools with protected, bounded public-URL operations:
 
 1. Parse bounded Apache and Nginx access-log samples.
 2. Inspect pasted HTTP response headers and HTML directives.
@@ -17,6 +17,7 @@ The maintained product combines browser-local evidence tools with one protected,
 5. Show search, training, and user-fetch crawler policies separately after a URL check.
 6. Export a report, keep up to five results locally for 24 hours, and compare a later check with an earlier one.
 7. Compare the normal response with one additional request carrying a selected crawler product token, explicitly labelled as a header simulation rather than a real crawler identity.
+8. Discover a site's sitemap or homepage links and check at most 50 same-site public URLs for technical index-readiness signals. This is not a Google index-status report.
 
 ## Experience and information architecture
 
@@ -35,7 +36,7 @@ The site is assigned to Contextter. Common ownership must be disclosed near any 
 ## Non-goals
 
 - Recreate or distribute former software, binaries, databases, screenshots, documentation, copy, branding, or user accounts.
-- Offer unrestricted URL fetching, active security testing, port scanning, arbitrary crawling, or a general-purpose proxy.
+- Offer unrestricted URL fetching, active security testing, port scanning, arbitrary crawling, or a general-purpose proxy. The website check remains same-site, discovery-led, and capped at 50 URLs.
 - Sell IP blocking, discrimination, or high-precision location claims.
 - Blanket-redirect unrelated historical URLs to the homepage.
 - Hide useful results behind signup or use the site mainly as a link shell.

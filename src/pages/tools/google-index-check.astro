@@ -1,0 +1,15 @@
+---
+import DomainScanTool from "../../components/DomainScanTool.astro";
+import ToolNavigator from "../../components/ToolNavigator.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+<BaseLayout
+  title="Google Index Checker: test technical index readiness — AnalyseSpider"
+  description="Enter one website and check up to 50 sitemap URLs for HTTP, robots.txt, noindex, canonical and initial HTML problems."
+  canonicalPath="/tools/google-index-check"
+  alternatePath="/de/tools/google-index-check"
+  bodyClass="crawler-tool-page"
+>
+  <ToolNavigator current="/tools/google-index-check" />
+  <DomainScanTool locale="en" />
+</BaseLayout>

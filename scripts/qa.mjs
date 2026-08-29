@@ -12,10 +12,7 @@ const publicUrlCases = [
     "matthiasramahi.de/impressum.html?test=1#abschnitt",
     "https://matthiasramahi.de/impressum.html?test=1",
   ],
-  [
-    "http://MatthiasRamahi.de:80/kontakt",
-    "http://matthiasramahi.de/kontakt",
-  ],
+  ["http://MatthiasRamahi.de:80/kontakt", "http://matthiasramahi.de/kontakt"],
   ["//matthiasramahi.de/portfolio", "https://matthiasramahi.de/portfolio"],
 ];
 for (const [input, expected] of publicUrlCases) {
@@ -23,7 +20,11 @@ for (const [input, expected] of publicUrlCases) {
     throw new Error(`URL normalization mismatch for ${input}`);
   }
 }
-for (const input of ["", "ftp://matthiasramahi.de/file", "https://user:secret@example.com/"]) {
+for (const input of [
+  "",
+  "ftp://matthiasramahi.de/file",
+  "https://user:secret@example.com/",
+]) {
   let rejected = false;
   try {
     normalizeUrlInput(input);
@@ -46,9 +47,16 @@ const { redirectChainFixtureResults } = await import(
 const { crawlerLabBuiltPaths } = await import(
   new URL("../src/data/crawler-lab.ts", import.meta.url)
 );
-const { localePairs } = await import(new URL("../src/data/i18n.ts", import.meta.url));
-const { sanitizeEvent } = await import(new URL("../src/lib/analytics.ts", import.meta.url));
-const { default: crawlerRanges } = await import(new URL("../src/data/crawler-ip-ranges.json", import.meta.url), { with: { type: "json" } });
+const { localePairs } = await import(
+  new URL("../src/data/i18n.ts", import.meta.url)
+);
+const { sanitizeEvent } = await import(
+  new URL("../src/lib/analytics.ts", import.meta.url)
+);
+const { default: crawlerRanges } = await import(
+  new URL("../src/data/crawler-ip-ranges.json", import.meta.url),
+  { with: { type: "json" } }
+);
 const editorialRoutes = new Set([
   "/guides/log-file-analysis",
   "/guides/crawler-log-analysis",
@@ -79,6 +87,8 @@ const collectionRoutes = new Set([
 const toolRoutes = new Set([
   "/tools/crawler-view",
   "/de/tools/crawler-sicht",
+  "/tools/google-index-check",
+  "/de/tools/google-index-check",
   "/tools/log-file-inspector",
   "/tools/url-inspector",
   "/tools/redirect-chain",
@@ -121,6 +131,21 @@ const approvedPortfolioLinks = new Map([
       "https://ai-fanout.com/de",
     ]),
   ],
+  [
+    "/tools/google-index-check",
+    new Set([
+      "https://contextter.com/features/site-audit",
+      "https://ai-fanout.com/",
+    ]),
+  ],
+  [
+    "/de/tools/google-index-check",
+    new Set([
+      "https://contextter.com/features/site-audit",
+      "https://contextter.com/de/features/site-audit",
+      "https://ai-fanout.com/de",
+    ]),
+  ],
   ["/guides", new Set(["https://seo-fanout.com/tool/"])],
   ["/guides/appear-in-ai-search", new Set(["https://ai-fanout.com"])],
   ["/crawlers", new Set(["https://ai-fanout.com/"])],
@@ -141,16 +166,35 @@ const sanitizedAnalyticsEvent = sanitizeEvent("tool_run_succeeded", {
   log: "private log line",
 });
 pass(
-  JSON.stringify(sanitizedAnalyticsEvent) === JSON.stringify({ name: "tool_run_succeeded", data: { tool: "bot_verification", outcome: "verified" } }),
+  JSON.stringify(sanitizedAnalyticsEvent) ===
+    JSON.stringify({
+      name: "tool_run_succeeded",
+      data: { tool: "bot_verification", outcome: "verified" },
+    }),
   "analytics sanitizer must strip URLs, IPs, logs and undeclared event fields",
 );
-const expectedRangeIds = ["googlebot", "oai_searchbot", "gptbot", "chatgpt_user", "perplexitybot", "perplexity_user", "claude_searchbot", "claudebot", "claude_user"];
+const expectedRangeIds = [
+  "googlebot",
+  "oai_searchbot",
+  "gptbot",
+  "chatgpt_user",
+  "perplexitybot",
+  "perplexity_user",
+  "claude_searchbot",
+  "claudebot",
+  "claude_user",
+];
 pass(
-  expectedRangeIds.every((id) => crawlerRanges.entries.some((entry) => entry.id === id && entry.prefixes.length > 0)),
+  expectedRangeIds.every((id) =>
+    crawlerRanges.entries.some(
+      (entry) => entry.id === id && entry.prefixes.length > 0,
+    ),
+  ),
   "every maintained crawler identity must have a non-empty official range snapshot",
 );
 pass(
-  Date.now() - new Date(crawlerRanges.reviewedAt).getTime() <= 14 * 24 * 60 * 60 * 1000,
+  Date.now() - new Date(crawlerRanges.reviewedAt).getTime() <=
+    14 * 24 * 60 * 60 * 1000,
   "crawler range snapshot must be refreshed at least every 14 days",
 );
 
@@ -350,8 +394,14 @@ for (const required of [
     `privacy notice missing technology fact: ${required}`,
   );
 }
-pass(!/Google Analytics/i.test(privacy), "privacy notice must not claim an inactive analytics provider");
-pass(privacy.includes('src="https://analytics.contextter.com/script.js"'), "privacy page must include the active Umami tracker");
+pass(
+  !/Google Analytics/i.test(privacy),
+  "privacy notice must not claim an inactive analytics provider",
+);
+pass(
+  privacy.includes('src="https://analytics.contextter.com/script.js"'),
+  "privacy page must include the active Umami tracker",
+);
 pass(
   !privacy.includes("<strong>No analytics</strong>"),
   "privacy notice must not contradict documented gateway metrics with a broad no-analytics claim",
@@ -363,9 +413,15 @@ for (const href of [
   "/de/tools/robots-regel-test",
   "/de/tools/server-log-analyse",
 ]) {
-  pass(germanHome.includes(`href="${href}"`), `German homepage missing localized tool link ${href}`);
+  pass(
+    germanHome.includes(`href="${href}"`),
+    `German homepage missing localized tool link ${href}`,
+  );
 }
-const technicalSeoPage = await readFile(await findOutput("/for/technical-seos"), "utf8");
+const technicalSeoPage = await readFile(
+  await findOutput("/for/technical-seos"),
+  "utf8",
+);
 pass(
   technicalSeoPage.includes("one public HTTP or HTTPS URL") &&
     technicalSeoPage.includes("SSRF-protected gateway"),
@@ -380,13 +436,24 @@ for (const route of [
   "/de/wissen/initiales-html-vs-gerenderter-dom",
 ]) {
   const html = await readFile(await findOutput(route), "utf8");
-  pass(html.includes('property="og:type" content="article"'), `article Open Graph type missing for ${route}`);
-  pass(html.includes('"@type":"TechArticle"'), `TechArticle structured data missing for ${route}`);
-  pass(html.includes("Primärquellen"), `German source section missing for ${route}`);
+  pass(
+    html.includes('property="og:type" content="article"'),
+    `article Open Graph type missing for ${route}`,
+  );
+  pass(
+    html.includes('"@type":"TechArticle"'),
+    `TechArticle structured data missing for ${route}`,
+  );
+  pass(
+    html.includes("Primärquellen"),
+    `German source section missing for ${route}`,
+  );
 }
 
 const robots = await readFile(new URL("robots.txt", dist), "utf8");
 const sitemap = await readFile(new URL("sitemap.xml", dist), "utf8");
+const sitemapStylesheet = await readFile(new URL("sitemap.xsl", dist), "utf8");
+const sitemapCss = await readFile(new URL("sitemap.css", dist), "utf8");
 pass(robots.includes("Allow: /"), "robots.txt must allow crawling at launch");
 pass(
   !/^Disallow:\s*\/$/m.test(robots),
@@ -395,6 +462,28 @@ pass(
 pass(
   robots.includes(`Sitemap: ${origin}/sitemap.xml`),
   "robots.txt must reference the canonical sitemap",
+);
+pass(
+  sitemap.includes('<?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>'),
+  "sitemap must expose its human-readable stylesheet",
+);
+pass(
+  sitemapStylesheet.includes(
+    'xmlns:sitemap="http://www.sitemaps.org/schemas/sitemap/0.9"',
+  ),
+  "sitemap stylesheet must read the sitemap namespace",
+);
+pass(
+  sitemapStylesheet.includes("count(sitemap:urlset/sitemap:url)"),
+  "sitemap stylesheet must derive the live URL count",
+);
+pass(
+  sitemapStylesheet.includes('href="/sitemap.css"'),
+  "sitemap stylesheet must use the CSP-compatible external CSS file",
+);
+pass(
+  sitemapCss.includes(".table-wrap"),
+  "sitemap stylesheet CSS must include responsive table handling",
 );
 for (const route of sitemapRoutes) {
   pass(
@@ -406,15 +495,41 @@ pass(
   (sitemap.match(/<url>/g) ?? []).length === sitemapRoutes.length,
   "sitemap URL count must match indexable canonical 200 route inventory",
 );
-const lastModifiedValues = [...sitemap.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)].map((match) => match[1]);
-pass(lastModifiedValues.length > 0, "sitemap must retain verified editorial modification dates");
-pass(lastModifiedValues.length < sitemapRoutes.length, "sitemap must omit lastmod where no reliable page date exists");
-pass(lastModifiedValues.every((value) => /^\d{4}-\d{2}-\d{2}$/.test(value)), "sitemap lastmod values must be ISO dates");
-pass(!/<loc>https:\/\/analysespider\.com\/<\/loc><lastmod>/.test(sitemap), "homepage must not receive a build-date lastmod");
-for (const page of (await import(new URL("../src/data/content.ts", import.meta.url))).contentPages) {
-  const root = { guide: "/guides", "lab-note": "/blog", reference: "/reference", audience: "/for" }[page.kind];
+const lastModifiedValues = [
+  ...sitemap.matchAll(/<lastmod>([^<]+)<\/lastmod>/g),
+].map((match) => match[1]);
+pass(
+  lastModifiedValues.length > 0,
+  "sitemap must retain verified editorial modification dates",
+);
+pass(
+  lastModifiedValues.length < sitemapRoutes.length,
+  "sitemap must omit lastmod where no reliable page date exists",
+);
+pass(
+  lastModifiedValues.every((value) => /^\d{4}-\d{2}-\d{2}$/.test(value)),
+  "sitemap lastmod values must be ISO dates",
+);
+pass(
+  !/<loc>https:\/\/analysespider\.com\/<\/loc><lastmod>/.test(sitemap),
+  "homepage must not receive a build-date lastmod",
+);
+for (const page of (
+  await import(new URL("../src/data/content.ts", import.meta.url))
+).contentPages) {
+  const root = {
+    guide: "/guides",
+    "lab-note": "/blog",
+    reference: "/reference",
+    audience: "/for",
+  }[page.kind];
   const location = new URL(`${root}/${page.slug}`, origin).href;
-  pass(sitemap.includes(`<loc>${location}</loc><lastmod>${page.updatedAt}</lastmod>`), `sitemap lastmod mismatch for ${location}`);
+  pass(
+    sitemap.includes(
+      `<loc>${location}</loc><lastmod>${page.updatedAt}</lastmod>`,
+    ),
+    `sitemap lastmod mismatch for ${location}`,
+  );
 }
 
 for (const [english, german] of localePairs) {
@@ -422,8 +537,14 @@ for (const [english, german] of localePairs) {
   const germanHtml = await readFile(await findOutput(german), "utf8");
   const englishUrl = new URL(english, origin).href;
   const germanUrl = new URL(german, origin).href;
-  pass(englishHtml.includes(`hreflang="de" href="${germanUrl}"`), `English alternate missing for ${english}`);
-  pass(germanHtml.includes(`hreflang="en" href="${englishUrl}"`), `German alternate missing for ${german}`);
+  pass(
+    englishHtml.includes(`hreflang="de" href="${germanUrl}"`),
+    `English alternate missing for ${english}`,
+  );
+  pass(
+    germanHtml.includes(`hreflang="en" href="${englishUrl}"`),
+    `German alternate missing for ${german}`,
+  );
 }
 
 const manifest = JSON.parse(
@@ -535,17 +656,31 @@ for (const directive of [
 ]) {
   pass(csp.includes(directive), "CSP missing required directive: " + directive);
 }
-pass(csp.includes("https://tools.contextter.com") && csp.includes("https://analytics.contextter.com"), "CSP must allow the protected gateway and self-hosted analytics only");
+pass(
+  csp.includes("https://tools.contextter.com") &&
+    csp.includes("https://analytics.contextter.com"),
+  "CSP must allow the protected gateway and self-hosted analytics only",
+);
 pass(
   csp.includes("worker-src 'self' blob:"),
   "CSP must allow the local Cap proof worker",
 );
-pass(csp.includes("script-src 'self' 'wasm-unsafe-eval' https://analytics.contextter.com"), "CSP must allow local scripts, the Cap WASM solver and the analytics host");
 pass(
-  csp.includes("style-src 'self' 'unsafe-hashes' 'sha256-wztaw4JykxcHsDODFshiqt3woVAWzD4k5Zi3KJI3B5U='"),
+  csp.includes(
+    "script-src 'self' 'wasm-unsafe-eval' https://analytics.contextter.com",
+  ),
+  "CSP must allow local scripts, the Cap WASM solver and the analytics host",
+);
+pass(
+  csp.includes(
+    "style-src 'self' 'unsafe-hashes' 'sha256-wztaw4JykxcHsDODFshiqt3woVAWzD4k5Zi3KJI3B5U='",
+  ),
   "CSP must allow only the reviewed Cap inline-style hash",
 );
-pass(!csp.includes("'unsafe-inline'"), "CSP must not allow inline script or style execution");
+pass(
+  !csp.includes("'unsafe-inline'"),
+  "CSP must not allow inline script or style execution",
+);
 pass(
   !csp.includes(" 'unsafe-eval'"),
   "CSP must not enable unrestricted JavaScript eval",
@@ -579,6 +714,14 @@ const crawlerViewHtml = await readFile(
   await findOutput("/tools/crawler-view"),
   "utf8",
 );
+const domainScanSource = await readFile(
+  new URL("../src/lib/domain-scan.ts", import.meta.url),
+  "utf8",
+);
+const domainScanHtml = await readFile(
+  await findOutput("/tools/google-index-check"),
+  "utf8",
+);
 const responseInspectorSource = await readFile(
   new URL("../src/pages/tools/url-inspector.astro", import.meta.url),
   "utf8",
@@ -588,7 +731,9 @@ pass(
   "crawler-to-HTTP handoff must preserve the checked URL",
 );
 pass(
-  responseInspectorSource.includes("headerInput.value = normalizePublicUrl(response.url)"),
+  responseInspectorSource.includes(
+    "headerInput.value = normalizePublicUrl(response.url)",
+  ),
   "HTTP inspector must prefill the transferred crawler URL",
 );
 for (const marker of [
@@ -614,9 +759,34 @@ pass(
     crawlerGatewaySource.includes("requestIdentity"),
   "crawler simulation must bind the selected identity into the Cap input digest",
 );
+for (const marker of [
+  "data-domain-scan-form",
+  "data-domain-scan-filter",
+  "data-domain-scan-download",
+  "technical website check, not a Google index report",
+]) {
+  pass(
+    domainScanHtml.includes(marker),
+    `website scan result surface missing ${marker}`,
+  );
+}
+pass(
+  crawlerGatewaySource.includes(
+    'const DOMAIN_SCAN_SCOPE = "tool_analysespider_domain_scan"',
+  ) && crawlerGatewaySource.includes("const DOMAIN_SCAN_MAX_URLS = 50"),
+  "website scan must bind a dedicated proof scope and hard 50-URL cap",
+);
+pass(
+  domainScanSource.includes('tool: "domain_scan"') &&
+    !domainScanSource.includes("requestedUrl: report.siteUrl"),
+  "website scan analytics must remain input-free",
+);
 const benchmarkEvidence = JSON.parse(
   await readFile(
-    new URL("../public/evidence/crawler-header-baseline-2026-08-28.json", import.meta.url),
+    new URL(
+      "../public/evidence/crawler-header-baseline-2026-08-28.json",
+      import.meta.url,
+    ),
     "utf8",
   ),
 );
@@ -676,7 +846,8 @@ for (const [route, href] of [
 ]) {
   const homeHtml = await readFile(await findOutput(route), "utf8");
   pass(
-    homeHtml.includes(`class="contextter-next"`) && homeHtml.includes(`href="${href}"`),
+    homeHtml.includes(`class="contextter-next"`) &&
+      homeHtml.includes(`href="${href}"`),
     `${route} must expose the disclosed Contextter Site Audit link in server-rendered HTML`,
   );
 }
@@ -688,9 +859,13 @@ existingRoutes.add("/favicon.svg");
 existingRoutes.add("/feed.xml");
 existingRoutes.add("/fixtures/synthetic-crawler-access.log");
 existingRoutes.add("/evidence/crawler-header-baseline-2026-08-28.json");
-for (const path of crawlerLabBuiltPaths) existingRoutes.add(path.replace(/\/$/, "") || "/");
+for (const path of crawlerLabBuiltPaths)
+  existingRoutes.add(path.replace(/\/$/, "") || "/");
 existingRoutes.add("/fixtures/crawler-lab/redirect-one-hop");
-for (const path of [...crawlerLabBuiltPaths, "/fixtures/crawler-lab/redirect-one-hop"]) {
+for (const path of [
+  ...crawlerLabBuiltPaths,
+  "/fixtures/crawler-lab/redirect-one-hop",
+]) {
   pass(
     !sitemap.includes(`<loc>${new URL(path, origin).href}</loc>`),
     `noindex crawler fixture leaked into sitemap: ${path}`,

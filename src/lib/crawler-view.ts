@@ -804,6 +804,10 @@ function mount(root: Element): void {
       renderActions(root, report, locale);
       renderDetails(root, report, locale);
       renderCacheStatus(root, report, locale);
+      const googleSearchLink = root.querySelector("[data-google-search-link]");
+      if (googleSearchLink instanceof HTMLAnchorElement) {
+        googleSearchLink.href = `https://www.google.com/search?q=${encodeURIComponent(`site:${report.fetchFacts.finalUrl}`)}`;
+      }
       const redirectHandoff = root.querySelector("[data-redirect-handoff]");
       if (redirectHandoff instanceof HTMLButtonElement) {
         if (report.fetchFacts.redirectChain.length > 0) {
