@@ -23,7 +23,7 @@ import { site } from "../data/site";
       <p>This processing is used to deliver the website, maintain availability, prevent abuse, and diagnose technical failures. Hosting-level processing and retention are governed by the applicable Vercel configuration and service terms. It is separate from the contents you paste into the current diagnostic tools.</p>
 
       <h2>Browser-local diagnostic tools</h2>
-      <p>The Log File Inspector and IP Address Check run as browser-local JavaScript. Pasted response headers, redirect blocks and robots.txt rules are also evaluated locally. AnalyseSpider does not upload those selected files, pasted inputs, IP addresses or generated local results to an application endpoint.</p>
+      <p>The Log File Inspector, IP Address Check and Bot Request Verifier run as browser-local JavaScript. Pasted response headers, redirect blocks and robots.txt rules are also evaluated locally. AnalyseSpider does not upload those selected files, pasted inputs, IP addresses, user-agent strings or generated local results to an application endpoint.</p>
       <p>The input can still remain in your device memory, clipboard, browser history or extensions, screenshots, and any files you export or save. Redact confidential logs before using any diagnostic tool, including a local one.</p>
 
       <h2>Protected live URL check</h2>
@@ -34,7 +34,11 @@ import { site } from "../data/site";
       <p><strong>Do not submit private, signed, password-reset, preview, or secret-bearing URLs.</strong> A submitted path and query can be included in the generated report, the short-lived gateway cache, browser-local history, clipboard content, or an exported JSON file. Remove unnecessary query parameters before starting a live check.</p>
 
       <h2>Cookies, analytics, and accounts</h2>
-      <p><strong>No client-side audience analytics</strong>, advertising pixels, behavioral tracking, account system, or profiling service is currently integrated. The gateway does process the limited operational and abuse-prevention metrics described above. <strong>No application cookies</strong> are set by the current site. There is no newsletter signup, payment flow, or user account.</p>
+      <p>AnalyseSpider uses the self-hosted open-source software <strong>Umami</strong> at <strong>analytics.contextter.com</strong> for cookie-free usage and technical quality measurement. The tracker is restricted to analysespider.com and www.analysespider.com, respects the browser's Do Not Track setting, excludes URL search parameters and hash fragments, and records web-performance measurements. It does not use advertising pixels, session replay, heatmaps, cross-site advertising profiles, or <code>umami.identify()</code>. No application or tracking cookie is set by the current site.</p>
+      <p>According to Umami's technical documentation, normal measurements can include page path without query or hash, referrer, browser, operating system, device category, screen information, approximate country, and Core Web Vitals. Umami creates a session hash from the request IP address, user agent and website ID; the raw IP address is not stored by Umami as an analytics field. Normal web-server and proxy request processing remains separate.</p>
+      <p>AnalyseSpider sends only allowlisted, low-cardinality product events: navigation category; tool start, success or error category; selected crawler profile; use of an example; report copy, download or comparison; and marked hand-offs to another tool. <strong>It never sends the checked URL or hostname, IP address, log line, pasted headers or HTML, robots.txt content, user-agent text, report content, query string, exported data, clipboard content, or local history to Umami.</strong></p>
+      <p>The legal basis is Article 6(1)(f) GDPR. The legitimate interests are understanding which public pages and tools are used, finding broken interactions and performance regressions, and operating the free service with proportionate data. Users can object for reasons arising from their particular situation by emailing the controller; browsers with Do Not Track enabled are not measured. Analytics records are kept only while needed for these purposes and are reviewed for deletion. The exact instance-level automatic deletion interval has not yet been independently verified and remains a production compliance gate.</p>
+      <p>There is no newsletter signup, payment flow, or user account.</p>
 
       <h2>Contact</h2>
       <p><strong>No contact form</strong> is embedded on this website. Clicking an email link opens your chosen email service. If you contact the operator, the email address, message, headers, attachments, and follow-up correspondence are processed to answer the request, document rights or security concerns, and meet applicable legal obligations. Do not send passwords, raw customer data, private logs, or former software files.</p>
@@ -44,7 +48,7 @@ import { site } from "../data/site";
       <p>The Google Search Console ownership TXT record is a DNS verification record. It does not add an analytics script or transmit visitor tool input.</p>
 
       <h2>Retention and recipients</h2>
-      <p>The browser-local tools do not create an application record. The live URL check creates the bounded cache and usage records described above. Technical request information can also be processed by Vercel, Hetzner, the reverse proxy, and involved network providers; email correspondence by the involved email providers. Information is retained only as needed for delivery, security, rate limiting, cache operation, correspondence, evidence of handled requests, or legal obligations.</p>
+      <p>The browser-local tools do not create an application record. The live URL check creates the bounded cache and usage records described above. The Umami service operated at analytics.contextter.com receives the limited usage events described above. Technical request information can also be processed by Vercel, Hetzner, the reverse proxy, and involved network providers; email correspondence by the involved email providers. Information is retained only as needed for delivery, security, rate limiting, cache operation, usage measurement, correspondence, evidence of handled requests, or legal obligations.</p>
 
       <h2>Legal bases and international processing</h2>
       <p>Where the GDPR applies, website delivery, the protected gateway, rate limiting, abuse prevention, availability monitoring, and technical fault diagnosis are processed on the basis of the operator's legitimate interests under Article 6(1)(f) GDPR in providing and protecting this free service. Email is processed under Article 6(1)(b) GDPR where it concerns a contract or steps requested before a contract, under Article 6(1)(f) for corrections, security reports, and general correspondence, and under Article 6(1)(c) where retention is required by law.</p>
@@ -55,7 +59,7 @@ import { site } from "../data/site";
       <p>Where the GDPR applies, a data subject can request access, rectification, erasure, restriction, portability, or object to processing, subject to the statutory conditions. A complaint can also be made to a competent data-protection supervisory authority. Send privacy requests to <a href={`mailto:${site.operator.email}?subject=AnalyseSpider%20privacy`}>{site.operator.email}</a>.</p>
 
       <h2>Changes</h2>
-      <p>This notice describes the current static site, local 24-hour report history and protected crawler gateway as reviewed on 28 August 2026. A future analytics service, upload, account, billing flow, paid data provider, or additional processor requires an updated technical and privacy review before activation.</p>
+      <p>This notice describes the current static site, cookie-free Umami measurement, local bot verification, local 24-hour report history and protected crawler gateway as reviewed on 29 August 2026. A future upload, account, billing flow, paid data provider, identity feature, or additional processor requires an updated technical and privacy review before activation.</p>
     </article>
     <aside class="side-note">
       <h3>Current declaration</h3>
@@ -65,12 +69,13 @@ import { site } from "../data/site";
         <div><dt>Live gateway</dt><dd>Hetzner / tools.contextter.com</dd></div>
         <div><dt>Report cache</dt><dd>1 hour success / 5 minutes error</dd></div>
         <div><dt>Local comparison history</dt><dd>Up to 5 reports / 24 hours in this browser</dd></div>
-        <div><dt>Client-side audience analytics</dt><dd>None</dd></div>
+        <div><dt>Usage measurement</dt><dd>Self-hosted Umami, cookie-free, DNT respected</dd></div>
+        <div><dt>Tool-input analytics</dt><dd>Never URLs, IPs, logs, pasted content or report data</dd></div>
         <div><dt>Gateway metrics</dt><dd>Limited operations and abuse prevention</dd></div>
         <div><dt>App cookies</dt><dd>None</dd></div>
         <div><dt>Contact form</dt><dd>None</dd></div>
         <div><dt>Accounts</dt><dd>None</dd></div>
-        <div><dt>Updated</dt><dd>28 August 2026</dd></div>
+        <div><dt>Updated</dt><dd>29 August 2026</dd></div>
       </dl>
     </aside>
   </section>

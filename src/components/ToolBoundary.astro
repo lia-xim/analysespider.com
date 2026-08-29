@@ -8,11 +8,13 @@ const relatedByPath: Record<string, { href: string; label: string }> = {
   "/tools/redirect-chain": { href: "/guides/redirect-chain-analysis", label: "Redirect analysis guide" },
   "/tools/robots-rule-tester": { href: "/guides/test-robots-txt-rules", label: "Robots testing guide" },
   "/tools/ip-location": { href: "/guides/ip-geolocation-data", label: "IP data limits guide" },
+  "/tools/bot-verification": { href: "/reference/crawler-verification-methods", label: "Crawler verification methods" },
   "/de/tools/server-log-analyse": { href: "/de/wissen/crawler-in-server-logs-erkennen", label: "Leitfaden zur Log-Analyse" },
   "/de/tools/http-antwort": { href: "/de/wissen/http-antwort-verstehen", label: "HTTP-Antwort verstehen" },
   "/de/tools/weiterleitungskette": { href: "/de/wissen/redirect-kette-pruefen", label: "Redirect-Kette verstehen" },
   "/de/tools/robots-regel-test": { href: "/de/wissen/robots-txt-testen", label: "robots.txt richtig testen" },
   "/de/tools/ip-adresse": { href: "/de/wissen/ip-geolokalisierung-verstehen", label: "Grenzen von IP-Geodaten" },
+  "/de/tools/bot-verifizierung": { href: "/de/wissen/crawler-erkennen", label: "Crawler richtig verifizieren" },
 };
 const related = relatedByPath[Astro.url.pathname];
 ---

@@ -16,6 +16,19 @@ import ArrowIcon from "../components/ArrowIcon.astro";
   />
   <section class="change-log" aria-label="Changelog entries">
     <article>
+      <div class="change-date"><time datetime="2026-08-29">29 AUG 2026</time><span>REAL REQUEST EVIDENCE</span></div>
+      <div>
+        <h2>Bot-range verification, fuller response comparison and privacy-safe measurement</h2>
+        <p>Added the missing bridge between a claimed crawler name in a log and evidence published by the operator.</p>
+        <ul>
+          <li>The new bilingual Bot Request Verifier checks one local log line against its exact product token and dated Google, OpenAI, Perplexity or Anthropic IP ranges without uploading the line or address.</li>
+          <li>Crawler response comparisons now include a bounded response-header allowlist alongside status, canonical, noindex, visible text and body hash.</li>
+          <li>Cookie-free Umami measurement records only allowlisted navigation, tool-state and report-action categories; URLs, hosts, IPs, logs and pasted evidence are excluded.</li>
+        </ul>
+        <a class="text-link" href="/tools/bot-verification">Verify a crawler request <ArrowIcon /></a>
+      </div>
+    </article>
+    <article>
       <div class="change-date"><time datetime="2026-08-28">28 AUG 2026</time><span>CRAWLER EVIDENCE</span></div>
       <div>
         <h2>Visible crawler policy, portable reports and a controlled second view</h2>

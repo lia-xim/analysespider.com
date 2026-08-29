@@ -47,6 +47,8 @@ const { crawlerLabBuiltPaths } = await import(
   new URL("../src/data/crawler-lab.ts", import.meta.url)
 );
 const { localePairs } = await import(new URL("../src/data/i18n.ts", import.meta.url));
+const { sanitizeEvent } = await import(new URL("../src/lib/analytics.ts", import.meta.url));
+const { default: crawlerRanges } = await import(new URL("../src/data/crawler-ip-ranges.json", import.meta.url), { with: { type: "json" } });
 const editorialRoutes = new Set([
   "/guides/log-file-analysis",
   "/guides/crawler-log-analysis",
@@ -82,11 +84,13 @@ const toolRoutes = new Set([
   "/tools/redirect-chain",
   "/tools/robots-rule-tester",
   "/tools/ip-location",
+  "/tools/bot-verification",
   "/de/tools/http-antwort",
   "/de/tools/weiterleitungskette",
   "/de/tools/robots-regel-test",
   "/de/tools/server-log-analyse",
   "/de/tools/ip-adresse",
+  "/de/tools/bot-verifizierung",
 ]);
 const approvedPortfolioLinks = new Map([
   [
@@ -129,6 +133,26 @@ const failures = [];
 const pass = (condition, message) => {
   if (!condition) failures.push(message);
 };
+const sanitizedAnalyticsEvent = sanitizeEvent("tool_run_succeeded", {
+  tool: "bot_verification",
+  outcome: "verified",
+  url: "https://secret.example/path?token=secret",
+  ip: "66.249.66.1",
+  log: "private log line",
+});
+pass(
+  JSON.stringify(sanitizedAnalyticsEvent) === JSON.stringify({ name: "tool_run_succeeded", data: { tool: "bot_verification", outcome: "verified" } }),
+  "analytics sanitizer must strip URLs, IPs, logs and undeclared event fields",
+);
+const expectedRangeIds = ["googlebot", "oai_searchbot", "gptbot", "chatgpt_user", "perplexitybot", "perplexity_user", "claude_searchbot", "claudebot", "claude_user"];
+pass(
+  expectedRangeIds.every((id) => crawlerRanges.entries.some((entry) => entry.id === id && entry.prefixes.length > 0)),
+  "every maintained crawler identity must have a non-empty official range snapshot",
+);
+pass(
+  Date.now() - new Date(crawlerRanges.reviewedAt).getTime() <= 14 * 24 * 60 * 60 * 1000,
+  "crawler range snapshot must be refreshed at least every 14 days",
+);
 
 pass(
   routes.length >= 45,
@@ -313,10 +337,11 @@ const privacy = await readFile(await findOutput("/privacy"), "utf8");
 for (const required of [
   "Vercel",
   "browser-local",
-  "No client-side audience analytics",
+  "Umami",
   "Gateway metrics",
   "Do not submit private, signed",
-  "No application cookies",
+  "No application or tracking cookie",
+  "never sends the checked URL or hostname",
   "No contact form",
   "data-subject",
 ]) {
@@ -325,10 +350,8 @@ for (const required of [
     `privacy notice missing technology fact: ${required}`,
   );
 }
-pass(
-  !/Google Analytics|Umami/i.test(privacy),
-  "privacy notice must not claim an inactive analytics provider",
-);
+pass(!/Google Analytics/i.test(privacy), "privacy notice must not claim an inactive analytics provider");
+pass(privacy.includes('src="https://analytics.contextter.com/script.js"'), "privacy page must include the active Umami tracker");
 pass(
   !privacy.includes("<strong>No analytics</strong>"),
   "privacy notice must not contradict documented gateway metrics with a broad no-analytics claim",
@@ -512,18 +535,12 @@ for (const directive of [
 ]) {
   pass(csp.includes(directive), "CSP missing required directive: " + directive);
 }
-pass(
-  csp.includes("connect-src 'self' https://tools.contextter.com"),
-  "CSP must allow only the protected crawler gateway as an external connection",
-);
+pass(csp.includes("https://tools.contextter.com") && csp.includes("https://analytics.contextter.com"), "CSP must allow the protected gateway and self-hosted analytics only");
 pass(
   csp.includes("worker-src 'self' blob:"),
   "CSP must allow the local Cap proof worker",
 );
-pass(
-  csp.includes("script-src 'self' 'wasm-unsafe-eval'"),
-  "CSP must allow only self-hosted scripts plus WebAssembly compilation for the local Cap proof solver",
-);
+pass(csp.includes("script-src 'self' 'wasm-unsafe-eval' https://analytics.contextter.com"), "CSP must allow local scripts, the Cap WASM solver and the analytics host");
 pass(!csp.includes("'unsafe-inline'"), "CSP must not allow inline script or style execution");
 pass(
   !csp.includes(" 'unsafe-eval'"),

@@ -1,17 +1,17 @@
-# Hub and cluster map — 2026-08-28
+# Hub and cluster map — 2026-08-29
 
 Each cluster must remain useful without Contextter and must link tools, workflow, reference, and proof where those assets actually exist.
 
 ## 1. Crawl-log evidence
 
 - Hub: `/guides`
-- Tool: `/tools/log-file-inspector`
+- Tools: `/tools/log-file-inspector`, `/tools/bot-verification`
 - German pair: `/de/tools/server-log-analyse`, `/de/wissen/crawler-in-server-logs-erkennen`
 - Guides: `/guides/log-file-analysis`, `/guides/crawler-log-analysis`
 - Lab note: `/blog/how-to-find-search-bots-in-server-logs`, `/blog/private-data-in-access-logs`
 - Reference: `/reference/crawler-user-agents`, `/reference/crawler-verification-methods`
 - Legacy successor: `/analysespider.html`
-- Proof path: log analyzer -> crawler verification methods -> live URL check -> crawler benchmark
+- Proof path: log analyzer -> browser-local request verifier -> crawler verification methods -> live URL check -> crawler benchmark
 
 ## 2. HTTP response and redirect evidence
 
@@ -32,7 +32,7 @@ Each cluster must remain useful without Contextter and must link tools, workflow
 - Crawler identity and role context: `/crawlers`, `/de/crawler`, `/reference/crawler-verification-methods`
 - The live check remains one-URL, no-JavaScript, and useful without an outbound product handoff.
 - Result path: four eligibility answers -> visible purpose-based crawler matrix -> local Markdown/JSON export -> 24-hour browser-local comparison -> optional simulated-token response comparison.
-- The simulation is one additional bounded request with an allowlisted product token; it is never presented as the real vendor crawler.
+- The simulation is one additional bounded request with an allowlisted product token. It exposes the exact User-Agent and compares status, response headers, canonical, noindex, visible text and HTML hash, but never presents the request as the real vendor crawler.
 - Rendering guide pair: `/blog/initial-html-vs-rendered-dom`, `/de/wissen/initiales-html-vs-gerenderter-dom`.
 
 ## 3. Robots and crawler access
@@ -50,6 +50,7 @@ Each cluster must remain useful without Contextter and must link tools, workflow
 - Tool: `/tools/ip-location`
 - Guide: `/guides/ip-geolocation-data`
 - German pair: `/de/tools/ip-adresse`, `/de/wissen/ip-geolokalisierung-verstehen`
+- Bot identity bridge: `/tools/bot-verification`, `/de/tools/bot-verifizierung` (request origin, not geolocation)
 - Restored references: `/ip2country/country_code.html`, `/geo-targeting/geo-targeting.html`
 - Legacy redirects: `/ip2country/lookup.php`, `/ip2country/lookup.html`, `/ip2country/ip_country.html`
 

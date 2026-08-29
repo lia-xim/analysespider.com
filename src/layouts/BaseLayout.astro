@@ -150,6 +150,7 @@ const structuredData = {
     {pageType === "article" && publishedTime && <meta property="article:published_time" content={publishedTime} />}
     {pageType === "article" && modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
     {includeStructuredData && <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />}
+    {site.analytics.enabled && <script is:inline defer src={site.analytics.scriptUrl} data-website-id={site.analytics.websiteId} data-domains={site.analytics.domains} data-do-not-track="true" data-exclude-search="true" data-exclude-hash="true" data-performance="true"></script>}
     <title>{title}</title>
   </head>
   <body class={bodyClass}>
@@ -163,3 +164,8 @@ const structuredData = {
     </div>
   </body>
 </html>
+
+<script>
+  import { mountAnalytics } from "../lib/analytics";
+  mountAnalytics();
+</script>

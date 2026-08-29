@@ -1,4 +1,4 @@
-# Page action matrix — 2026-08-28
+# Page action matrix — 2026-08-29
 
 Every indexable canonical URL has one primary user job. “Keep” does not mean “finished forever”; it means no merge, redirect, or expansion is justified by current evidence.
 
@@ -11,6 +11,7 @@ Every indexable canonical URL has one primary user job. “Keep” does not mean
 | `/tools/url-inspector`                              | Interpret pasted HTTP headers and HTML directives.                                          | HTTP response            | Verified       | Keep; do not turn into unrestricted fetching.                                     |
 | `/tools/redirect-chain`                             | Assemble observed redirect hops and expose gaps, loops, and the final captured state.       | HTTP response            | Experiment     | Replace interim alias with bounded local tool and measure completed chains.       |
 | `/tools/ip-location`                                | Classify IP syntax and selected address ranges locally.                                     | IP and geo               | Verified       | Keep accuracy boundary.                                                           |
+| `/tools/bot-verification`                           | Verify one claimed bot request against its user-agent token and dated operator-published IP ranges locally. | Crawl logs | Verified | Refresh the generated source snapshot and preserve the no-identity-overclaim boundary. |
 | `/tools/robots-rule-tester`                         | Decide one RFC-style robots rule match locally.                                             | Robots access            | Experiment     | Build and measure completed tests.                                                |
 | `/guides`                                           | Choose a stable diagnostic workflow.                                                        | Guides                   | Verified       | Strengthen with robots workflow.                                                  |
 | `/guides/log-file-analysis`                         | Turn raw server logs into a bounded request inventory.                                      | Crawl logs               | Supported      | Keep.                                                                             |
@@ -54,6 +55,7 @@ Every indexable canonical URL has one primary user job. “Keep” does not mean
 | `/de/tools/robots-regel-test`                       | Test one crawler token and target against live or pasted robots evidence.                   | Robots access            | Experiment     | Maintain shared evaluator and gateway behavior with the English tool.              |
 | `/de/tools/server-log-analyse`                      | Parse a bounded Apache or Nginx sample locally with German guidance.                        | Crawl logs               | Experiment     | Maintain the same browser-local parser and privacy limits as English.              |
 | `/de/tools/ip-adresse`                              | Classify one address or log-line address without a location claim.                          | IP and geo               | Verified       | Maintain the same local range logic as English.                                    |
+| `/de/tools/bot-verifizierung`                       | Prüfe eine behauptete Bot-Anfrage lokal gegen Token und datierte Betreiberbereiche.         | Crawl logs               | Verified       | Maintain as the exact German counterpart and keep range sources current.           |
 | `/de/crawler`                                       | Choose the right crawler control and verification path in German.                            | Crawler comparison       | Supported      | Keep roles, evidence ladder and official-source table in sync with English.       |
 | `/de/wissen`                                        | Start with a plain German question and reach the best maintained answer.                    | German knowledge         | Experiment     | Translate detail pages only where demand and maintenance justify it.              |
 | `/de/wissen/http-antwort-verstehen`                 | Read status, headers and HTML in evidence order.                                             | German knowledge         | Supported      | Maintain as the true German counterpart to the English HTTP guide.                 |

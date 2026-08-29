@@ -1,0 +1,88 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ToolBoundary from "../../components/ToolBoundary.astro";
+import ToolNavigator from "../../components/ToolNavigator.astro";
+import rangeData from "../../data/crawler-ip-ranges.json";
+interface Props { locale?: "en" | "de" }
+const { locale = "en" } = Astro.props;
+const de = locale === "de";
+const reviewed = new Intl.DateTimeFormat(de ? "de-DE" : "en-GB", { dateStyle: "medium" }).format(new Date(rangeData.reviewedAt));
+---
+<BaseLayout
+  title={de ? "Echten Bot anhand einer Logzeile prüfen — AnalyseSpider" : "Verify a crawler request from a log line — AnalyseSpider"}
+  description={de ? "Prüfe lokal, ob IP-Adresse und User-Agent einer Server-Logzeile zu veröffentlichten Bereichen von Google, OpenAI, Perplexity oder Anthropic passen." : "Check locally whether the IP address and user agent in a server log line match published Google, OpenAI, Perplexity or Anthropic crawler ranges."}
+  canonicalPath={de ? "/de/tools/bot-verifizierung" : "/tools/bot-verification"}
+  alternatePath={de ? "/tools/bot-verification" : "/de/tools/bot-verifizierung"}
+  lang={locale}
+  bodyClass="tool-page"
+>
+  <section class="tool-shell">
+    <aside class="tool-sidebar">
+      <h1>{de ? "Bot-Anfrage verifizieren" : "Bot Request Verifier"}</h1>
+      <p>{de ? "Ein Botname im User-Agent ist nur eine Behauptung. Dieses Tool prüft zusätzlich, ob die Quell-IP in einem veröffentlichten Betreiberbereich liegt." : "A bot name in a user agent is only a claim. This tool also checks whether the source IP belongs to a range published by the operator."}</p>
+      <div class="sidebar-meta">
+        <strong>{de ? "Lokal im Browser" : "Browser-local"}</strong><br />
+        {de ? "Keine Logzeile oder IP wird hochgeladen" : "No log line or IP is uploaded"}<br />
+        {de ? `Quellen aktualisiert: ${reviewed}` : `Sources refreshed: ${reviewed}`}
+      </div>
+    </aside>
+
+    <div class="tool-main">
+      <ToolBoundary />
+      <ToolNavigator current={de ? "/de/tools/bot-verifizierung" : "/tools/bot-verification"} locale={locale} />
+      <section class="workspace bot-verification-workspace" aria-labelledby="bot-verification-input">
+        <div class="workspace-toolbar"><span class="active">1. {de ? "Logzeile einfügen" : "Paste a log line"}</span><span>2. {de ? "Behauptung + IP prüfen" : "Check claim + IP"}</span><span>{de ? "Kein Upload" : "No upload"}</span></div>
+        <div class="workspace-content">
+          <div class="tool-question">
+            <strong>{de ? "Was brauchst du?" : "What do you need?"}</strong>
+            <p>{de ? "Füge eine Access-Logzeile ein. Eine einzelne IP funktioniert ebenfalls; wähle dann den vermuteten Bot selbst aus." : "Paste one access-log line. A single IP also works; then choose the claimed bot yourself."}</p>
+          </div>
+          <div class="tool-presets" aria-label={de ? "Sichere Beispiele" : "Safe examples"}>
+            <button type="button" data-bot-preset='66.249.66.1 - - [12/May/2025:10:15:05 +0000] "GET /robots.txt HTTP/1.1" 200 512 "-" "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"'><strong>Googlebot</strong><span>{de ? "Beispiel aus der Google-Dokumentation" : "Example from Google documentation"}</span></button>
+            <button type="button" data-bot-preset='203.0.113.10 - - [12/May/2025:10:16:05 +0000] "GET / HTTP/1.1" 200 512 "-" "GPTBot/1.0"'><strong>{de ? "Gefälschter GPTBot" : "Spoofed GPTBot"}</strong><span>{de ? "Botname, aber Dokumentations-IP" : "Bot name with a documentation IP"}</span></button>
+            <button type="button" data-bot-preset='216.73.216.1 - - [29/Aug/2026:10:17:05 +0000] "GET / HTTP/1.1" 200 512 "-" "ClaudeBot"'><strong>ClaudeBot</strong><span>{de ? "Anthropic-Range mit passendem Token" : "Anthropic range with matching token"}</span></button>
+          </div>
+          <label for="bot-log-input" id="bot-verification-input">{de ? "IP-Adresse oder vollständige Logzeile" : "IP address or complete log line"}</label>
+          <textarea id="bot-log-input" rows="6" maxlength="12000" spellcheck="false" placeholder='66.249.66.1 ... "Googlebot/2.1"'></textarea>
+          <label for="bot-profile">{de ? "Vermuteter Betreiber-Bot" : "Claimed operator bot"}</label>
+          <select id="bot-profile">
+            {rangeData.entries.map((entry) => <option value={entry.id}>{entry.operator} · {entry.token}</option>)}
+          </select>
+          <div class="workspace-actions">
+            <button class="button" type="button" id="load-bot-sample">{de ? "Google-Beispiel laden" : "Load Google example"}</button>
+            <button class="button primary" type="button" id="verify-bot">{de ? "Anfrage lokal prüfen" : "Verify locally"}</button>
+          </div>
+          <p class="form-status" id="bot-status" role="status" aria-live="polite">{de ? "Warte auf eine IP-Adresse oder Logzeile." : "Waiting for an IP address or log line."}</p>
+        </div>
+      </section>
+
+      <section class="result-surface" id="bot-results" hidden aria-labelledby="bot-result-heading">
+        <div class="workspace-toolbar"><span class="active" id="bot-verdict"></span><span id="bot-operator"></span></div>
+        <h2 id="bot-result-heading" class="visually-hidden">{de ? "Ergebnis der Bot-Verifizierung" : "Bot verification result"}</h2>
+        <div class="diagnostic-output">
+          <section class="evidence-group"><h3>{de ? "BEOBACHTET" : "OBSERVED"}</h3><div><ul id="bot-observed"></ul></div></section>
+          <section class="evidence-group"><h3>{de ? "VERIFIZIERUNG" : "VERIFICATION"}</h3><div><ul id="bot-verified"></ul></div></section>
+          <section class="evidence-group"><h3>{de ? "GRENZE" : "BOUNDARY"}</h3><div><ul id="bot-boundary"></ul></div></section>
+        </div>
+        <p class="crawler-policy-note"><a id="bot-source" rel="noreferrer">{de ? "Offizielle Betreiberquelle öffnen" : "Open the official operator source"} →</a></p>
+      </section>
+    </div>
+  </section>
+
+  <section class="content-grid">
+    <div class="prose">
+      <h2>{de ? "Warum reicht der User-Agent nicht?" : "Why is the user agent not enough?"}</h2>
+      <p>{de ? "Jeder Client kann sich im Header Googlebot, GPTBot oder PerplexityBot nennen. Ein belastbarer Treffer braucht deshalb zwei passende Signale: den behaupteten Produkt-Token und eine Quell-IP aus dem veröffentlichten Betreiberbereich." : "Any client can put Googlebot, GPTBot or PerplexityBot in its header. A defensible match therefore needs two aligned signals: the claimed product token and a source IP from the operator's published range."}</p>
+      <h2>{de ? "Was das Ergebnis beweist – und was nicht" : "What the result proves — and what it does not"}</h2>
+      <p>{de ? "Ein doppelter Treffer stützt die Aussage, dass diese protokollierte Anfrage aus einem veröffentlichten Netz des Betreibers kam. Er beweist nicht, dass die URL indexiert, fürs Training verwendet oder später zitiert wurde." : "A double match supports the claim that this logged request came from a network range published by that operator. It does not prove that the URL was indexed, used for training, or later cited."}</p>
+      <p>{de ? "Anthropic veröffentlicht inzwischen eine maschinenlesbare IP-Liste für ClaudeBot, Claude-SearchBot und Claude-User. AnalyseSpider übernimmt diese Bereiche in denselben datierten Snapshot wie die Listen der anderen Betreiber." : "Anthropic now publishes a machine-readable IP list for ClaudeBot, Claude-SearchBot and Claude-User. AnalyseSpider includes those ranges in the same dated snapshot as the other operator lists."}</p>
+      <p><a href={de ? "/de/wissen/crawler-erkennen" : "/reference/crawler-verification-methods"}>{de ? "Die Verifizierungsmethoden im Detail" : "Read the crawler verification methods"}</a></p>
+    </div>
+    <aside class="side-note"><h3>{de ? "Datenschutzgrenze" : "Privacy boundary"}</h3><p>{de ? "Die Prüfung läuft vollständig in diesem Tab. Umami erhält nur die Kategorie des Ergebnisses und den gewählten Betreiber – niemals IP, Logzeile oder User-Agent-Text." : "The check runs entirely in this tab. Umami receives only the result category and selected operator — never the IP, log line, or user-agent text."}</p></aside>
+  </section>
+
+  <script>
+    import { mountBotVerification } from "../../lib/bot-verification";
+    mountBotVerification();
+  </script>
+</BaseLayout>

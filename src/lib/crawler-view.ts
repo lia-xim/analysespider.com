@@ -7,6 +7,7 @@ import {
   type EligibilityState,
 } from "./crawler-gateway";
 import { formatLiveRedirectEvidence } from "./redirect-chain";
+import { trackEvent } from "./analytics";
 
 type Locale = "de" | "en";
 
@@ -574,7 +575,9 @@ function comparisonFields(
   locale: Locale,
 ): readonly [string, string][] {
   const copy = messages[locale];
+  const responseHeaders = report.fetchFacts.responseHeaders ?? {};
   return [
+    [locale === "de" ? "Gesendeter User-Agent" : "Sent user agent", report.fetchFacts.requestUserAgent ?? copy.unknown],
     [copy.details.status, report.fetchFacts.status == null ? copy.unknown : String(report.fetchFacts.status)],
     [copy.details.finalUrl, report.fetchFacts.finalUrl],
     [copy.details.canonical, report.indexability.canonical.url ?? report.indexability.canonical.state],
@@ -583,7 +586,22 @@ function comparisonFields(
     [copy.details.h1, String(report.extraction.h1Count)],
     [copy.details.text, `${report.extraction.visibleMainTextLength.toLocaleString(locale)} ${copy.chars}`],
     [locale === "de" ? "HTML-Body-Hash" : "HTML body hash", report.fetchFacts.responseBodySha256 ?? copy.unknown],
+    [locale === "de" ? "Content-Type-Header" : "Content-Type header", responseHeaders["content-type"] ?? copy.missing],
+    ["Vary", responseHeaders.vary ?? copy.missing],
+    ["Cache-Control", responseHeaders["cache-control"] ?? copy.missing],
+    ["X-Robots-Tag", responseHeaders["x-robots-tag"] ?? copy.missing],
   ];
+}
+
+function analyticsErrorReason(error: unknown): string {
+  if (!(error instanceof GatewayError)) return "unknown";
+  if (error.code === "VALIDATION_INVALID_INPUT") return "validation";
+  if (error.code === "RATE_LIMITED") return "rate_limit";
+  if (error.code === "TOOL_BUSY") return "busy";
+  if (error.code === "TOOL_TIMEOUT") return "timeout";
+  if (error.code === "ORIGIN_NOT_ALLOWED") return "origin";
+  if (error.code.startsWith("CAP_")) return "captcha";
+  return "service";
 }
 
 function renderComparison(
@@ -663,8 +681,10 @@ function mount(root: Element): void {
       if (currentReport === null) return;
       try {
         await navigator.clipboard.writeText(reportMarkdown(currentReport, locale));
+        trackEvent("report_action", { action: "copy", outcome: "success" });
         text(reportStatus, locale === "de" ? "Markdown-Bericht kopiert." : "Markdown report copied.");
       } catch {
+        trackEvent("report_action", { action: "copy", outcome: "failure" });
         text(reportStatus, locale === "de" ? "Der Bericht konnte nicht kopiert werden." : "The report could not be copied.");
       }
     });
@@ -673,12 +693,14 @@ function mount(root: Element): void {
     downloadButton.addEventListener("click", () => {
       if (currentReport === null) return;
       downloadReport(currentReport);
+      trackEvent("report_action", { action: "download", outcome: "success" });
       text(reportStatus, locale === "de" ? "JSON-Bericht heruntergeladen." : "JSON report downloaded.");
     });
   }
   if (comparePreviousButton instanceof HTMLButtonElement) {
     comparePreviousButton.addEventListener("click", () => {
       if (currentReport === null || previousReport === null) {
+        trackEvent("report_action", { action: "compare_previous", outcome: "unavailable" });
         text(reportStatus, locale === "de" ? "Für diese URL gibt es noch keine ältere lokale Prüfung." : "There is no older local check for this URL yet.");
         return;
       }
@@ -691,6 +713,7 @@ function mount(root: Element): void {
         locale === "de" ? "Jetzt" : "Current",
       );
       previousComparison?.removeAttribute("hidden");
+      trackEvent("report_action", { action: "compare_previous", outcome: "success" });
       previousComparison?.scrollIntoView({ behavior: "smooth", block: "nearest" });
     });
   }
@@ -707,6 +730,8 @@ function mount(root: Element): void {
       text(simulationStatus, locale === "de" ? "Die zweite Serverantwort wird geprüft …" : "Checking the second server response …");
       try {
         const identity = simulationSelect.value as CrawlerRequestIdentity;
+        trackEvent("crawler_profile_selected", { profile: identity });
+        trackEvent("tool_run_started", { tool: "crawler_comparison" });
         const simulated = await runCrawlerCheck(
           currentReport.fetchFacts.requestedUrl,
           identity,
@@ -726,7 +751,15 @@ function mount(root: Element): void {
             ? "Zweiter Request abgeschlossen. Unterschiede bedeuten eine abweichende Serverantwort auf den simulierten Header."
             : "Second request complete. Differences mean the server responded differently to the simulated header.",
         );
+        trackEvent("tool_run_succeeded", {
+          tool: "crawler_comparison",
+          outcome: simulated.eligibility.pageFetch,
+        });
       } catch (caught) {
+        trackEvent("tool_run_failed", {
+          tool: "crawler_comparison",
+          reason: analyticsErrorReason(caught),
+        });
         text(simulationStatus, errorMessage(caught, locale));
       } finally {
         if (simulationButton instanceof HTMLButtonElement) simulationButton.disabled = false;
@@ -749,10 +782,15 @@ function mount(root: Element): void {
     progress?.removeAttribute("hidden");
     results?.setAttribute("hidden", "");
     error?.setAttribute("hidden", "");
+    trackEvent("tool_run_started", { tool: "crawler_check" });
     try {
       const normalizedUrl = normalizePublicUrl(input.value);
       input.value = normalizedUrl;
       const report = await runCrawlerCheck(normalizedUrl);
+      trackEvent("tool_run_succeeded", {
+        tool: "crawler_check",
+        outcome: report.eligibility.pageFetch,
+      });
       currentReport = report;
       previousReport = saveHistory(report)?.report ?? null;
       if (comparePreviousButton instanceof HTMLButtonElement)
@@ -771,6 +809,7 @@ function mount(root: Element): void {
         if (report.fetchFacts.redirectChain.length > 0) {
           redirectHandoff.hidden = false;
           redirectHandoff.onclick = () => {
+            trackEvent("report_action", { action: "open_redirects", outcome: "success" });
             sessionStorage.setItem(
               "analysespider.redirect-chain",
               formatLiveRedirectEvidence(report.fetchFacts),
@@ -785,6 +824,7 @@ function mount(root: Element): void {
       const responseHandoff = root.querySelector("[data-response-handoff]");
       if (responseHandoff instanceof HTMLButtonElement) {
         responseHandoff.onclick = () => {
+          trackEvent("report_action", { action: "open_http", outcome: "success" });
           sessionStorage.setItem(
             "analysespider.http-response",
             JSON.stringify({
@@ -806,6 +846,10 @@ function mount(root: Element): void {
       results?.removeAttribute("hidden");
       results?.scrollIntoView({ behavior: "smooth", block: "start" });
     } catch (caught) {
+      trackEvent("tool_run_failed", {
+        tool: "crawler_check",
+        reason: analyticsErrorReason(caught),
+      });
       text(
         root.querySelector("[data-crawler-error-text]"),
         errorMessage(caught, locale),

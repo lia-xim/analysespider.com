@@ -26,6 +26,7 @@ export const localePairs = [
   ["/tools/robots-rule-tester", "/de/tools/robots-regel-test"],
   ["/tools/log-file-inspector", "/de/tools/server-log-analyse"],
   ["/tools/ip-location", "/de/tools/ip-adresse"],
+  ["/tools/bot-verification", "/de/tools/bot-verifizierung"],
   ["/crawlers", "/de/crawler"],
   ["/guides", "/de/wissen"],
   ["/guides/http-response-debugging", "/de/wissen/http-antwort-verstehen"],

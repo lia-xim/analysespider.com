@@ -23,7 +23,13 @@ export interface SiteConfig {
   };
   boundary: string;
   indexing: IndexingState;
-  analytics: { enabled: false; provider: null };
+  analytics: {
+    enabled: true;
+    provider: "Umami";
+    scriptUrl: string;
+    websiteId: string;
+    domains: string;
+  };
   githubUrl: string;
   contactEmail: string;
   primaryProject: { id: "contextter"; name: "Contextter"; relationship: string };
@@ -58,10 +64,16 @@ export const site: SiteConfig = {
     relationship: "Common operator and optional downstream workflow after a complete standalone result.",
   },
   indexing: "public",
-  analytics: { enabled: false, provider: null },
+  analytics: {
+    enabled: true,
+    provider: "Umami",
+    scriptUrl: "https://analytics.contextter.com/script.js",
+    websiteId: "2d92943b-f7b2-4fd0-a514-623646536639",
+    domains: "analysespider.com,www.analysespider.com",
+  },
   githubUrl: "https://github.com/lia-xim/analysespider.com",
   contactEmail: "info@contextter.com",
-  buildDate: "2026-08-28",
+  buildDate: "2026-08-29",
 };
 
 export const robotsContent = site.indexing === "public"

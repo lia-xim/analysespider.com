@@ -11,14 +11,14 @@ import PageLead from "../components/PageLead.astro";
   <section class="content-grid">
     <article class="prose">
       <h2>Current processing boundary</h2>
-      <p>The Log File Inspector and IP Address Check run in your browser. Pasted response headers, redirect blocks and robots.txt rules also stay local. The main crawler check and the optional public-URL modes in the Response Inspector, Redirect Chain tool and Robots Rule Tester send one public URL to the protected gateway described below.</p>
+      <p>The Log File Inspector, IP Address Check and Bot Request Verifier run in your browser. Pasted response headers, redirect blocks and robots.txt rules also stay local. The main crawler check and the optional public-URL modes in the Response Inspector, Redirect Chain tool and Robots Rule Tester send one public URL to the protected gateway described below.</p>
       <p>The crawler check keeps at most five successful reports in this browser for 24 hours so a later result can be compared with an earlier one. That local history contains the checked URL but is not uploaded as a history record. Copy and JSON export also happen in the browser.</p>
       <p>Do not submit private, signed, password-reset, preview, or secret-bearing URLs. The full checked path and query can appear in the generated report, the short-lived gateway cache, browser-local history, clipboard content, or a downloaded JSON file.</p>
       <p>Browser-local processing reduces exposure, but it does not make unsafe input harmless. Do not paste confidential logs into any device or browser you do not control. Results remain an interpretation of the supplied material—not proof of live server behavior.</p>
 
       <h2>Hosting boundary</h2>
       <p>The public site is delivered by Vercel. Loading a page necessarily sends connection and request metadata—such as the IP address, requested path, timestamp, user agent, and response status—to that hosting layer for delivery, reliability, and security. This is separate from the browser-local tool input, which the current application does not transmit.</p>
-      <p>There is no current analytics script, advertising tag, account system, or contact form. The complete controller, hosting, email, external-link, retention, and data-subject information is published in the <a href="/privacy">privacy notice</a>.</p>
+      <p>Cookie-free Umami measurement records page use, performance and allowlisted product-event categories. It never receives submitted URLs, IPs, log lines, pasted technical evidence, report contents or local history. There is no advertising tag, account system, or contact form. The complete controller, hosting, event, retention, and data-subject information is published in the <a href="/privacy">privacy notice</a>.</p>
 
       <h2>Result vocabulary</h2>
       <h3>Observed</h3>
@@ -39,7 +39,7 @@ import PageLead from "../components/PageLead.astro";
         <li>exact allowed origins, rate limits, replay protection, a circuit breaker, and a scope kill switch;</li>
         <li>tests for redirect-to-private targets and changing DNS answers.</li>
       </ul>
-      <p>The result reports only what this HTTP fetch observed. It does not render JavaScript, enter logged-in areas, prove bot identity, guarantee indexation, or measure actual AI mentions. No DataForSEO or paid LLM provider is used.</p>
+      <p>The result reports only what this HTTP fetch observed. It does not render JavaScript, enter logged-in areas, guarantee indexation, or measure actual AI mentions. The separate browser-local Bot Request Verifier can match a log-line IP and exact product token against dated ranges published by Google, OpenAI, Perplexity or Anthropic. No range match proves indexing, training or citation. No DataForSEO or paid LLM provider is used.</p>
 
       <h2>Sources and change control</h2>
       <p>Historical archives are used only to establish broad former topic and URL intent. A paid target-level backlink export was used to prioritize which old jobs deserved a new successor. Neither source grants rights to old content or proves current search performance.</p>
@@ -50,12 +50,12 @@ import PageLead from "../components/PageLead.astro";
       <dl class="facts-list">
         <div><dt>Processing</dt><dd>Browser-local plus protected public URL fetch</dd></div>
         <div><dt>URL fetch</dt><dd>One URL, one slot, strict limits</dd></div>
-        <div><dt>Client-side audience analytics</dt><dd>Disabled</dd></div>
+        <div><dt>Usage measurement</dt><dd>Cookie-free Umami; no tool input</dd></div>
         <div><dt>Gateway metrics</dt><dd>Limited operations and abuse prevention</dd></div>
         <div><dt>Live report cache</dt><dd>1 hour success / 5 minutes error</dd></div>
         <div><dt>Local report history</dt><dd>5 reports / 24 hours / this browser only</dd></div>
         <div><dt>Hosting</dt><dd>Vercel request layer</dd></div>
-        <div><dt>Updated</dt><dd>2026-08-28</dd></div>
+        <div><dt>Updated</dt><dd>2026-08-29</dd></div>
       </dl>
     </aside>
   </section>

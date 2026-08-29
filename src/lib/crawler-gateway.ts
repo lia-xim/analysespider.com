@@ -36,6 +36,7 @@ export interface CrawlerReport {
     readonly responseBodySha256?: string | null;
     readonly requestIdentity?: string;
     readonly requestUserAgent?: string;
+    readonly responseHeaders?: Readonly<Record<string, string>>;
   };
   readonly eligibility: {
     readonly pageFetch: EligibilityState;

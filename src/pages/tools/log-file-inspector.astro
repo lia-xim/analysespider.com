@@ -108,7 +108,7 @@ const de = locale === "de";
         <div id="panel-paths" class="result-panel" role="tabpanel" aria-labelledby="tab-paths" hidden>
           <div class="table-wrap"><table><thead><tr><th>#</th><th>Request path</th><th>Requests</th><th>Share</th></tr></thead><tbody id="path-rows"></tbody></table></div>
         </div>
-        <div class="workspace-actions result-panel"><button class="button" id="classify-log-ip" type="button" hidden>Classify the first observed IP</button></div>
+        <div class="workspace-actions result-panel"><button class="button" id="classify-log-ip" type="button" hidden>{de ? "Erste Bot-Anfrage verifizieren" : "Verify the first bot request"}</button></div>
       </section>
     </div>
   </section>
@@ -118,7 +118,7 @@ const de = locale === "de";
       <h2>{de ? "Woher kommen Server-Logs?" : "Where do server logs come from?"}</h2>
       <p>{de ? "Webserver, Hosting-Plattform, CDN oder Firewall können pro Anfrage eine Zeile schreiben. Darin stehen meist IP-Adresse, Zeit, Pfad, Statuscode und User-Agent. Suche nach Access Logs, Request Logs oder HTTP Logs." : "Your web server, hosting platform, CDN or firewall may record one line for each request. A line normally contains an IP address, time, path, status code and user-agent. Look for “access logs”, “request logs” or “HTTP logs”. If you cannot export them, ask the person who manages the hosting for a short Apache- or Nginx-style sample."}</p>
       <h2>{de ? "Was das Tool beantworten kann" : "What this tool can answer"}</h2>
-      <p>{de ? <>Es zählt Crawler-Namen, Fehler und häufige Pfade. Ein User-Agent lässt sich kopieren und beweist keine Bot-Identität. Nutze die <a href="/de/tools/ip-adresse">IP-Einordnung</a> als ersten Bereichscheck und danach die Methode des jeweiligen Betreibers.</> : <>It counts crawler names, errors and frequently requested paths. It does not prove that a claimed bot is genuine: user-agent text can be copied. Use the <a href="/tools/ip-location">IP Range Classifier</a> as a first range check, then follow the bot operator's verification procedure when identity matters.</>}</p>
+      <p>{de ? <>Es zählt Crawler-Namen, Fehler und häufige Pfade. Ein User-Agent lässt sich kopieren und beweist keine Bot-Identität. Übergib eine verdächtige Zeile direkt an die <a href="/de/tools/bot-verifizierung">Bot-Verifizierung</a>, um Token und veröffentlichte Betreiberbereiche gemeinsam zu prüfen.</> : <>It counts crawler names, errors and frequently requested paths. A user-agent can be copied and does not prove bot identity. Send a candidate line directly to the <a href="/tools/bot-verification">Bot Request Verifier</a> to check the token and published operator ranges together.</>}</p>
       <p><a href={de ? "/de/wissen/crawler-in-server-logs-erkennen" : "/guides/crawler-log-analysis"}>{de ? "Crawler in Server-Logs richtig erkennen" : "Read the crawler log analysis guide"}</a></p>
     </div>
     <aside class="side-note"><h3>No log access yet?</h3><p>Start with the <a href="/tools/crawler-view">live URL check</a>. This log tool becomes useful after you can export request data from your host or CDN.</p></aside>
@@ -155,6 +155,7 @@ const de = locale === "de";
     const classifyIpButton = document.querySelector<HTMLButtonElement>("#classify-log-ip")!;
     let latestEvidence: Record<string, unknown> | null = null;
     let firstObservedIp: string | null = null;
+    let firstObservedLine: string | null = null;
 
     const crawlerRules: Array<[RegExp, string]> = [
       [/googlebot/i, "Googlebot"],
@@ -235,7 +236,7 @@ const de = locale === "de";
         topPaths: pathCounts.slice(0, 100).map(([path, count]) => ({ path, requests: count })),
         unknowns: ["Crawler identity was not verified.", "Indexing, rendering, origin ownership, and root cause were not checked."],
       };
-      firstObservedIp = parsed[0]?.ip ?? null;
+      firstObservedIp = bots[0]?.ip ?? parsed[0]?.ip ?? null;
       classifyIpButton.hidden = firstObservedIp == null;
       exportButton.disabled = false;
 
@@ -291,6 +292,7 @@ const de = locale === "de";
         return;
       }
       render(parsed, lines.length - parsed.length, capped);
+      firstObservedLine = lines.find((line) => line.includes(firstObservedIp ?? "") && /bot|crawler|spider|claude|perplexity/iu.test(line)) ?? lines.find((line) => line.includes(firstObservedIp ?? "")) ?? null;
     };
 
     document.querySelector("#load-sample")!.addEventListener("click", () => {
@@ -313,6 +315,7 @@ const de = locale === "de";
       results.hidden = true;
       latestEvidence = null;
       firstObservedIp = null;
+      firstObservedLine = null;
       classifyIpButton.hidden = true;
       exportButton.disabled = true;
       statusMessage.textContent = "Local input cleared.";
@@ -347,8 +350,8 @@ const de = locale === "de";
 
     classifyIpButton.addEventListener("click", () => {
       if (!firstObservedIp) return;
-      sessionStorage.setItem("analysespider.ip-address", firstObservedIp);
-      window.location.assign("/tools/ip-location?from=log-inspector");
+      sessionStorage.setItem("analysespider.bot-log-line", firstObservedLine ?? firstObservedIp);
+      window.location.assign(document.documentElement.lang === "de" ? "/de/tools/bot-verifizierung?from=log-inspector" : "/tools/bot-verification?from=log-inspector");
     });
 
     document.querySelectorAll<HTMLButtonElement>('[role="tab"]').forEach((tab) => {
