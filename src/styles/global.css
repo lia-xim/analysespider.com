@@ -880,9 +880,20 @@ input[type="file"] {
   width: 100%;
   padding: .75rem;
   border: 1px solid var(--line-strong);
-  background: #101212;
-  color: var(--paper-soft);
+  background: #fff;
+  color: #17202a;
   font-size: .7rem;
+}
+
+input[type="file"]::file-selector-button {
+  margin-right: .75rem;
+  border: 1px solid #0b4f86;
+  background: #0b4f86;
+  color: #fff;
+  padding: .55rem .7rem;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 input[type="search"],

@@ -255,6 +255,16 @@ for (const route of routes) {
   }
 
   const canonical = new URL(route, origin).href;
+  if (route.endsWith("/robots-txt-generator")) {
+    pass(
+      html.includes('src="/scripts/robots-txt-generator.js"'),
+      `robots.txt generator must load its client code from a CSP-compatible same-origin script: ${route}`,
+    );
+    pass(
+      !/<script\b(?=[^>]*type="module")(?![^>]*\bsrc=)[^>]*>/i.test(html),
+      `robots.txt generator must not emit an inline executable module: ${route}`,
+    );
+  }
   pass(
     html.includes(`rel="canonical" href="${canonical}"`),
     `canonical mismatch for ${route}`,
