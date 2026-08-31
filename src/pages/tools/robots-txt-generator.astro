@@ -1,0 +1,221 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ToolBoundary from "../../components/ToolBoundary.astro";
+import ToolNavigator from "../../components/ToolNavigator.astro";
+
+interface Props { locale?: "en" | "de" }
+const { locale = "en" } = Astro.props;
+const de = locale === "de";
+const canonicalPath = de ? "/de/tools/robots-txt-generator" : "/tools/robots-txt-generator";
+const alternatePath = de ? "/tools/robots-txt-generator" : "/de/tools/robots-txt-generator";
+---
+
+<BaseLayout
+  title={de ? "Robots.txt Generator: Datei sicher erstellen — AnalyseSpider" : "Robots.txt Generator: Build and Check Rules — AnalyseSpider"}
+  description={de ? "Erstelle eine robots.txt im Browser, ergänze Allow-, Disallow- und Sitemap-Regeln und kopiere oder lade die fertige Datei herunter." : "Build a robots.txt file in your browser, add Allow, Disallow and Sitemap rules, then copy or download the finished file."}
+  canonicalPath={canonicalPath}
+  alternatePath={alternatePath}
+  lang={locale}
+  bodyClass="tool-page"
+>
+  <section class="tool-shell">
+    <aside class="tool-sidebar">
+      <h1>Robots.txt Generator</h1>
+      <p>{de ? "Erstelle eine übersichtliche Datei für einen Crawler oder für alle Bots. Die Eingaben bleiben in diesem Browser." : "Create a clear file for one crawler or for all bots. Everything stays in this browser."}</p>
+      <button class="button sidebar-action" type="button" data-generator-preset="allow">{de ? "Sicheren Start laden" : "Load a safe starting point"}</button>
+      <div class="sidebar-meta">
+        <strong>{de ? "Enthalten" : "Included"}</strong><br />
+        User-agent group<br />
+        Allow and Disallow paths<br />
+        Sitemap URLs<br />
+        Copy and download
+      </div>
+    </aside>
+
+    <div class="tool-main">
+      <ToolBoundary />
+      <ToolNavigator current={canonicalPath} locale={locale} />
+      <section class="workspace" aria-labelledby="generator-input-heading">
+        <div class="workspace-toolbar"><span class="active">{de ? "Regeln zusammenstellen" : "Build the rules"}</span><span>{de ? "Keine Netzwerkanfrage" : "No network request"}</span></div>
+        <div class="workspace-content">
+          <h2 id="generator-input-heading" class="visually-hidden">{de ? "robots.txt-Eingaben" : "robots.txt inputs"}</h2>
+          <div class="tool-question">
+            <strong>{de ? "Wie soll der Crawler deine Pfade behandeln?" : "How should the crawler handle your paths?"}</strong>
+            <p>{de ? "Starte offen und sperre nur Pfade, die wirklich nicht gecrawlt werden sollen. robots.txt schützt keine vertraulichen Inhalte." : "Start open and block only paths that genuinely should not be crawled. robots.txt does not protect confidential content."}</p>
+          </div>
+
+          <div class="tool-presets" aria-label={de ? "robots.txt-Vorlagen" : "robots.txt presets"}>
+            <button type="button" data-generator-preset="allow"><strong>{de ? "Alles erlauben" : "Allow all"}</strong><span><code>User-agent: *</code> + <code>Allow: /</code></span></button>
+            <button type="button" data-generator-preset="custom"><strong>{de ? "Eigene Regeln" : "Custom rules"}</strong><span>{de ? "Leere Pfadfelder" : "Empty path fields"}</span></button>
+            <button type="button" data-generator-preset="block"><strong>{de ? "Alles sperren" : "Block all"}</strong><span>{de ? "Nur bewusst einsetzen" : "Use deliberately"}</span></button>
+          </div>
+
+          <div class="input-grid generator-input-grid">
+            <div>
+              <label for={`generator-agent-${locale}`}>User-agent</label>
+              <input id={`generator-agent-${locale}`} data-generator-agent type="text" value="*" autocomplete="off" spellcheck="false" aria-describedby={`generator-agent-help-${locale}`} />
+              <p class="field-help" id={`generator-agent-help-${locale}`}>{de ? "Nutze * für alle Crawler oder einen veröffentlichten Produkt-Token wie Googlebot." : "Use * for all crawlers or a published product token such as Googlebot."}</p>
+
+              <label for={`generator-allow-${locale}`}>Allow</label>
+              <textarea id={`generator-allow-${locale}`} data-generator-allow spellcheck="false" placeholder="/&#10;/public/">/</textarea>
+              <p class="field-help">{de ? "Ein Pfad pro Zeile. Die Regel muss mit / beginnen." : "One path per line. Each rule must start with /."}</p>
+            </div>
+            <div>
+              <label for={`generator-disallow-${locale}`}>Disallow</label>
+              <textarea id={`generator-disallow-${locale}`} data-generator-disallow spellcheck="false" placeholder="/private/&#10;/search/"></textarea>
+              <p class="field-help">{de ? "Leer lassen, wenn nichts gesperrt werden soll." : "Leave empty when nothing should be blocked."}</p>
+
+              <label for={`generator-sitemap-${locale}`}>Sitemap</label>
+              <textarea id={`generator-sitemap-${locale}`} data-generator-sitemap spellcheck="false" placeholder="https://example.com/sitemap.xml"></textarea>
+              <p class="field-help">{de ? "Eine vollständige http- oder https-URL pro Zeile." : "One complete HTTP or HTTPS URL per line."}</p>
+            </div>
+          </div>
+
+          <div class="workspace-actions">
+            <button class="button" type="button" data-generator-clear>{de ? "Leeren" : "Clear"}</button>
+            <button class="button primary" type="button" data-generator-build>{de ? "robots.txt erstellen" : "Generate robots.txt"}</button>
+          </div>
+          <p class="form-status" data-generator-status role="status" aria-live="polite">{de ? "Alles erlauben ist als sichere Ausgangsbasis geladen." : "Allow all is loaded as a safe starting point."}</p>
+        </div>
+      </section>
+
+      <section class="result-surface" data-generator-result aria-labelledby="generator-result-heading">
+        <div class="workspace-toolbar"><span class="active">robots.txt</span><span>{de ? "Vor dem Veröffentlichen testen" : "Test before publishing"}</span></div>
+        <div class="result-panel">
+          <h2 id="generator-result-heading" class="visually-hidden">{de ? "Erstellte robots.txt" : "Generated robots.txt"}</h2>
+          <label for={`generator-output-${locale}`}>{de ? "Erstellte Datei" : "Generated file"}</label>
+          <textarea id={`generator-output-${locale}`} data-generator-output rows="10" readonly spellcheck="false">User-agent: *
+Allow: /</textarea>
+          <div class="workspace-actions">
+            <button class="button" type="button" data-generator-copy>{de ? "Kopieren" : "Copy"}</button>
+            <button class="button" type="button" data-generator-download>{de ? "robots.txt herunterladen" : "Download robots.txt"}</button>
+            <a class="button primary" href={de ? "/de/tools/robots-regel-test" : "/tools/robots-rule-tester"}>{de ? "Regel testen" : "Test a rule"}</a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <section class="content-grid">
+    <div class="prose">
+      <h2>{de ? "Was der robots.txt Generator erstellt" : "What the robots.txt generator creates"}</h2>
+      <p>{de ? "Das Tool schreibt eine gültige, übersichtliche Gruppe mit User-agent, Allow und Disallow. Vollständige Sitemap-URLs stehen getrennt darunter. Leere Zeilen und doppelte Eingaben werden bereinigt." : "The tool writes one clean group with User-agent, Allow and Disallow directives. Complete Sitemap URLs appear below it. Blank lines and duplicate entries are removed."}</p>
+      <p>{de ? <>Lege die Datei anschließend unter <code>/robots.txt</code> auf dem betreffenden Host ab und öffne genau diese URL zur Kontrolle. Teste kritische Pfade danach mit dem <a href="/de/tools/robots-regel-test">Robots.txt Tester</a>.</> : <>Publish the file at <code>/robots.txt</code> on the relevant host, then open that exact URL to confirm delivery. Test important paths afterwards with the <a href="/tools/robots-rule-tester">Robots.txt Tester</a>.</>}</p>
+
+      <h2>{de ? "Was die Datei nicht leisten kann" : "What the file cannot do"}</h2>
+      <p>{de ? "robots.txt ist eine Crawling-Anweisung für kooperierende Bots. Sie ist weder Zugriffsschutz noch ein verlässlicher noindex-Mechanismus. Vertrauliche Inhalte brauchen Authentifizierung; für eine Indexierungsentscheidung musst du robots.txt, Antwort-Header, HTML und Search Console getrennt prüfen." : "robots.txt is a crawl instruction for cooperating bots. It is neither access control nor a reliable noindex mechanism. Confidential content needs authentication; an indexing diagnosis must consider robots.txt, response headers, HTML and Search Console separately."}</p>
+      <p>{de ? "Setze „Alles sperren“ nur bewusst ein, etwa für eine nicht öffentliche Staging-Umgebung mit zusätzlichem Zugriffsschutz. Auf einer öffentlichen Website kann diese Regel Suchcrawler von allen Pfaden ausschließen." : "Use “Block all” only deliberately, such as on a non-public staging environment that also has access control. On a public site, that rule can exclude search crawlers from every path."}</p>
+    </div>
+    <aside class="side-note">
+      <h3>{de ? "Primärquellen" : "Primary references"}</h3>
+      <p><a href="https://www.rfc-editor.org/rfc/rfc9309.html" rel="noreferrer">RFC 9309</a> {de ? "definiert Gruppen, Direktiven und Pfad-Matching." : "defines groups, directives and path matching."}</p>
+      <p><a href="https://developers.google.com/search/docs/crawling-indexing/robots/intro" rel="noreferrer">Google Search Central</a> {de ? "erklärt die Grenzen für Crawling, Indexierung und Sicherheit." : "explains the boundaries between crawling, indexing and security."}</p>
+    </aside>
+  </section>
+
+  <script>
+    const root = document.querySelector<HTMLElement>("[data-generator-result]")?.closest(".tool-main") ?? document;
+    const agent = root.querySelector<HTMLInputElement>("[data-generator-agent]")!;
+    const allow = root.querySelector<HTMLTextAreaElement>("[data-generator-allow]")!;
+    const disallow = root.querySelector<HTMLTextAreaElement>("[data-generator-disallow]")!;
+    const sitemap = root.querySelector<HTMLTextAreaElement>("[data-generator-sitemap]")!;
+    const output = root.querySelector<HTMLTextAreaElement>("[data-generator-output]")!;
+    const status = root.querySelector<HTMLElement>("[data-generator-status]")!;
+    const locale = document.documentElement.lang === "de" ? "de" : "en";
+
+    const lines = (value: string) => [...new Set(value.split(/\r?\n/).map((line) => line.trim()).filter(Boolean))];
+    const setStatus = (deText: string, enText: string) => { status.textContent = locale === "de" ? deText : enText; };
+
+    const loadPreset = (preset: string) => {
+      agent.value = "*";
+      sitemap.value = "";
+      if (preset === "allow") {
+        allow.value = "/";
+        disallow.value = "";
+      } else if (preset === "block") {
+        allow.value = "";
+        disallow.value = "/";
+      } else {
+        allow.value = "";
+        disallow.value = "";
+      }
+      build();
+      if (preset === "allow") setStatus("Alles erlauben ist als sichere Ausgangsbasis geladen.", "Allow all is loaded as a safe starting point.");
+      if (preset === "block") setStatus("Achtung: Diese Vorlage sperrt alle passenden Crawler für alle Pfade.", "Warning: this preset blocks every matching crawler from every path.");
+      if (preset === "custom") setStatus("Füge nur Regeln hinzu, die du für konkrete Pfade brauchst.", "Add only the rules you need for specific paths.");
+    };
+
+    const build = () => {
+      const productToken = agent.value.trim();
+      if (!productToken || !/^[A-Za-z0-9_*.-]+$/.test(productToken)) {
+        setStatus("Der User-agent darf nur Buchstaben, Zahlen, Punkt, Bindestrich, Unterstrich oder * enthalten.", "User-agent may contain only letters, numbers, dots, hyphens, underscores or *." );
+        return false;
+      }
+
+      const allowPaths = lines(allow.value);
+      const disallowPaths = lines(disallow.value);
+      const invalidPath = [...allowPaths, ...disallowPaths].find((path) => !path.startsWith("/"));
+      if (invalidPath) {
+        setStatus(`Der Pfad „${invalidPath}“ muss mit / beginnen.`, `The path “${invalidPath}” must start with /.`);
+        return false;
+      }
+
+      const sitemapUrls = lines(sitemap.value);
+      const invalidSitemap = sitemapUrls.find((value) => {
+        try {
+          const parsed = new URL(value);
+          return parsed.protocol !== "http:" && parsed.protocol !== "https:";
+        } catch {
+          return true;
+        }
+      });
+      if (invalidSitemap) {
+        setStatus(`Die Sitemap „${invalidSitemap}“ braucht eine vollständige http- oder https-URL.`, `The sitemap “${invalidSitemap}” needs a complete HTTP or HTTPS URL.`);
+        return false;
+      }
+
+      const group = [`User-agent: ${productToken}`];
+      allowPaths.forEach((path) => group.push(`Allow: ${path}`));
+      disallowPaths.forEach((path) => group.push(`Disallow: ${path}`));
+      if (!allowPaths.length && !disallowPaths.length) group.push("Disallow:");
+      const sitemapRules = sitemapUrls.map((value) => `Sitemap: ${value}`);
+      output.value = [...group, ...(sitemapRules.length ? ["", ...sitemapRules] : [])].join("\n");
+      setStatus("robots.txt erstellt. Prüfe die Pfade, bevor du die Datei veröffentlichst.", "robots.txt generated. Review the paths before publishing the file.");
+      return true;
+    };
+
+    root.querySelectorAll<HTMLButtonElement>("[data-generator-preset]").forEach((button) => {
+      button.addEventListener("click", () => loadPreset(button.dataset.generatorPreset ?? "allow"));
+    });
+    root.querySelector<HTMLButtonElement>("[data-generator-clear]")?.addEventListener("click", () => {
+      agent.value = "*";
+      allow.value = "";
+      disallow.value = "";
+      sitemap.value = "";
+      output.value = "";
+      setStatus("Eingaben geleert.", "Inputs cleared.");
+    });
+    root.querySelector<HTMLButtonElement>("[data-generator-build]")?.addEventListener("click", build);
+    root.querySelector<HTMLButtonElement>("[data-generator-copy]")?.addEventListener("click", async () => {
+      if (!build()) return;
+      try {
+        await navigator.clipboard.writeText(output.value);
+        setStatus("robots.txt kopiert.", "robots.txt copied.");
+      } catch {
+        output.focus();
+        output.select();
+        setStatus("Automatisches Kopieren war nicht möglich. Der Inhalt ist markiert.", "Automatic copy was unavailable. The content is selected.");
+      }
+    });
+    root.querySelector<HTMLButtonElement>("[data-generator-download]")?.addEventListener("click", () => {
+      if (!build()) return;
+      const url = URL.createObjectURL(new Blob([`${output.value}\n`], { type: "text/plain;charset=utf-8" }));
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "robots.txt";
+      link.click();
+      URL.revokeObjectURL(url);
+      setStatus("robots.txt heruntergeladen.", "robots.txt downloaded.");
+    });
+  </script>
+</BaseLayout>

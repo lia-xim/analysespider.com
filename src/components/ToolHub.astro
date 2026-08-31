@@ -18,6 +18,14 @@ const copy = de
       liveAction: "Crawler-Analyse starten",
       localHeading: "Weitere Tools",
       openTool: "Tool öffnen",
+      guidanceHeading: "Das richtige Werkzeug wählen",
+      guidance: [
+        "Beginne mit dem URL-Check, wenn du Status, Canonical, robots.txt und initiales HTML einer öffentlichen Seite gemeinsam sehen möchtest.",
+        "Nutze die spezialisierten Tools, wenn du bereits weißt, welche Evidenz fehlt: eine Redirect-Kette, eine konkrete robots.txt-Regel, Logzeilen, eine IP-Zuordnung oder die Verifikation einer Bot-Anfrage.",
+        "Behandle jedes Ergebnis als Beobachtung mit Grenzen. Ein erfolgreicher Abruf beweist weder Indexierung noch Ranking oder einen Besuch des behaupteten Crawlers.",
+      ],
+      boundaryHeading: "Datengrenze",
+      boundaryText: "Lokale Werkzeuge verarbeiten eingefügte Daten im Browser. Öffentliche URL-Prüfungen laufen begrenzt über den geschützten Gateway; Eingaben, Limits und Aussagegrenzen stehen jeweils direkt am Tool.",
       tools: [
         {
           title: "Website-Indexierbarkeit prüfen",
@@ -40,6 +48,10 @@ const copy = de
           href: "/de/tools/robots-regel-test",
         },
         {
+          title: "robots.txt Generator",
+          href: "/de/tools/robots-txt-generator",
+        },
+        {
           title: "IP-Adressen-Check",
           href: "/de/tools/ip-adresse",
         },
@@ -58,6 +70,14 @@ const copy = de
       liveAction: "Start crawler analysis",
       localHeading: "More tools",
       openTool: "Open tool",
+      guidanceHeading: "Choose the right diagnostic",
+      guidance: [
+        "Start with the URL check when you need status, canonical, robots.txt and initial HTML evidence for one public page in the same report.",
+        "Use a focused tool when the missing evidence is already clear: a redirect chain, one robots.txt rule, a bounded log sample, an IP allocation or verification of a claimed bot request.",
+        "Treat every result as a bounded observation. A successful fetch does not prove indexing, ranking or a visit from the crawler named in a user-agent string.",
+      ],
+      boundaryHeading: "Data boundary",
+      boundaryText: "Local tools keep pasted data in the browser. Public URL checks use the protected gateway with explicit input and usage limits; each tool states what its result can and cannot establish.",
       tools: [
         {
           title: "Website Indexability Check",
@@ -78,6 +98,10 @@ const copy = de
         {
           title: "Robots.txt Tester",
           href: "/tools/robots-rule-tester",
+        },
+        {
+          title: "Robots.txt Generator",
+          href: "/tools/robots-txt-generator",
         },
         {
           title: "IP Address Checker",
@@ -102,6 +126,17 @@ const copy = de
     <p>{copy.liveText}</p>
   </div>
   <a class="button primary" href={de ? "/de/tools/crawler-sicht" : "/tools/crawler-view"}>{copy.liveAction}</a>
+</section>
+
+<section class="content-grid tool-hub-guidance" aria-labelledby="tool-guidance-heading">
+  <div class="prose">
+    <h2 id="tool-guidance-heading">{copy.guidanceHeading}</h2>
+    {copy.guidance.map((paragraph) => <p>{paragraph}</p>)}
+  </div>
+  <aside class="side-note">
+    <h3>{copy.boundaryHeading}</h3>
+    <p>{copy.boundaryText}</p>
+  </aside>
 </section>
 
 <section class="tool-hub-local" aria-labelledby="local-tools-heading">

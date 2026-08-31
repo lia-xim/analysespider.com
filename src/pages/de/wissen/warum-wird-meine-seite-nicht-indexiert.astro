@@ -9,7 +9,7 @@ import BaseLayout from "../../../layouts/BaseLayout.astro";
   lang="de"
   pageType="article"
   publishedTime="2026-08-23"
-  modifiedTime="2026-08-23"
+  modifiedTime="2026-08-31"
   bodyClass="simple-content"
 >
   <header class="simple-page-lead">
@@ -22,6 +22,7 @@ import BaseLayout from "../../../layouts/BaseLayout.astro";
     <section>
       <h2>Die kurze Antwort</h2>
       <p>Eine Seite kann nur indexiert werden, wenn ein Suchsystem ihre URL kennt, sie abrufen kann und genug Gründe sieht, genau diese Version zu speichern. Ein einzelnes grünes Signal reicht nicht. Ein Statuscode 200 hebt zum Beispiel ein noindex nicht auf.</p>
+      <p>Wenn du die <strong>Website-Indexierung prüfen</strong> möchtest, beginne mit den beobachtbaren technischen Signalen. Der <a href="/de/tools/google-index-check">Website-Index-Check</a> bündelt sie für bis zu 50 öffentliche URLs; den verifizierten Google-Status siehst du nur in deiner Search-Console-Property.</p>
     </section>
 
     <section>
@@ -34,14 +35,14 @@ import BaseLayout from "../../../layouts/BaseLayout.astro";
       <h2>2. Lies den HTTP-Status</h2>
       <p><strong>200</strong> bedeutet: Der Server hat Inhalt geliefert. <strong>301 oder 308</strong> bedeutet: Die URL leitet dauerhaft weiter. <strong>404</strong> bedeutet: nicht gefunden. <strong>410</strong> bedeutet: bewusst entfernt. <strong>5xx</strong> zeigt einen Serverfehler.</p>
       <p>Prüfe bei einer Weiterleitung jeden Schritt. Das Endziel sollte erreichbar sein und zum Inhalt passen. Eine lange oder wechselnde Kette macht die Diagnose unnötig schwer.</p>
-      <p><a class="button secondary" href="/tools/redirect-chain">Redirect-Schritte im Browser prüfen</a></p>
+      <p><a class="button secondary" href="/de/tools/weiterleitungskette">Redirect-Schritte im Browser prüfen</a></p>
     </section>
 
     <section>
       <h2>3. Trenne Crawling von Indexierung</h2>
       <p>Die robots.txt steuert in erster Linie, welche URLs ein Bot abrufen darf. Ein meta-robots-noindex oder ein X-Robots-Tag-noindex sagt dagegen, dass die gelieferte Seite nicht indexiert werden soll.</p>
       <p>Das ist ein wichtiger Unterschied: Wenn du den Abruf in robots.txt blockierst, kann der Bot ein noindex auf der Seite möglicherweise gar nicht lesen. Prüfe deshalb robots.txt, HTML und Antwort-Header getrennt.</p>
-      <p><a class="button secondary" href="/tools/robots-rule-tester">Eine robots.txt-Regel testen</a></p>
+      <p><a class="button secondary" href="/de/tools/robots-regel-test">Eine robots.txt-Regel testen</a></p>
     </section>
 
     <section>

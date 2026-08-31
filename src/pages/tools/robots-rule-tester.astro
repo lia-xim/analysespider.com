@@ -35,8 +35,8 @@ const crawlerGroups = [
 ] as const;
 ---
 <BaseLayout
-  title={de ? "robots.txt-Regel testen — AnalyseSpider" : "Robots.txt Rule Tester — AnalyseSpider"}
-  description={de ? "Prüfe eine öffentliche URL für Google-, ChatGPT- oder Claude-Crawler oder teste kopierte robots.txt-Regeln lokal." : "Check a public URL for Google, ChatGPT or Claude crawler access, or test pasted robots.txt rules locally."}
+  title={de ? "Robots.txt Tester für Googlebot und AI-Crawler — AnalyseSpider" : "Robots.txt Tester for Google and AI Crawlers — AnalyseSpider"}
+  description={de ? "Teste robots.txt-Regeln für Googlebot, ChatGPT und Claude live oder lokal. Das Ergebnis erklärt, welche Regel für den Pfad gewinnt." : "Test robots.txt rules for Googlebot, ChatGPT and Claude live or locally, with a clear explanation of the winning path rule."}
   canonicalPath={de ? "/de/tools/robots-regel-test" : "/tools/robots-rule-tester"}
   alternatePath={de ? "/tools/robots-rule-tester" : "/de/tools/robots-regel-test"}
   lang={locale}
@@ -44,7 +44,7 @@ const crawlerGroups = [
 >
   <section class="tool-shell">
     <aside class="tool-sidebar">
-      <h1>{de ? "robots.txt-Regel testen" : "Robots.txt Rule Tester"}</h1>
+      <h1>{de ? "Robots.txt Tester für Googlebot und AI-Crawler" : "Robots.txt Tester"}</h1>
       <p>{de ? "Wähle Google, ChatGPT oder Claude und gib deine Domain ein. Für genaue Einzelfälle kannst du robots.txt-Regeln auch direkt einfügen." : "Choose Google, ChatGPT or Claude and enter your domain. AnalyseSpider checks the public page. Pasting robots.txt rules remains available for advanced tests."}</p>
       <button class="button sidebar-action" id="load-robots-sample" type="button">{de ? "Beispiel laden" : "Try the example"}</button>
       <div class="sidebar-meta">
@@ -133,6 +133,7 @@ const crawlerGroups = [
       <p>{de ? "Wähle OAI-SearchBot für die mögliche Aufnahme in die ChatGPT-Suche. GPTBot betrifft mögliches Modelltraining. Claude veröffentlicht ebenfalls getrennte Tokens. Für Google Search und dessen AI-Funktionen bleibt Googlebot relevant." : <>Choose <strong>ChatGPT search</strong> when you care about possible inclusion in ChatGPT search. GPTBot is a separate decision about model training. Claude publishes a separate search token as well. Googlebot remains the relevant crawler for Google Search and its AI search features.</>}</p>
       <h2>{de ? "Was das Ergebnis belegt" : "What this result establishes"}</h2>
       <p>{de ? "Die Live-Prüfung liest die für die öffentliche Seite zurückgegebene Crawler-Entscheidung. Der lokale Test wendet Gruppenauswahl und Pfad-Matching nach RFC 9309 auf deine eingefügten Regeln an." : "The live check reads the crawler decision returned for the public page. The advanced local test applies RFC 9309 group selection and path matching to the exact rules, token and target you pasted. It combines repeated exact-token groups, falls back to the wildcard group only when no exact group exists, and chooses the most specific matching path rule."}</p>
+      <p>{de ? <>Du hast noch keine Datei? Mit dem <a href="/de/tools/robots-txt-generator">robots.txt Generator</a> erstellst du eine saubere Ausgangsversion und kannst sie anschließend hier für einen konkreten Pfad testen.</> : <>Starting from scratch? Use the <a href="/tools/robots-txt-generator">robots.txt Generator</a> to create a clean draft, then return here to test a specific path.</>}</p>
       <p><a href={de ? "/de/wissen/robots-txt-testen" : "/guides/test-robots-txt-rules"}>{de ? "Den vollständigen robots.txt-Leitfaden lesen" : "Follow the complete robots.txt testing workflow"}</a></p>
       <p>The local mode does not fetch <code>/robots.txt</code> or verify its HTTP status and content type. Neither mode models undocumented vendor behaviour or proves that a crawler will obey the file. Robots rules are crawl controls, not authentication and not a reliable way to keep a URL out of search results.</p>
       <p><a href="/guides/test-robots-txt-rules">Follow the complete robots.txt testing workflow</a> or inspect the <a href="/lab/crawler-benchmarks">versioned fixture evidence</a>.</p>

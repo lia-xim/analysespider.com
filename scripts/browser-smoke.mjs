@@ -4,7 +4,7 @@ import chromedriver from "chromedriver";
 
 const baseUrl = process.env.ANALYSESPIDER_PREVIEW_URL ?? "http://127.0.0.1:4321";
 const chromePath = process.env.CHROME_PATH ?? "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
-const routes = ["/", "/tools", "/crawlers", "/de", "/de/crawler", "/de/tools/http-antwort", "/lab/crawler-benchmarks", "/blog/how-to-find-search-bots-in-server-logs", "/blog/robots-txt-allows-bot-cdn-blocks-it", "/blog/initial-html-vs-rendered-dom", "/de/wissen/robots-erlaubt-cdn-blockiert", "/de/wissen/initiales-html-vs-gerenderter-dom"];
+const routes = ["/", "/tools", "/tools/robots-txt-generator", "/crawlers", "/de", "/de/crawler", "/de/tools/http-antwort", "/de/tools/robots-txt-generator", "/lab/crawler-benchmarks", "/blog/how-to-find-search-bots-in-server-logs", "/blog/robots-txt-allows-bot-cdn-blocks-it", "/blog/initial-html-vs-rendered-dom", "/de/wissen/robots-erlaubt-cdn-blockiert", "/de/wissen/initiales-html-vs-gerenderter-dom"];
 const viewports = [
   { width: 1440, height: 1000, label: "desktop" },
   { width: 430, height: 932, label: "large mobile" },

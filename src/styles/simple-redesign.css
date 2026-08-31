@@ -2798,7 +2798,9 @@ a {
   gap: 0.25rem;
 }
 
-.tool-navigator > div a {
+.tool-navigator > div a,
+.tool-navigator > div span {
+  display: inline-block;
   padding: 0.4rem 0.65rem;
   border-radius: 4px;
   color: var(--muted);
@@ -2807,7 +2809,7 @@ a {
 
 .tool-navigator > div a:hover,
 .tool-navigator > div a:focus-visible,
-.tool-navigator > div a[aria-current="page"] {
+.tool-navigator > div span[aria-current="page"] {
   background: #edf4ff;
   color: var(--signal);
   outline: none;
@@ -2850,6 +2852,18 @@ a {
 .tool-page textarea::placeholder {
   color: #778398;
   opacity: 1;
+}
+
+.tool-page .generator-input-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.generator-input-grid > div {
+  min-width: 0;
+}
+
+.generator-input-grid textarea {
+  min-height: 140px;
 }
 
 .tool-question {

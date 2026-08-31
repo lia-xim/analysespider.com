@@ -24,6 +24,7 @@ interface Props {
   indexing?: "inherit" | "noindex";
   includeCanonical?: boolean;
   includeStructuredData?: boolean;
+  includeFeedDiscovery?: boolean;
   lang?: Locale;
   alternatePath?: string | null;
   breadcrumbs?: { name: string; path: string }[];
@@ -41,6 +42,7 @@ const {
   indexing = "inherit",
   includeCanonical = true,
   includeStructuredData = true,
+  includeFeedDiscovery = false,
   lang = getLocale(Astro.url.pathname),
   alternatePath = getAlternatePath(canonicalPath),
   breadcrumbs = [],
@@ -129,7 +131,7 @@ const structuredData = {
     <meta name="robots" content={robots} />
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="alternate" type="application/atom+xml" title="AnalyseSpider articles" href="/feed.xml" />
+    {includeFeedDiscovery && <link rel="alternate" type="application/atom+xml" title="AnalyseSpider articles" href="/feed.xml" />}
     {includeCanonical && <link rel="canonical" href={canonical} />}
     {alternateUrl && <link rel="alternate" hreflang={lang} href={canonical} />}
     {alternateUrl && <link rel="alternate" hreflang={alternateLocale} href={alternateUrl} />}

@@ -25,6 +25,7 @@ export const localePairs = [
   ["/tools/url-inspector", "/de/tools/http-antwort"],
   ["/tools/redirect-chain", "/de/tools/weiterleitungskette"],
   ["/tools/robots-rule-tester", "/de/tools/robots-regel-test"],
+  ["/tools/robots-txt-generator", "/de/tools/robots-txt-generator"],
   ["/tools/log-file-inspector", "/de/tools/server-log-analyse"],
   ["/tools/ip-location", "/de/tools/ip-adresse"],
   ["/tools/bot-verification", "/de/tools/bot-verifizierung"],

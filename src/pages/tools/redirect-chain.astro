@@ -7,8 +7,8 @@ const { locale = "en" } = Astro.props;
 const de = locale === "de";
 ---
 <BaseLayout
-  title={de ? "Weiterleitungskette prüfen — AnalyseSpider" : "Redirect Chain Builder — AnalyseSpider"}
-  description={de ? "Prüfe die Weiterleitungskette einer öffentlichen URL geschützt live oder werte kopierte HTTP-Antworten lokal aus." : "Enter one public URL for a protected live redirect check, or analyse pasted HTTP response blocks locally."}
+  title={de ? "Redirect Checker: Weiterleitungskette prüfen — AnalyseSpider" : "Redirect Checker: Trace 301, 302 and Redirect Chains — AnalyseSpider"}
+  description={de ? "Prüfe 301, 302, 307, 308, Weiterleitungsketten und Schleifen live oder werte kopierte HTTP-Antworten lokal aus." : "Check 301, 302, 307 and 308 redirects, chains and loops live, or analyse pasted HTTP response blocks locally."}
   canonicalPath={de ? "/de/tools/weiterleitungskette" : "/tools/redirect-chain"}
   alternatePath={de ? "/tools/redirect-chain" : "/de/tools/weiterleitungskette"}
   lang={locale}
@@ -16,8 +16,8 @@ const de = locale === "de";
 >
   <section class="tool-shell">
     <aside class="tool-sidebar">
-      <h1>{de ? "Weiterleitungskette prüfen" : "Map a Redirect Chain"}</h1>
-      <p>{de ? "Gib eine Domain oder URL für die Live-Prüfung ein. Bereits kopierte Antworten kannst du lokal in diesem Browser auswerten." : "Enter a domain or URL for a live check. If you already captured the responses, paste those instead and they stay in this browser."}</p>
+      <h1>{de ? "Redirect Checker: URL-Weiterleitung prüfen" : "Redirect Checker"}</h1>
+      <p>{de ? "Gib eine Domain oder URL ein und prüfe 301, 302, 307 und 308 sowie Redirect-Ketten oder Schleifen. Bereits kopierte Antworten kannst du lokal in diesem Browser auswerten." : "Enter a domain or URL for a live check. If you already captured the responses, paste those instead and they stay in this browser."}</p>
       <button class="button sidebar-action" id="load-chain-sample" type="button">{de ? "Beispiel mit drei Schritten" : "Load a 3-hop example"}</button>
       <div class="sidebar-meta">
         <strong>What it accepts</strong><br />

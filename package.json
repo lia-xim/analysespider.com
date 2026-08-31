@@ -13,7 +13,7 @@
     "preview": "astro preview",
     "check": "astro check",
     "qa": "node scripts/qa.mjs",
-    "qa:a11y": "axe http://127.0.0.1:4321/ http://127.0.0.1:4321/tools http://127.0.0.1:4321/tools/crawler-view http://127.0.0.1:4321/tools/google-index-check http://127.0.0.1:4321/tools/bot-verification http://127.0.0.1:4321/de http://127.0.0.1:4321/de/tools/http-antwort http://127.0.0.1:4321/de/tools/crawler-sicht http://127.0.0.1:4321/de/tools/google-index-check http://127.0.0.1:4321/de/tools/bot-verifizierung http://127.0.0.1:4321/de/wissen/robots-erlaubt-cdn-blockiert http://127.0.0.1:4321/de/wissen/initiales-html-vs-gerenderter-dom --exit",
+    "qa:a11y": "axe http://127.0.0.1:4321/ http://127.0.0.1:4321/tools http://127.0.0.1:4321/tools/crawler-view http://127.0.0.1:4321/tools/google-index-check http://127.0.0.1:4321/tools/robots-txt-generator http://127.0.0.1:4321/tools/bot-verification http://127.0.0.1:4321/de http://127.0.0.1:4321/de/tools/http-antwort http://127.0.0.1:4321/de/tools/crawler-sicht http://127.0.0.1:4321/de/tools/google-index-check http://127.0.0.1:4321/de/tools/robots-txt-generator http://127.0.0.1:4321/de/tools/bot-verifizierung http://127.0.0.1:4321/de/wissen/robots-erlaubt-cdn-blockiert http://127.0.0.1:4321/de/wissen/initiales-html-vs-gerenderter-dom --exit",
     "qa:browser": "node scripts/browser-smoke.mjs",
     "update:crawler-ranges": "node scripts/update-crawler-ip-ranges.mjs",
     "verify": "pnpm build && pnpm qa"

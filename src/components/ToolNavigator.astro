@@ -14,6 +14,7 @@ const tools = [
   { href: de ? "/de/tools/weiterleitungskette" : "/tools/redirect-chain", label: "Redirects" },
   { href: de ? "/de/tools/http-antwort" : "/tools/url-inspector", label: "HTTP" },
   { href: de ? "/de/tools/robots-regel-test" : "/tools/robots-rule-tester", label: "robots.txt" },
+  { href: de ? "/de/tools/robots-txt-generator" : "/tools/robots-txt-generator", label: de ? "Generator" : "Generator" },
   { href: de ? "/de/tools/server-log-analyse" : "/tools/log-file-inspector", label: de ? "Server-Logs" : "Server logs" },
   { href: de ? "/de/tools/ip-adresse" : "/tools/ip-location", label: de ? "IP prüfen" : "IP check" },
   { href: de ? "/de/tools/bot-verifizierung" : "/tools/bot-verification", label: de ? "Bot verifizieren" : "Verify bot" },
@@ -24,7 +25,9 @@ const tools = [
   <a class="tool-navigator-all" href={de ? "/de/tools" : "/tools"}>{de ? "Alle Tools" : "All tools"}</a>
   <div>
     {tools.map((tool) => (
-      <a href={tool.href} aria-current={current === tool.href ? "page" : undefined}>{tool.label}</a>
+      current === tool.href
+        ? <span aria-current="page">{tool.label}</span>
+        : <a href={tool.href}>{tool.label}</a>
     ))}
   </div>
 </nav>

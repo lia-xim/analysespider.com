@@ -20,11 +20,12 @@ interface Props {
   index: string;
   entries: Entry[];
   note: string;
+  includeFeedDiscovery?: boolean;
 }
 
-const { title, pageTitle, description, intro, canonicalPath, index, entries, note } = Astro.props;
+const { title, pageTitle, description, intro, canonicalPath, index, entries, note, includeFeedDiscovery = false } = Astro.props;
 ---
-<BaseLayout title={pageTitle} description={description} canonicalPath={canonicalPath}>
+<BaseLayout title={pageTitle} description={description} canonicalPath={canonicalPath} includeFeedDiscovery={includeFeedDiscovery}>
   <nav class="breadcrumbs" aria-label="Breadcrumb">
     <a href="/">Home</a><span aria-hidden="true">/</span><span aria-current="page">{title}</span>
   </nav>

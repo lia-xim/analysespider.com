@@ -9,9 +9,9 @@ const { locale } = Astro.props;
 const de = locale === "de";
 const copy = de
   ? {
-      title: "Prüfe bis zu 50 URLs deiner Website.",
+      title: "Website-Indexierung prüfen",
       intro:
-        "Gib nur die Domain ein. AnalyseSpider prüft bis zu 50 gefundene URLs technisch. Danach kannst du jede URL mit einer öffentlichen Google-site:-Suche gegenprüfen.",
+        "Gib deine Domain ein. AnalyseSpider prüft bis zu 50 gefundene URLs auf Statuscode, robots.txt, noindex und Canonical. Eine öffentliche Google-site:-Suche liefert danach einen Hinweis, aber keinen Indexbeweis.",
       label: "Öffentliche Website",
       placeholder: "example.com",
       submit: "Website prüfen",
