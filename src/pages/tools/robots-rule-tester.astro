@@ -78,7 +78,7 @@ const crawlerGroups = [
             <p class="field-help" id="crawler-selection-help">{de ? "OAI-SearchBot betrifft ChatGPT Search. GPTBot betrifft mögliches Modelltraining." : "OAI-SearchBot controls ChatGPT Search access. GPTBot controls possible model-development access."}</p>
           </div>
           <div class="tool-live-row">
-            <div><label for="robots-live-url">{de ? "Öffentliche Domain oder URL" : "Public domain or URL"}</label><input id="robots-live-url" type="text" inputmode="url" autocomplete="url" placeholder="contextter.com" /></div>
+            <div><label for="robots-live-url">{de ? "Öffentliche Domain oder URL" : "Public domain or URL"}</label><input id="robots-live-url" type="text" inputmode="url" autocomplete="url" placeholder="crawlfoundry.com" /></div>
             <button class="button primary" id="check-live-robots" type="button">{de ? "Seite live prüfen" : "Check this page live"}</button>
           </div>
           <p class="field-help">The live check uses the protected crawler gateway and the selected crawler token. It does not guarantee indexing or a future visit.</p>
@@ -237,7 +237,7 @@ Allow: /private/preview/`;
         requestAnimationFrame(() => results.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" }));
       } catch (error) {
         status.textContent = error instanceof GatewayError && error.code === "VALIDATION_INVALID_INPUT"
-          ? "Enter a public domain or HTTP(S) URL, for example contextter.com."
+          ? "Enter a public domain or HTTP(S) URL, for example crawlfoundry.com."
           : "The protected live check could not be completed. You can still test pasted robots.txt rules locally.";
       } finally {
         liveButton.disabled = selectedCrawlerOption()?.dataset.liveSupported === "false";

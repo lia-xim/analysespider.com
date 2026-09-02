@@ -44,7 +44,7 @@ const de = locale === "de";
           <div class="input-grid">
             <div>
               <label for="header-input">{de ? "Domain, URL oder Antwort-Header" : "Domain, URL or response headers"}</label>
-              <textarea id="header-input" spellcheck="false" placeholder="contextter.com&#10;&#10;or paste:&#10;HTTP/2 301&#10;location: https://example.com/new-path"></textarea>
+              <textarea id="header-input" spellcheck="false" placeholder="crawlfoundry.com&#10;&#10;or paste:&#10;HTTP/2 301&#10;location: https://example.com/new-path"></textarea>
               <p class="field-help">{de ? "Eine einzelne URL nutzt den geschützten Live-Abruf. Ein Block ab HTTP/ bleibt in diesem Browser." : "A single URL uses the protected live fetch. A block beginning with HTTP/ stays in this browser."}</p>
             </div>
             <div class="or-divider" aria-hidden="true">+</div>
@@ -265,7 +265,7 @@ content-type: text/html; charset=utf-8`;
           : "Fresh live response checked through the protected crawler gateway.");
       } catch (error) {
         status.textContent = error instanceof GatewayError && error.code === "VALIDATION_INVALID_INPUT"
-          ? "Enter a public domain or HTTP(S) URL, for example contextter.com."
+          ? "Enter a public domain or HTTP(S) URL, for example crawlfoundry.com."
           : "The protected live check could not be completed. Pasted headers can still be inspected locally.";
       } finally {
         inspectButton.disabled = false;

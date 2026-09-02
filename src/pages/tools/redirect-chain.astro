@@ -43,7 +43,7 @@ const de = locale === "de";
             <button type="button" data-chain-preset="broken"><strong>{de ? "Defekte Kette" : "Broken chain"}</strong><span>{de ? "Einer Weiterleitung fehlt das Ziel" : "A redirect is missing its destination"}</span></button>
           </div>
           <label for="chain-input">{de ? "Domain, URL oder kopierte HTTP-Antwortblöcke" : "Domain, URL or captured HTTP response blocks"}</label>
-          <textarea id="chain-input" spellcheck="false" placeholder="contextter.com&#10;&#10;or paste:&#10;&#10;URL: https://example.com/old&#10;HTTP/2 301&#10;Location: /new&#10;&#10;URL: https://example.com/new&#10;HTTP/2 200"></textarea>
+          <textarea id="chain-input" spellcheck="false" placeholder="crawlfoundry.com&#10;&#10;or paste:&#10;&#10;URL: https://example.com/old&#10;HTTP/2 301&#10;Location: /new&#10;&#10;URL: https://example.com/new&#10;HTTP/2 200"></textarea>
           <p class="field-help">A single URL uses the same protected crawler gateway as the main check. Pasted blocks are analysed locally; each needs a <code>URL:</code> line and an HTTP status line.</p>
           <div class="workspace-actions">
             <button class="button" id="clear-chain" type="button">{de ? "Leeren" : "Clear"}</button>
@@ -185,7 +185,7 @@ HTTP/2 302`,
 
     const liveError = (error: unknown) => {
       if (!(error instanceof GatewayError)) return "The live check is temporarily unavailable. Please try again later.";
-      if (error.code === "VALIDATION_INVALID_INPUT") return "Enter a public domain or HTTP(S) URL, for example contextter.com.";
+      if (error.code === "VALIDATION_INVALID_INPUT") return "Enter a public domain or HTTP(S) URL, for example crawlfoundry.com.";
       if (error.code.includes("RATE") || error.code.includes("LIMIT")) return "The live-check limit has been reached. Try again after the displayed waiting period.";
       return "The protected live check could not be completed. You can still paste captured response blocks and analyse them locally.";
     };

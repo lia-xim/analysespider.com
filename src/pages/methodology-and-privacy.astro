@@ -29,7 +29,7 @@ import PageLead from "../components/PageLead.astro";
       <p>A question the current evidence cannot answer: live DNS, the final redirect hop, rendered DOM, current index state, precise location, identity, or future behavior.</p>
 
       <h2>Live crawler check and safety gates</h2>
-      <p>AnalyseSpider exposes tightly bounded server-side checks through dedicated gateway operations and does not enqueue the Contextter Site Audit worker. The live production container is limited to 0.5 CPU and 256 MB RAM. Single-URL checks allow one concurrent run, six runs per ten minutes, and 30 per 24 hours for one pseudonymous client. The optional crawler-token comparison uses one additional run and the same network limits. A website scan allows one concurrent scan, two scans per ten minutes, and ten per 24 hours; each scan checks at most 50 same-site URLs with bounded internal concurrency and a one-hour result cache.</p>
+      <p>AnalyseSpider exposes tightly bounded server-side checks through dedicated gateway operations and does not enqueue the Crawl Foundry Site Audit worker. The live production container is limited to 0.5 CPU and 256 MB RAM. Single-URL checks allow one concurrent run, six runs per ten minutes, and 30 per 24 hours for one pseudonymous client. The optional crawler-token comparison uses one additional run and the same network limits. A website scan allows one concurrent scan, two scans per ten minutes, and ten per 24 hours; each scan checks at most 50 same-site URLs with bounded internal concurrency and a one-hour result cache.</p>
       <p>The public fetch path enforces all of the following:</p>
       <ul>
         <li>private, loopback, link-local, metadata, and internal DNS blocking;</li>
