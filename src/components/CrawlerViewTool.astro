@@ -53,13 +53,13 @@ const copy = de
       contextterHeading: "Ganze Website prüfen",
       contextterText:
         "Nutze einen vollständigen technischen Crawl, wenn du Probleme über viele Seiten hinweg finden und priorisieren möchtest.",
-      contextterLink: "Zu Contextter Site Audit",
+      contextterLink: "Zu Crawl Foundry Site Audit",
       fanoutHeading: "Fragen und Quellen für AI-Suche prüfen",
       fanoutText:
         "Sieh, welche Folgefragen und Quellen bei echten OpenAI- und Gemini-Abfragen erscheinen.",
       fanoutLink: "Zu AI Fanout",
       disclosure:
-        "AnalyseSpider, Contextter und AI Fanout werden von Matthias Ramahi betrieben und sind keine unabhängigen Empfehlungen.",
+        "AnalyseSpider, Crawl Foundry und AI Fanout werden von Matthias Ramahi betrieben und sind keine unabhängigen Empfehlungen.",
       how: "So funktioniert der Check",
       steps: [
         ["URL prüfen", "Gib eine öffentliche Domain oder URL ein und starte die Prüfung."],
@@ -115,13 +115,13 @@ const copy = de
       contextterHeading: "Check the whole website",
       contextterText:
         "Use a full technical crawl when you need to find and prioritise problems across many pages.",
-      contextterLink: "Open Contextter Site Audit",
+      contextterLink: "Open Crawl Foundry Site Audit",
       fanoutHeading: "Check questions and sources in AI search",
       fanoutText:
         "See which follow-up questions and sources appear in real OpenAI and Gemini queries.",
       fanoutLink: "Open AI Fanout",
       disclosure:
-        "AnalyseSpider, Contextter and AI Fanout are operated by Matthias Ramahi and are not independent recommendations.",
+        "AnalyseSpider, Crawl Foundry and AI Fanout are operated by Matthias Ramahi and are not independent recommendations.",
       how: "How the check works",
       steps: [
         ["Check a URL", "Enter one public domain or URL and start the check."],
@@ -224,14 +224,14 @@ const pageIntro = indexMode
           <a class="button" data-google-search-link href="https://www.google.com/search?q=site%3Aexample.com" target="_blank" rel="noreferrer">
             {de ? "Manuell bei Google prüfen" : "Check manually on Google"}
           </a>
-          <a class="button primary" href="https://contextter.com/features/site-audit">
+          <a class="button primary" href="https://crawlfoundry.com/features/site-audit?utm_source=analysespider.com&utm_medium=referral&utm_campaign=index_monitor">
             {de ? "Tiefen Index-Monitor öffnen" : "Open the deep index monitor"}
           </a>
         </div>
         <p class="crawler-policy-note">
           {de
-            ? "Eine site:-Suche ist nur ein Hinweis. Der Contextter-Monitor nutzt deine eigene Search-Console-Property und zeigt Googles URL-Inspection-Antwort neben dem Live-Crawl. Gemeinsamer Betreiber: Matthias Ramahi."
-            : "A site: search is only a clue. The Contextter monitor uses your own Search Console property and places Google's URL Inspection answer next to the live crawl. Common operator: Matthias Ramahi."}
+            ? "Eine site:-Suche ist nur ein Hinweis. Der Crawl-Foundry-Monitor nutzt deine eigene Search-Console-Property und zeigt Googles URL-Inspection-Antwort neben dem Live-Crawl. Gemeinsamer Betreiber: Matthias Ramahi."
+            : "A site: search is only a clue. The Crawl Foundry monitor uses your own Search Console property and places Google's URL Inspection answer next to the live crawl. Common operator: Matthias Ramahi."}
         </p>
       </section>
     )}
@@ -324,7 +324,7 @@ const pageIntro = indexMode
       <article>
         <h2>{copy.contextterHeading}</h2>
         <p>{copy.contextterText}</p>
-        <a href={de ? "https://contextter.com/de/features/site-audit" : "https://contextter.com/features/site-audit"}>
+        <a href={de ? "https://crawlfoundry.com/de/features/site-audit?utm_source=analysespider.com&utm_medium=referral&utm_campaign=crawler_workflow" : "https://crawlfoundry.com/features/site-audit?utm_source=analysespider.com&utm_medium=referral&utm_campaign=crawler_workflow"}>
           {copy.contextterLink} <span aria-hidden="true">→</span>
         </a>
       </article>

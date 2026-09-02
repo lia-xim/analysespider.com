@@ -32,7 +32,7 @@ export interface SiteConfig {
   };
   githubUrl: string;
   contactEmail: string;
-  primaryProject: { id: "contextter"; name: "Contextter"; relationship: string };
+  primaryProject: { id: "contextter"; name: "Crawl Foundry"; relationship: string };
   buildDate: string;
 }
 
@@ -46,7 +46,7 @@ export const site: SiteConfig = {
   description: "Free browser tools and plain-language guides for checking crawler traffic, redirects, robots rules, HTTP responses and server logs.",
   purpose: "Help people understand crawler and response signals with small local tools, clear explanations and visible evidence limits.",
   ownershipDisclosure: "AnalyseSpider is a new implementation under new ownership in 2026. Former software, users, downloads, customers, and operator identity did not transfer.",
-  operatorDisclosure: "Owned and legally operated by Matthias Ramahi. Product work is associated with Contextter; common ownership is disclosed and this site is not independent corroboration.",
+  operatorDisclosure: "Owned and legally operated by Matthias Ramahi. Product work is associated with Crawl Foundry; common ownership is disclosed and this site is not independent corroboration.",
   operator: {
     schemaId: "https://analysespider.com/#operator",
     name: "Matthias Ramahi",
@@ -60,7 +60,7 @@ export const site: SiteConfig = {
   boundary: "No former software, users, downloads, or operator identity transferred. No unrestricted server-side fetching or active security scanning.",
   primaryProject: {
     id: "contextter",
-    name: "Contextter",
+    name: "Crawl Foundry",
     relationship: "Common operator and optional downstream workflow after a complete standalone result.",
   },
   indexing: "public",

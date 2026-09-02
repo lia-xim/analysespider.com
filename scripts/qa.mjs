@@ -873,14 +873,14 @@ for (const state of [
 
 await walk(distDir);
 for (const [route, href] of [
-  ["/", "https://contextter.com/features/site-audit"],
-  ["/de", "https://contextter.com/de/features/site-audit"],
+  ["/", "https://crawlfoundry.com/features/site-audit?utm_source=analysespider.com&amp;utm_medium=referral&amp;utm_campaign=single_url_workflow"],
+  ["/de", "https://crawlfoundry.com/de/features/site-audit?utm_source=analysespider.com&amp;utm_medium=referral&amp;utm_campaign=single_url_workflow"],
 ]) {
   const homeHtml = await readFile(await findOutput(route), "utf8");
   pass(
     homeHtml.includes(`class="contextter-next"`) &&
       homeHtml.includes(`href="${href}"`),
-    `${route} must expose the disclosed Contextter Site Audit link in server-rendered HTML`,
+    `${route} must expose the disclosed Crawl Foundry Site Audit link in server-rendered HTML`,
   );
 }
 const existingRoutes = new Set(routes);

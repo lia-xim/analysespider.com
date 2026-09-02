@@ -172,7 +172,9 @@ function clickTarget(anchor: HTMLAnchorElement): string {
   const url = new URL(anchor.href, window.location.href);
   if (
     url.hostname === "contextter.com" ||
-    url.hostname === "www.contextter.com"
+    url.hostname === "www.contextter.com" ||
+    url.hostname === "crawlfoundry.com" ||
+    url.hostname === "www.crawlfoundry.com"
   )
     return "contextter";
   if (url.hostname === "ai-fanout.com" || url.hostname === "www.ai-fanout.com")
