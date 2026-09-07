@@ -67,7 +67,7 @@ export const site: SiteConfig = {
   analytics: {
     enabled: true,
     provider: "Umami",
-    scriptUrl: "https://analytics.contextter.com/script.js",
+    scriptUrl: "https://analytics.crawlfoundry.com/script.js",
     websiteId: "2d92943b-f7b2-4fd0-a514-623646536639",
     domains: "analysespider.com,www.analysespider.com",
   },

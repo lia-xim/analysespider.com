@@ -411,7 +411,7 @@ pass(
   "privacy notice must not claim an inactive analytics provider",
 );
 pass(
-  privacy.includes('src="https://analytics.contextter.com/script.js"'),
+  privacy.includes('src="https://analytics.crawlfoundry.com/script.js"'),
   "privacy page must include the active Umami tracker",
 );
 pass(
@@ -670,7 +670,7 @@ for (const directive of [
 }
 pass(
   csp.includes("https://tools.contextter.com") &&
-    csp.includes("https://analytics.contextter.com"),
+    csp.includes("https://analytics.crawlfoundry.com"),
   "CSP must allow the protected gateway and self-hosted analytics only",
 );
 pass(
@@ -679,7 +679,7 @@ pass(
 );
 pass(
   csp.includes(
-    "script-src 'self' 'wasm-unsafe-eval' https://analytics.contextter.com",
+    "script-src 'self' 'wasm-unsafe-eval' https://analytics.contextter.com https://analytics.crawlfoundry.com",
   ),
   "CSP must allow local scripts, the Cap WASM solver and the analytics host",
 );
